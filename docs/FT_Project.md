@@ -68,7 +68,7 @@ Specifiche di sistema:
 ## Componenti Software
 
 Per l'implementazione sono stati utilizzati:
-* PC con distribuzione Linux (Ubuntu) con installato G-Forth e minicom;
+* PC con distribuzione Linux (Ubuntu) con installato G-Forth, minicom e picocom;
 * Interprete FORTH per soluzioni bare-metal pijFORTHos (via *https://github.com/organix/pijFORTHos*)
 
 ## Preparazione Ambiente di Sviluppo
@@ -82,6 +82,7 @@ avviare un terminale, ed eseguire i seguenti comandi per l'installazione di G-Fo
 $ sudo apt-get update
 $ sudo apt-get install -y gforth
 $ sudo apt-get install -y minicom
+$ sudo apt-get install -y picocom
 ```
 
 Minicom è un software di emulazione di terminale per sistemi operativi Unix-like da utilizzare per stabilire una comunicazione seriale remota (con il dispositivo target). Dopo averlo installato, bisogna configurarlo con i parametri specifici per il dispositivo target:
@@ -91,7 +92,7 @@ Minicom è un software di emulazione di terminale per sistemi operativi Unix-lik
    2. Seguendo le istruzioni a schermo:
       1. Modificare il *Serial Device*, impostandolo sulla posizione del dispositivo target collegato (tipicamente `/dev/ttyUSB0`)
       2. Modificare le impostazioni relative al baud rate, al bit di parità e ai data bits necessari alla comunicazione. Per il Raspberry&trade; Pi 1B sono:
-          * baud rate a 115200 data/s
+          * baud rate a 115200 bps
           * bit di parità assente
           * 8 data bits
       3. Disattivare l'opzione "Hardware Flow Control" 
@@ -104,6 +105,11 @@ Minicom è un software di emulazione di terminale per sistemi operativi Unix-lik
 3. Uscire dall'applicativo
 
 Dopo aver salvato la configurazione, si potrà mettere minicom in ascolto secondo i parametri scelti digitando `$ sudo minicom [nome_configurazione]`
+
+In alternativa, è possibile utilizzare picocom attraverso il comando `sudo picocom -b 115200 -r -l /dev/ttyUSB0 --imap delbs -s "ascii-xfr -sv -l100 -c10"`, in cui specifichiamo:
+* baudrate a 115200 bps
+* `--imap delbs` per usare il backspace per cancellare caratteri
+* `-s "ascii-xfr -sv -l100 -c10"` permette di specificare il protocollo ASCII-XFR per lo scambio di file, con un ritardo di 100 ms tra l'invio di una riga e l'altra e un intervallo di 10 ms tra l'invio di un carattere e l'altro.
 
 ## Preparazione della Scheda SD e dell'Interprete
 

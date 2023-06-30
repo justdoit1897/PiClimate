@@ -1,2 +1,4 @@
 *.fth
 utils.f
+Makefile
+Makefile.*
