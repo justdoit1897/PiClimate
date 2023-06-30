@@ -1,7 +1,0 @@
-Per fare un progetto di implementazione Snake/simil-Snake occorrono:
-* display almeno 2", 128x64 e B/W
-* tastierino con almeno 4 pulsanti
-* cavo USB-seriale per usare la console di pijFORTHos sul RPi da Linux
-
-Ho iniziato una conversazione con Pasquale (https://chat.openai.com/share/0a51adcb-f7ac-4a3d-8e46-7e82121c063b),
-ma siamo ancora in alto mare.
