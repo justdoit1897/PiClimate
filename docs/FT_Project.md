@@ -7,7 +7,7 @@ Il progetto nasce per definire, in forma embrionale, un sistema di gestione del 
 ## Componenti Hardware
 
 Per la realizzazione di questo progetto, sono stati necessari:
-1. Raspberry Pi 1B
+1. Raspberry&trade; Pi 1B
 2. Cavo USB-micro USB per l'alimentazione
 3. MicroSD 32GB
 4. Cavo USB-seriale TTL per usare l'interfaccia seriale UART
@@ -90,7 +90,7 @@ Minicom è un software di emulazione di terminale per sistemi operativi Unix-lik
    1. Selezionare l'opzione "Serial port setup"
    2. Seguendo le istruzioni a schermo:
       1. Modificare il *Serial Device*, impostandolo sulla posizione del dispositivo target collegato (tipicamente `/dev/ttyUSB0`)
-      2. Modificare le impostazioni relative al baud rate, al bit di parità e ai data bits necessari alla comunicazione. Per il Raspberry Pi 1B sono:
+      2. Modificare le impostazioni relative al baud rate, al bit di parità e ai data bits necessari alla comunicazione. Per il Raspberry&trade; Pi 1B sono:
           * baud rate a 115200 data/s
           * bit di parità assente
           * 8 data bits
@@ -131,7 +131,7 @@ start.elf
 kernel.img
 ```
 
-È possibile, quindi, inserire la scheda SD nel Raspberry Pi, connetterlo al computer con il cavo USB-seriale e, con minicom avviato secondo le modalità dette in precedenza, collegare il Raspberry Pi all'alimentazione.
+È possibile, quindi, inserire la scheda SD nel Raspberry&trade; Pi, connetterlo al computer con il cavo USB-seriale e, con minicom avviato secondo le modalità dette in precedenza, collegare il Raspberry&trade; Pi all'alimentazione.
 
 ## Descrizione dei Componenti
 
@@ -150,7 +150,7 @@ L'invio del file avviene attraverso minicom:
 2. Premere la combinazione Ctrl+A S per aprire il prompt di invio file
 3. Usando le istruzioni a schermo selezionare il protocollo di invio ASCII (per trattare il flusso di dati come un flusso di caratteri ASCII)
 4. Nel menù contestuale digitare il percorso `path/to/file/TBD` del file sulla macchina sorgente (il PC Linux)
-5. Attendere il caricamento del file sul Raspberry Pi e premere 'Invio'
+5. Attendere il caricamento del file sul Raspberry&trade; Pi e premere 'Invio'
 
 ## Descrizione dei Moduli
 
