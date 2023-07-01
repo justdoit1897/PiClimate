@@ -63,8 +63,6 @@ Specifiche di sistema:
   * massa
 * Requisiti di alimentazione: 5V @ 700 mA tramite MicroUSB o Header GPIO
 
-
-
 ## Componenti Software
 
 Per l'implementazione sono stati utilizzati:
@@ -145,7 +143,9 @@ kernel.img
 
 ## Flusso degli Eventi
 
-(*Inserire anche un semplice diagramma di flusso*)
+![Flusso degli Eventi](images/EventFlow.png)
+
+Dopo aver collegato il dispositivo target all'alimentazione, aver permesso a pijFORTHos di avviarsi e aver inviato il codice da eseguire (secondo le modalità spiegate in seguito), il sistema accoglie l'utente con una scritta di benvenuto, dopo la quale effettua il primo rilevamento e stampa sul display il risultato. Successivamente, ogni *X* secondi e finché il dispositivo è alimentato, il sensore effettua rilevamenti e li mostra a schermo, in sostituzione del valore precedente.
 
 ## Codice
 
