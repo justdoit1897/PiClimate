@@ -141,9 +141,19 @@ kernel.img
 
 ## Descrizione dei Componenti
 
+### Cavo USB-Seriale
+
+Si tratta di un cavo con, all'interno, un convertitore USB-seriale TTL basato sul chip PL2303HX. Dispone di connettore USB tipo A da un lato e 4 fili con connettori singoli dall'altro, con pinout: filo rosso Vcc, filo nero GND, verde TXD e bianco RXD
+
+I livelli logici di funzionamento sono 3.3V per il segnale TXD, mentre per il segnale RXD è accettato in ingresso una tensione compresa tra 3V e 5V.
+
+È dotato di un buffer in ricezione da 128 B ed uno in trasmissione da 256 B, cosa che garantisce robustezza in trasmissioni fino a 3Mbaud/s. Collegando opportunamente il dispositivo target ad un computer dotato di ingresso USB, questo riconoscerà la connessione come una VirtualCOM Port seriale (VCP), con cui emulare la porta seriale RS232, senza bisogno di alcuna modifica. 
+
+Nel nostro caso, trattandosi di un collegamento SPI asincrono, è stato necessario specificare i parametri di sincronizzazione, come il baud rate e la dimensione (in bit) dei dati.
+
 ### Sensore di temperatura e umidità TZT DHT22
 
-<img src='images/components/temp_hum_sensor.jpeg' alt='Sensore di umidità e temperatura DHT22' width='80' style='float: right; margin: 20px 10px;'>
+<img src='images/components/temp_hum_sensor.jpeg' alt='Sensore di umidità e temperatura DHT22' width='80' style='float: right; margin: 5px 10px;'>
 
 Il sensore permette il monitoraggio della temperatura e dell'umidità nell'ambiente circostante, ed è caratterizzato da un sensore di base della famiglia AM2302, che si caratterizza per la capacità di gestione di segnali digitali con una precisione di &pm;0.5 °C per la temperatura e di &pm;2% RH per l'umidità, rilevando valori di temperatura tra i -40°C e i +80°C e di umidità tra lo 0% e il 100%. 
 
