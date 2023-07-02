@@ -2,7 +2,7 @@
 
 ## Descrizione del progetto
 
-Il progetto nasce per definire, in forma embrionale, un sistema di gestione del clima in ambienti chiusi. Il sistema target scelto è un **Raspberry&trade; Pi**, nella sua variante 1B, attraverso cui viene visualizzata, in modo continuato nel tempo, la condizione climatica dell'ambiente in cui ci si trova.
+Il progetto nasce per definire, in forma embrionale, un sistema di gestione del clima in ambienti chiusi, nello specifico un ambiente simile a una sala server, ossia uno in cui sono richieste specifiche condizioni ambientali per garantire il corretto funzionamento della struttura. Il sistema target scelto è un **Raspberry&trade; Pi**, nella sua variante 1B, attraverso cui viene visualizzata, in modo continuato nel tempo, la condizione climatica dell'ambiente in cui ci si trova.
 
 ## Componenti Hardware
 
@@ -12,8 +12,10 @@ Per la realizzazione di questo progetto, sono stati necessari:
 3. MicroSD 32GB
 4. Cavo USB-seriale TTL per usare l'interfaccia seriale UART
 5. Display (*TBD*)
-6. Sensore Temperatura e Umidità (*TBD*)
-7. Breadboard (*TBD*)
+6. Sensore Temperatura e Umidità **TZT DHT22**
+7. Ventola di raffreddamento a 5V 2 pin
+8. 2x LED (*TBD*)
+9. Breadboard MB-102 da 400 pin
 
 ### Schema del Sistema
 
@@ -139,6 +141,20 @@ kernel.img
 
 ## Descrizione dei Componenti
 
+### Sensore di temperatura e umidità TZT DHT22
+
+<img src='images/components/temp_hum_sensor.jpeg' alt='Sensore di umidità e temperatura DHT22' width='80' style='float: right; margin: 20px 10px;'>
+
+Il sensore permette il monitoraggio della temperatura e dell'umidità nell'ambiente circostante, ed è caratterizzato da un sensore di base della famiglia AM2302, che si caratterizza per la capacità di gestione di segnali digitali con una precisione di &pm;0.5 °C per la temperatura e di &pm;2% RH per l'umidità, rilevando valori di temperatura tra i -40°C e i +80°C e di umidità tra lo 0% e il 100%. 
+
+Il sensore dispone di interfaccia seriale a filo singolo che ne facilita l'utilizzo. Il sensore DHT22 viene calibrato in modo estremamente preciso, essendo che i coefficienti di calibrazione sono memorizzati nella memoria OTP e vengono richiamati durante il processo di rilevamento: in questo modo non vi è alcuna necessità di ricalibrare il sensore.
+
+### Ventola di raffreddamento a 5V 2 pin
+
+<img src='images/components/cool_fan.jpg' alt='Ventola di raffreddamento' width='96' style='float: left; margin: 10px 10px;'>
+
+Si tratta di una ventola di dimensioni 60x60x10 mm, capace di lavorare a una tensione di 5V e garantire una velocità di rotazione di circa 3300 RPM, permettendo quindi un flusso d'aria di 13,8 CFM.
+
 (*Da fare dopo aver acquistato i componenti*)
 
 ## Flusso degli Eventi
@@ -162,7 +178,7 @@ L'invio del file avviene attraverso minicom:
 
 ## Considerazioni Finali
 
-Dopo una prima, lunga, fase di impostazione dell'attività progettuale, legata principalmente al reperimento della componentistica e all'apprendimento dell'ambiente di sviluppo (essendo la prima esperienza di programmazione a un così basso livello), possiamo affermare che la soluzione proposta rappresenti un punto di partenza per future espansioni e adattamenti a vari contesti applicativi, che vanno dalla domotica ad applicazioni industriali, in cui il rilevamento dei valori di temperatura e di umidità in tempo reale possa essere un *game-changer*.
+Dopo una prima, lunga, fase di impostazione dell'attività progettuale, legata principalmente al reperimento della componentistica e all'apprendimento dell'ambiente di sviluppo (essendo la prima esperienza di programmazione a un così basso livello), possiamo affermare che la soluzione proposta rappresenti un punto di partenza per future espansioni e adattamenti a vari contesti, che vanno dalla domotica ad applicazioni industriali, in cui il rilevamento dei valori di temperatura e di umidità in tempo reale possa essere un *game-changer*.
 
 In questo senso, possibili espansioni riguardano l'inserimento di attuatori e sensori che possano permettere alla soluzione di interfacciarsi con altri dispositivi e di fungere da regolatore del comportamento di questi ultimi, senza, peraltro, dover modificare il codice sorgente fin dove scritto: nel caso domestico, per esempio, si potrebbe pensare di centralizzare il controllo della temperatura aggiungendo pulsanti, per la determinazione dei valori desiderati, e altra componentistica, per permettere la comunicazione con le unità di controllo del clima (es. climatizzatori) e l'imposizione di tali valori fino al soddisfacimento di condizioni sia temporali che ambientali.
 
