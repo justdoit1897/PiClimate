@@ -1,3 +1,7 @@
+
+
+<link rel="stylesheet" type="text/css" href="stili.css">
+
 # BM - Termostato (Nome Provvisorio)
 
 ## Descrizione del progetto
@@ -7,6 +11,7 @@ Il progetto nasce per definire, in forma embrionale, un sistema di gestione del 
 ## Componenti Hardware
 
 Per la realizzazione di questo progetto, sono stati necessari:
+
 1. Raspberry&trade; Pi 1B
 2. Cavo USB-micro USB per l'alimentazione
 3. MicroSD 32GB
@@ -22,12 +27,12 @@ Per la realizzazione di questo progetto, sono stati necessari:
 ![Componenti e interconnessioni]()
 
 | FUN | CONN | HEADER | PIN | PIN | HEADER  | CONN | FUN |
-| --- | ---  |  ---   | --- | --- |  ---    | ---  | --- |
-|     |      |        |  1  |  2  |         |      |     |
-|     |      |        |  3  |  4  |         |      |     |
-|     |      |        |  5  |  6  |   GND   |      |     |
-|     |      |        |  7  |  8  | UART TX | TXD  |     |
-|     |      |        |  9  | 10  | UART RX | RXD  |     |
+| --- | ---- | ------ | --- | --- | ------- | ---- | --- |
+|     |      |        | 1   | 2   |         |      |     |
+|     |      |        | 3   | 4   |         |      |     |
+|     |      |        | 5   | 6   | GND     |      |     |
+|     |      |        | 7   | 8   | UART TX | TXD  |     |
+|     |      |        | 9   | 10  | UART RX | RXD  |     |
 |     |      |        | 11  | 12  |         |      |     |
 |     |      |        | 13  | 14  |         |      |     |
 |     |      |        | 15  | 16  |         |      |     |
@@ -39,18 +44,19 @@ Per la realizzazione di questo progetto, sono stati necessari:
 
 ### Dispositivo Target
 
-Come detto, il target del nostro progetto è il Raspberry&trade; Pi 1B. Esso monta il SoC Broadcom 2835 con processore ARM1176JZFS a 700 Mhz che, nonostante le caratteristiche non più all'avanguardia, si dimostra particolarmente potente nella gestione dei compiti richiesti.
+Come detto, il target del nostro progetto è il **Raspberry&trade; Pi 1B**. Esso monta il SoC Broadcom 2835 con processore ARM1176JZFS a 700 Mhz che, nonostante le caratteristiche non più all'avanguardia, si dimostra particolarmente potente nella gestione dei compiti richiesti.
 
-<img src='./images/raspberry-pi-1-modello-b.jpg' alt='Raspberry Pi 1B' width="640">
+<img src='./images/raspberry-pi-1-modello-b.jpg' alt='Raspberry Pi 1B' width="50%">
 
-<img src='./images/Pi-GPIO-header-26-sm.png' alt='Raspberry Pi 1B GPIO Headers' width="320" style='float:right;'>
+<img src='./images/Pi-GPIO-header-26-sm.png' alt='Raspberry Pi 1B GPIO Headers' width="320" style='float:right; margin-top:120px'>
 
 Specifiche di sistema:
+
 * SoC Broadcom BCM2835
 * CPU ARM1176JZF-S core a 700 MHz
 * GPU Broadcom VideoCore IV
 * 512 MB RAM
-* 2 Porte USB2.0 
+* 2 Porte USB2.0
 * Video Output Composito (PAL e NTSC), HDMI o LCD diretto (DSI)
 * Audio Output tramite Jack 3.5mm o Audio over HDMI
 * Archiviazione: SD/MMC/SDIO
@@ -68,6 +74,7 @@ Specifiche di sistema:
 ## Componenti Software
 
 Per l'implementazione sono stati utilizzati:
+
 * PC con distribuzione Linux (Ubuntu) con installato G-Forth, minicom e picocom;
 * Interprete FORTH per soluzioni bare-metal pijFORTHos (via *https://github.com/organix/pijFORTHos*)
 
@@ -75,10 +82,10 @@ Per l'implementazione sono stati utilizzati:
 
 Dovendo lavorare in *bare-metal*, abbiamo pensato che i file di codice dovessero essere caricati al momento sul dispositivo, per cui abbiamo optato per un trasferimento lungo la connessione seriale, sfruttando il protocollo FTDI RS-232.
 
-Nel sistema sorgente (quello su cui viene scritto il codice da inviare), su cui deve essere installata una distribuzione Linux (nel nostro caso Ubuntu 22.04 LTS), 
+Nel sistema sorgente (quello su cui viene scritto il codice da inviare), su cui deve essere installata una distribuzione Linux (nel nostro caso Ubuntu 22.04 LTS),
 avviare un terminale, ed eseguire i seguenti comandi per l'installazione di G-Forth e minicom:
 
-```
+```bash
 $ sudo apt-get update
 $ sudo apt-get install -y gforth
 $ sudo apt-get install -y minicom
@@ -86,16 +93,17 @@ $ sudo apt-get install -y picocom
 ```
 
 Minicom è un software di emulazione di terminale per sistemi operativi Unix-like da utilizzare per stabilire una comunicazione seriale remota (con il dispositivo target). Dopo averlo installato, bisogna configurarlo con i parametri specifici per il dispositivo target:
+
 1. Avviare l'applicativo di configurazione da terminale con il comando `$ sudo minicom -s`
 2. Usando le frecce, invio (*return*) ed esc per navigare nei menu:
    1. Selezionare l'opzione "Serial port setup"
    2. Seguendo le istruzioni a schermo:
       1. Modificare il *Serial Device*, impostandolo sulla posizione del dispositivo target collegato (tipicamente `/dev/ttyUSB0`)
       2. Modificare le impostazioni relative al baud rate, al bit di parità e ai data bits necessari alla comunicazione. Per il Raspberry&trade; Pi 1B sono:
-          * baud rate a 115200 bps
-          * bit di parità assente
-          * 8 data bits
-      3. Disattivare l'opzione "Hardware Flow Control" 
+         * baud rate a 115200 bps
+         * bit di parità assente
+         * 8 data bits
+      3. Disattivare l'opzione "Hardware Flow Control"
       4. Uscire dal menu
    3. Selezionare l'opzione "Modem and dialing"
    4. Seguendo le istruzioni a schermo
@@ -107,6 +115,7 @@ Minicom è un software di emulazione di terminale per sistemi operativi Unix-lik
 Dopo aver salvato la configurazione, si potrà mettere minicom in ascolto secondo i parametri scelti digitando `$ sudo minicom [nome_configurazione]`
 
 In alternativa, è possibile utilizzare picocom attraverso il comando `sudo picocom -b 115200 -r -l /dev/ttyUSB0 --imap delbs -s "ascii-xfr -sv -l100 -c10"`, in cui specifichiamo:
+
 * baudrate a 115200 bps
 * `--imap delbs` per usare il backspace per cancellare caratteri
 * `-s "ascii-xfr -sv -l100 -c10"` permette di specificare il protocollo ASCII-XFR per lo scambio di file, con un ritardo di 100 ms tra l'invio di una riga e l'altra e un intervallo di 10 ms tra l'invio di un carattere e l'altro.
@@ -116,6 +125,7 @@ In alternativa, è possibile utilizzare picocom attraverso il comando `sudo pico
 Per procedere all'installazione di pijFORTHos sulla scheda SD si possono seguire direttamente le istruzioni fornite dal gestore della repo *organix*, che riportiamo per completezza.
 
 Direttamente da Raspbian OS:
+
 1. Aprire il terminale
 2. Clonare il repository attraverso il comando `$ git clone https://github.com/organix/pijFORTHos`
 3. Accedere alla posizione della copia della repository con il comando `$ cd path/to/pijFORTHos`
@@ -124,7 +134,7 @@ Direttamente da Raspbian OS:
 Questa procedura genera un file `kernel.img` ma, in caso di problemi, ne può essere utilizzato uno predefinito incluso nei file della repository
 Dopo di che, eseguire i comandi
 
-```
+```bash
 $ cp firmware/* /media/<SD-card>/
 $ cp kernel.img /media/<SD-card>/
 ```
@@ -178,6 +188,7 @@ Dopo aver collegato il dispositivo target all'alimentazione, aver permesso a pij
 Nella scrittura del codice sorgente, si è provato a seguire un approccio modulare, inteso come suddiviso per aree di interesse, ma il file che deve essere trasmesso al dispositivo target dev'essere preferibilmente unico e ripulito da commenti utili solo in fase di debug, per cui abbiamo fatto ricorso ad un makefile per la generazione del file *TBD*
 
 L'invio del file avviene attraverso minicom:
+
 1. Avviare minicom digitando `$ sudo minicom [nome_configurazione]` da terminale
 2. Premere la combinazione Ctrl+A S per aprire il prompt di invio file
 3. Usando le istruzioni a schermo selezionare il protocollo di invio ASCII (per trattare il flusso di dati come un flusso di caratteri ASCII)
