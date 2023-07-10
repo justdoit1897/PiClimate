@@ -37,3 +37,19 @@ BASE 20007C + CONSTANT GPAREN0
 : ISACTIVE GPLEV0 @ SWAP RSHIFT 1 AND ;
 
 : DELAY BEGIN 1 - DUP 0 = UNTIL DROP ;
+
+DECIMAL
+
+\\ Controllo che il numero del pin GPIO inserito sia minore di 18 (per errori di definizione dell'operatore >), 
+\\ altrimenti termina l'esecuzione e ripulisce lo stack.
+: GPIO DUP 18 > IF ABORT THEN ;
+
+\\ MODE (N -- R A B) R -> GPFSEL_REGISTER_ADDR; A -> PIN_ADDRESS B -> SPLACEMENT_BIT
+\\ ES: 11 -- 2116026372 -1061109568 3
+
+: MODE 10 /MOD 4 * GPFSEL0 + SWAP 3 * DUP 7 SWAP LSHIFT ROT DUP @ ROT INVERT AND ROT ;
+
+: OUTPUT 1 SWAP LSHIFT OR SWAP ! ;
+
+: INPUT 1 SWAP LSHIFT INVERT AND SWAP ! ;
+
