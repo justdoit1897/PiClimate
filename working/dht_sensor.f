@@ -44,7 +44,7 @@ VARIABLE CHECKSUM
 \\ mentre gli altri 8 saranno usati come checksum
 : READ_DATA 
     WAIT_PULLDOWN WAIT_PULLUP
-    27 BEGIN
+    28 BEGIN
         DUP 7 > IF
             \\ Primi 32 bit per i dati
             DATA DUP @ 1 LSHIFT
