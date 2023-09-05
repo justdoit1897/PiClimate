@@ -67,6 +67,7 @@ VARIABLE CHECKSUM
     DATA @  8 RSHIFT FF AND +
     DATA @ 10 RSHIFT FF AND +
     DATA @ 18 RSHIFT +
+    FF AND
     CHECKSUM @ = NOT IF ." Data didn't match cheksum " CR THEN ;
 \\ Definiamo due variabili per contenere la parte intera e la parte frazionaria per
 \\ l'umidità
