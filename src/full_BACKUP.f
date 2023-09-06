@@ -1,0 +1,440 @@
+
+\ Embedded Systems
+\ Università degli Studi di Palermo
+\ CdL in Ingegneria Informatica LM-32
+\ Mario Tortorici, 0737892, A. A. 2022/2023
+
+\ *********** FINAL.f ***********
+
+: '\n' 10 ;
+: BL 32 ;
+: ':' [ CHAR : ] LITERAL ;
+: ';' [ CHAR ; ] LITERAL ;
+: '(' [ CHAR ( ] LITERAL ;
+: ')' [ CHAR ) ] LITERAL ;
+: '"' [ CHAR " ] LITERAL ;
+: 'A' [ CHAR A ] LITERAL ;
+: '0' [ CHAR 0 ] LITERAL ;
+: '-' [ CHAR - ] LITERAL ;
+: '.' [ CHAR . ] LITERAL ;
+: ( IMMEDIATE 1 BEGIN KEY DUP '(' = IF DROP 1+ ELSE ')' = IF 1- THEN THEN DUP 0= UNTIL DROP ;
+: SPACES BEGIN DUP 0> WHILE SPACE 1- REPEAT DROP ;
+: WITHIN -ROT OVER <= IF > IF TRUE ELSE FALSE THEN ELSE 2DROP FALSE THEN ;
+: ALIGNED 3 + 3 INVERT AND ;
+: ALIGN HERE @ ALIGNED HERE ! ;
+: C, HERE @ C! 1 HERE +! ;
+: S" IMMEDIATE STATE @ IF ' LITS , HERE @ 0 , BEGIN KEY DUP '"' <> WHILE C, REPEAT DROP DUP HERE @ SWAP - 4- SWAP ! ALIGN ELSE HERE @ BEGIN KEY DUP '"' <> WHILE OVER C! 1+ REPEAT DROP HERE @ - HERE @ SWAP THEN ;
+: ." IMMEDIATE STATE @ IF [COMPILE] S" ' TELL , ELSE BEGIN KEY DUP '"' = IF DROP EXIT THEN EMIT AGAIN THEN ;
+: DICT WORD FIND ;
+: VALUE WORD CREATE DOCOL , ' LIT , , ' EXIT , ;
+: TO IMMEDIATE DICT >DFA 4+ STATE @ IF ' LIT , , ' ! , ELSE ! THEN ;
+: +TO IMMEDIATE DICT >DFA 4+ STATE @ IF ' LIT , , ' +! , ELSE +! THEN ;
+: ID. 4+ COUNT F_LENMASK AND BEGIN DUP 0> WHILE SWAP COUNT EMIT SWAP 1- REPEAT 2DROP ;
+: ?HIDDEN 4+ C@ F_HIDDEN AND ;
+: ?IMMEDIATE 4+ C@ F_IMMED AND ;
+: WORDS LATEST @ BEGIN ?DUP WHILE DUP ?HIDDEN NOT IF DUP ID. SPACE THEN @ REPEAT CR ;
+: FORGET DICT DUP @ LATEST ! HERE ! ;
+: CFA> LATEST @ BEGIN ?DUP WHILE 2DUP SWAP < IF NIP EXIT THEN @ REPEAT DROP 0 ;
+: SEE DICT HERE @ LATEST @ BEGIN 2 PICK OVER <> WHILE NIP DUP @ REPEAT DROP SWAP ':' EMIT SPACE DUP ID. SPACE DUP ?IMMEDIATE IF ." IMMEDIATE " THEN >DFA BEGIN 2DUP > WHILE DUP @ CASE ' LIT OF 4 + DUP @ . ENDOF ' LITS OF [ CHAR S ] LITERAL EMIT '"' EMIT SPACE 4 + DUP @ SWAP 4 + SWAP 2DUP TELL '"' EMIT SPACE + ALIGNED 4 - ENDOF ' 0BRANCH OF ." 0BRANCH ( " 4 + DUP @ . ." ) " ENDOF ' BRANCH OF ." BRANCH ( " 4 + DUP @ . ." ) " ENDOF ' ' OF [ CHAR ' ] LITERAL EMIT SPACE 4 + DUP @ CFA> ID. SPACE ENDOF ' EXIT OF 2DUP 4 + <> IF ." EXIT " THEN ENDOF DUP CFA> ID. SPACE ENDCASE 4 + REPEAT ';' EMIT CR 2DROP ;
+: :NONAME 0 0 CREATE HERE @ DOCOL , ] ;
+: ['] IMMEDIATE ' LIT , ;
+: BINARY 2 BASE ! ;
+: OCTAL 8 BASE ! ;
+: 2# BASE @ 2 BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: 8# BASE @ 8 BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: # BASE @ SWAP BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: UNUSED PAD HERE @ - 4/ ;
+
+: EXCEPTION-MARKER RDROP 0 ;
+: CATCH DSP@ 4+ >R ' EXCEPTION-MARKER 4+ >R EXECUTE ;
+: THROW ?DUP IF RSP@ BEGIN DUP R0 4- < WHILE DUP @ ' EXCEPTION-MARKER 4+ = IF 4+ RSP! DUP DUP DUP R> 4- SWAP OVER ! DSP! EXIT THEN 4+ REPEAT DROP CASE 0 1- OF ." ABORTED" CR ENDOF ." UNCAUGHT THROW " DUP . CR ENDCASE QUIT THEN ;
+: ABORT 0 1- THROW ;
+
+\ *********** UTILS.f ***********
+
+: MILLISECONDS 1000 * ;
+: SECONDS 1000 * MILLISECONDS ;
+
+: DELAY 
+    BEGIN 
+        1 - DUP
+        0 =     
+    UNTIL 
+    DROP ;
+
+HEX
+
+20000000            CONSTANT RPI1_BASE
+
+: BILS 1 SWAP LSHIFT ;
+
+: BIC INVERT AND ;
+
+\ QUESTA WORD HA LO SCOPO DI EFFETTUARE UNA SET FUNCTION PER IL PIN GPIOn
+\ AD ESEMPIO POSSO SETTARE IL PIN GPIO23 IN MODALITÀ OUTPUT
+( GPIOn_FSEL GPIOn_XMODE GPFSELm -- )
+: ENABLE_PIN
+    DUP                 ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 GPFSEL2 )
+    >R @                ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 @ )
+    -ROT                ( GPFSEL2 @ GPIOn_FSEL GPIOn_XMODE )
+    >R                  ( GPFSEL2 @ GPIOn_FSEL )
+    BIC                 
+    R>                  ( [ GPFSEL2 @ GPIOn_FSEL BIC ] GPIOn_XMODE )
+    OR 
+    R> ! ;          
+
+\ QUESTA WORD HA LO SCOPO DI EFFETTUARE UNA CLEAR FUNCTION PER IL PIN GPIOn
+( GPIOn_FSEL GPIOn_XMODE GPFSELm -- )
+: DISABLE_PIN
+    NIP
+    DUP >R
+    @ SWAP BIC
+    R> ! ;
+
+VARIABLE TIMES
+
+: ACTIVATE 
+    DEPTH 3 /
+    TIMES !
+    BEGIN
+        ENABLE
+        TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
+        TIMES @ 0=                          \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+: DEACTIVATE
+    DEPTH 3 /
+    TIMES !
+    BEGIN
+        DISABLE
+        TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
+        TIMES @ 0=                          \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+\ *********** GPIO.f *********** 
+
+RPI1_BASE 200000 +  CONSTANT GPIO_BASE
+
+GPIO_BASE           CONSTANT GPFSEL0
+GPIO_BASE 04 +      CONSTANT GPFSEL1
+GPIO_BASE 08 +      CONSTANT GPFSEL2
+GPIO_BASE 1C +      CONSTANT GPSET0
+GPIO_BASE 28 +      CONSTANT GPCLR0
+
+DECIMAL
+
+0   BILS            CONSTANT GPIO0
+1   BILS            CONSTANT GPIO1
+2   BILS            CONSTANT GPIO2
+3   BILS            CONSTANT GPIO3
+4   BILS            CONSTANT GPIO4
+5   BILS            CONSTANT GPIO5
+6   BILS            CONSTANT GPIO6
+7   BILS            CONSTANT GPIO7
+8   BILS            CONSTANT GPIO8
+9   BILS            CONSTANT GPIO9
+
+10  BILS            CONSTANT GPIO10
+11  BILS            CONSTANT GPIO11
+12  BILS            CONSTANT GPIO12
+13  BILS            CONSTANT GPIO13
+14  BILS            CONSTANT GPIO14
+15  BILS            CONSTANT GPIO15
+16  BILS            CONSTANT GPIO16
+17  BILS            CONSTANT GPIO17
+18  BILS            CONSTANT GPIO18
+19  BILS            CONSTANT GPIO19
+20  BILS            CONSTANT GPIO20
+
+21  BILS            CONSTANT GPIO21
+22  BILS            CONSTANT GPIO22
+23  BILS            CONSTANT GPIO23
+24  BILS            CONSTANT GPIO24
+25  BILS            CONSTANT GPIO25
+26  BILS            CONSTANT GPIO26
+27  BILS            CONSTANT GPIO27
+
+\ *********** LED.f ***********
+
+HEX
+
+GPIO23 CONSTANT RED
+GPIO24 CONSTANT GREEN
+
+VARIABLE FLAG
+VARIABLE IS_WARNING
+
+: FSEL_MASK 
+    DUP DUP
+    2 + >R
+    1 + >R
+    BILS
+    R> BILS OR
+    R> BILS OR ;
+
+10# 9 FSEL_MASK     CONSTANT GPIO23_FSEL
+10# 9 BILS          CONSTANT GPIO23_OUT
+
+10# 12 FSEL_MASK    CONSTANT GPIO24_FSEL
+10# 12 BILS         CONSTANT GPIO24_OUT
+
+: RED_PIN GPIO23_FSEL GPIO23_OUT GPFSEL2 ;
+: GREEN_PIN GPIO24_FSEL GPIO24_OUT GPFSEL2 ;
+
+: LED_PINS RED_PIN GREEN_PIN ;
+
+: LED GPSET0 GPCLR0 ;
+
+: ON DROP ! ;
+: OFF NIP ! ;
+
+: LOOP_BLINK 
+    BEGIN 
+        RED LED ON
+        300 MILLISECONDS DELAY 
+        RED LED OFF
+        300 MILLISECONDS DELAY
+    AGAIN ;
+
+( n -- )
+( ES: BLINK -> FA ACCENDERE E SPEGNERE IL LED 5 VOLTE )
+: BLINK 
+    5 FLAG !
+    BEGIN 
+        RED LED ON
+        300 MILLISECONDS DELAY 
+        RED LED OFF
+        300 MILLISECONDS DELAY
+        FLAG @ 1 - FLAG !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        FLAG @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+: WARNING_BLINK
+    TRUE IS_WARNING ! 
+    IS_WARNING @ TRUE = IF
+        BLINK
+    THEN ;
+
+\ : MY_SWAP -ROT SWAP ;
+
+\ *********** I2C.f ***********
+
+10# 6 FSEL_MASK     CONSTANT GPIO2_FSEL
+10# 8 BILS          CONSTANT GPIO2_ALT0
+
+10# 9 FSEL_MASK     CONSTANT GPIO3_FSEL
+10# 11 BILS         CONSTANT GPIO3_ALT0 
+
+: SDA1_PIN GPIO2_FSEL GPIO2_ALT0 GPFSEL0 ;
+: SCL1_PIN GPIO3_FSEL GPIO3_ALT0 GPFSEL0 ;
+
+: I2C_PINS SDA1_PIN SCL1_PIN ;
+
+RPI1_BASE 804000 +  CONSTANT BSC1
+
+BSC1                CONSTANT C_REGISTER
+BSC1 4 +            CONSTANT S_REGISTER
+BSC1 8 +            CONSTANT DLEN_REGISTER
+BSC1 C +            CONSTANT A_REGISTER
+BSC1 10 +           CONSTANT FIFO_REGISTER
+
+: SET DUP >R @ OR R> ! ;
+
+\ **** Gestione CONTROL_REGISTER ****
+
+\ Costanti
+
+0                   CONSTANT READ
+10# 4 BILS          CONSTANT CLEAR
+10# 7 BILS          CONSTANT ST
+10# 15 BILS         CONSTANT I2CEN
+
+\ Word(s)
+: SET_WRITE         READ        C_REGISTER SET ;
+: CLEAR_FIFO        CLEAR       C_REGISTER SET ;
+: ACTIVATE_TRANSFER    ST       C_REGISTER SET ;
+: I2C_ENABLE        I2CEN       C_REGISTER SET ;
+
+\ **** Gestione DLEN_REGISTER ****
+
+\ Costanti
+0 BILS              CONSTANT DLEN
+
+\ Word(s)
+: SET_DLEN DLEN DLEN_REGISTER SET ;
+
+\ **** Gestione A_REGISTER ****
+
+\ Costanti 
+
+27                  CONSTANT ADDR
+
+\ Word(s)
+: SET_SLAVE ADDR A_REGISTER SET ;
+
+\ **** Gestione FIFO_REGISTER ****
+
+\ Word(s)
+
+: >FIFO FIFO_REGISTER ! ;
+: FIFO> FIFO_REGISTER @ ;
+
+: I2C_SEND
+    SET_WRITE
+    START_TRANSFER
+    I2C_ENABLE ;
+
+: >I2C
+    >FIFO
+    SET_DLEN
+    I2C_SEND ;
+
+: INIT_I2C ( -- ) I2C_PINS ACTIVATE ;
+
+\ *********** LCD.f ***********
+
+: ?CMD DUP 8 RSHIFT 1 = ;
+
+: CMD 100 OR ;
+
+: ?CMD_OR_CHAR 
+    TRUE = IF
+        C
+    ELSE
+        D
+    THEN
+    OR ;
+
+: NIBBLE
+    DUP ROT
+    ?CMD_OR_CHAR SWAP
+    8 OR SWAP ;
+
+: BYTE
+    ?CMD SWAP 2DUP
+    F0 AND NIBBLE 
+    2SWAP
+    F AND 4 LSHIFT NIBBLE
+    2SWAP ;
+
+: SEND
+    >I2C 1 MILLISECONDS DELAY
+    >I2C 2 MILLISECONDS DELAY
+    >I2C 1 MILLISECONDS DELAY
+    >I2C 2 MILLISECONDS DELAY ;
+
+: >LCD BYTE SEND ;
+
+\ Elenco CMD(s) 
+
+01                  CONSTANT CLEAR_DISPLAY
+02                  CONSTANT RETURN_HOME
+
+80                  CONSTANT ROW1
+C0                  CONSTANT ROW2
+ROW1 14 +           CONSTANT ROW3
+ROW2 14 +           CONSTANT ROW4
+
+14                  CONSTANT CURSOR_RSHIFT
+10                  CONSTANT CURSOR_LSHIFT
+
+08                  CONSTANT DISPLAY_OFF
+0C                  CONSTANT CURSOR_OFF
+0F                  CONSTANT CURSOR_ON
+0E                  CONSTANT CURSOR_BLINK_OFF
+
+VARIABLE COL
+
+( row col -- )
+: SET_CURSOR
+    COL !
+    CMD >LCD
+    BEGIN 
+        CURSOR_RSHIFT CMD >LCD
+        COL @ 1 - COL !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        COL @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+\ Elenco CHAR(s)
+
+18                  CONSTANT DELETE
+20                  CONSTANT SPACE
+
+VARIABLE LEN
+
+: PRINT 
+    DEPTH LEN !
+    BEGIN 
+        >LCD
+        LEN @ 1 - LEN !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        LEN @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+VARIABLE STR_LEN
+
+: PRINT_STR
+    STR_LEN !
+    BEGIN
+        DUP C@ >LCD
+        STR_LEN @ 1- STR_LEN !
+        1+
+        STR_LEN @ 0=
+    UNTIL
+    DROP ;
+
+: SUBJECT 
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 CMD 2 SET_CURSOR S" Embedded Systems" PRINT_STR
+    ROW3 CMD 2 SET_CURSOR S" A.A.   2022/2023" PRINT_STR ;
+
+: MARIO 
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 CMD 2 SET_CURSOR S" Mario Tortorici" PRINT_STR
+    ROW3 CMD 2 SET_CURSOR S" Matr.   0737892" PRINT_STR ;
+
+: VINCENZO
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 CMD 2 SET_CURSOR S" Vincenzo Fardella" PRINT_STR
+    ROW3 CMD 2 SET_CURSOR S" Matr.     07XXXXX" PRINT_STR ;
+
+: STUDENTS
+    VINCENZO                                                        3 SECONDS DELAY
+    MARIO                                                           3 SECONDS DELAY ;
+
+: PROJECT
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 CMD 6 SET_CURSOR S" PiServer " PRINT_STR
+    ROW3 CMD 2 SET_CURSOR S" Climate Control" PRINT_STR ;
+
+: WELCOME_MSG
+    SUBJECT                                                         3 SECONDS DELAY
+    STUDENTS
+    PROJECT ;
+
+: LOAD_MSG
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 CMD 2 SET_CURSOR S" Inizializzazione " PRINT_STR
+    ROW3 CMD 6 SET_CURSOR S" in corso" PRINT_STR ;
+
+: INIT_LCD ( -- ) 
+    SET_SLAVE 02 CMD >LCD
+    WELCOME_MSG ;
+
+\ *********** DHT22.f ***********
+
+
+
+\ *********** MAIN.f ***********
+
+: INIT_LEDS
+    CLEAR_DISPLAY CMD >LCD                                          2 MILLISECONDS DELAY
+    ROW2 CMD >LCD S" Attivazione LED PINS" PRINT_STR                2 MILLISECONDS DELAY
+    LEDS ACTIVATE                                                   2 SECONDS DELAY
+    RED LED ON                                                      2 SECONDS DELAY
+    RED LED OFF                                                     1 SECONDS DELAY
+    GREEN LED ON                                                    2 SECONDS DELAY
+    GREEN LED OFF                                                   1 SECONDS DELAY
+    ROW3 CMD 9 SET_CURSOR S" ;)" PRINT_STR                          2 MILLISECONDS DELAY
+    LEDS DEACTIVATE                                                 2 MILLISECONDS DELAY
+    ;
+
