@@ -52,16 +52,6 @@
 
 \ *********** UTILS.f ***********
 
-: MILLISECONDS 1000 * ;
-: SECONDS 1000 * MILLISECONDS ;
-
-: DELAY 
-    BEGIN 
-        1 - DUP
-        0 =     
-    UNTIL 
-    DROP ;
-
 HEX
 
 20000000            CONSTANT RPI1_BASE
@@ -97,7 +87,7 @@ VARIABLE TIMES
     DEPTH 3 /
     TIMES !
     BEGIN
-        ENABLE
+        ENABLE_PIN
         TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
         TIMES @ 0=                          \ CONDIZIONE DI USCITA
     UNTIL ;
@@ -106,12 +96,52 @@ VARIABLE TIMES
     DEPTH 3 /
     TIMES !
     BEGIN
-        DISABLE
+        DISABLE_PIN
         TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
         TIMES @ 0=                          \ CONDIZIONE DI USCITA
     UNTIL ;
 
+\ *********** TIME.f ***********
+
+HEX
+
+RPI1_BASE 3000 +    CONSTANT TIMER_BASE
+TIMER_BASE 4 +      CONSTANT TIMER_COUNT
+
+DECIMAL
+
+: MILLISECONDS 1000 * ;
+: SECONDS 1000 * MILLISECONDS ;
+
+( MILLISECONDS -- )
+: DELAY 
+    BEGIN 
+        1 - DUP
+        0 =     
+    UNTIL 
+    DROP ;
+
+: uS>mS 1000 / ;
+
+: CURRENT_TIME ( -- time ) TIMER_COUNT @ ;
+
+: CURRENT_TIME_MS CURRENT_TIME uS>mS ;
+
+( MILLISECONDS -- )
+\ : DELAY
+\     CURRENT_TIME_MS
+\     BEGIN
+\         DUP >R
+\         CURRENT_TIME_MS
+\         R> -
+\         >R OVER R>
+\         <=
+\     UNTIL 
+\     DROP DROP ;
+
 \ *********** GPIO.f *********** 
+
+HEX
 
 RPI1_BASE 200000 +  CONSTANT GPIO_BASE
 
@@ -219,6 +249,8 @@ VARIABLE IS_WARNING
 
 \ *********** I2C.f ***********
 
+HEX
+
 10# 6 FSEL_MASK     CONSTANT GPIO2_FSEL
 10# 8 BILS          CONSTANT GPIO2_ALT0
 
@@ -252,7 +284,7 @@ BSC1 10 +           CONSTANT FIFO_REGISTER
 \ Word(s)
 : SET_WRITE         READ        C_REGISTER SET ;
 : CLEAR_FIFO        CLEAR       C_REGISTER SET ;
-: ACTIVATE_TRANSFER    ST       C_REGISTER SET ;
+: START_TRANSFER    ST          C_REGISTER SET ;
 : I2C_ENABLE        I2CEN       C_REGISTER SET ;
 
 \ **** Gestione DLEN_REGISTER ****
@@ -422,19 +454,18 @@ VARIABLE STR_LEN
 
 \ *********** DHT22.f ***********
 
-
+\ *********** BUTTON.f ***********
 
 \ *********** MAIN.f ***********
 
 : INIT_LEDS
     CLEAR_DISPLAY CMD >LCD                                          2 MILLISECONDS DELAY
     ROW2 CMD >LCD S" Attivazione LED PINS" PRINT_STR                2 MILLISECONDS DELAY
-    LEDS ACTIVATE                                                   2 SECONDS DELAY
+    LED_PINS ACTIVATE                                               2 SECONDS DELAY
     RED LED ON                                                      2 SECONDS DELAY
     RED LED OFF                                                     1 SECONDS DELAY
     GREEN LED ON                                                    2 SECONDS DELAY
     GREEN LED OFF                                                   1 SECONDS DELAY
     ROW3 CMD 9 SET_CURSOR S" ;)" PRINT_STR                          2 MILLISECONDS DELAY
-    LEDS DEACTIVATE                                                 2 MILLISECONDS DELAY
     ;
 
