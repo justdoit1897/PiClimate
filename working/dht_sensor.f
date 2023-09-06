@@ -8,26 +8,21 @@
 : SETUP_SENSOR 
     DECIMAL 
     DUP DUP DUP
-\\    ." RPi: GPIO pin " DHT_SENSOR DUP . ." level at begin = " PIN_LEVEL . CR
     MODE OUTPUT 
-\\    ." RPi: GPIO pin " DHT_SENSOR DUP . ." level after set output mode = " PIN_LEVEL . CR
-    LOW 1000 DELAY
-\\    ." RPi: GPIO pin " DHT_SENSOR DUP . ." level after set low = " PIN_LEVEL . CR
+    LOW 1 MS DELAY
     HIGH
-\\    ." RPi: GPIO pin " DHT_SENSOR DUP . ." level after set high = " PIN_LEVEL . CR
     MODE INPUT
-\\    ." RPi: GPIO pin " DHT_SENSOR DUP . ." level after set input mode = " PIN_LEVEL . CR 
     HEX ;
 \\     
 \\ WAIT_PULLDOWN ( dht --  )
 \\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 1 a 0 nel
 \\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
-: WAIT_PULLDOWN BEGIN DHT_SENSOR PIN_LEVEL 0 = WHILE REPEAT ;
+: WAIT_PULLDOWN BEGIN DUP PIN_LEVEL 0 = WHILE REPEAT DROP ;
 \\ 
 \\ WAIT_PULLUP ( dht --  )
 \\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 0 a 1 nel
 \\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
-: WAIT_PULLUP BEGIN DHT_SENSOR PIN_LEVEL 1 = WHILE REPEAT ;
+: WAIT_PULLUP BEGIN DUP PIN_LEVEL 1 = WHILE REPEAT DROP ;
 \\ 
 VARIABLE DATA
 VARIABLE CHECKSUM
@@ -37,25 +32,23 @@ VARIABLE CHECKSUM
 \\ e quello, precedente, in cui è avvenuto un pulldown, che dev'essere almeno di 50 (0x32) us, 
 \\ la soglia che permette di affermare se è stato generato uno 0 (BASSO) o un 1 (ALTO)
 : READ_BIT 
-    WAIT_PULLDOWN CLO_REGISTER @ WAIT_PULLUP CLO_REGISTER @ SWAP - 32 >
+    DHT_SENSOR WAIT_PULLDOWN CLO_REGISTER @ DHT_SENSOR WAIT_PULLUP CLO_REGISTER @ SWAP - 32 >
     IF 1 ELSE 0 THEN ;
 \\ READ_DATA
 \\ Viene usata per effettuare la lettura di 40 (0x28) bit per volta, conservando i primi 32 come dati effettivi,
 \\ mentre gli altri 8 saranno usati come checksum
 : READ_DATA 
-    WAIT_PULLDOWN WAIT_PULLUP
+    DUP DUP WAIT_PULLDOWN WAIT_PULLUP
     28 BEGIN
         DUP 7 > IF
             \\ Primi 32 bit per i dati
             DATA DUP @ 1 LSHIFT
-            READ_BIT
-            OR SWAP !
         ELSE 
             \\ Ultimi 8 bit per la checksum
             CHECKSUM DUP @ 1 LSHIFT
-            READ_BIT
-            OR SWAP !
         THEN
+        READ_BIT
+        OR SWAP !
         1 - DUP 0 >
     WHILE REPEAT DROP ;
 \\ CHECK_DATA_INTEGRITY
@@ -112,4 +105,4 @@ VARIABLE TEMPERATURE_DP
 \\ : MEASURE ( dht -- ) 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD ;
 \\ Parola principale per le operazioni di un sensore passato in input. Ogni misurazione andrà separata
 \\ dall'altra di almeno 2 secondi.
-: MEASURE 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD ;
+: MEASURE 0 DATA ! 0 CHECKSUM ! DUP SETUP_SENSOR READ_DATA GET_READING DHT>CMD ;
