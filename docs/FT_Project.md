@@ -1,5 +1,3 @@
-
-
 <link rel="stylesheet" type="text/css" href="stili.css">
 
 # BM - Termostato (Nome Provvisorio)
@@ -114,7 +112,7 @@ Minicom è un software di emulazione di terminale per sistemi operativi Unix-lik
 
 Dopo aver salvato la configurazione, si potrà mettere minicom in ascolto secondo i parametri scelti digitando `$ sudo minicom [nome_configurazione]`
 
-In alternativa, è possibile utilizzare picocom attraverso il comando `sudo picocom -b 115200 -r -l /dev/ttyUSB0 --imap delbs -s "ascii-xfr -sv -l100 -c10"`, in cui specifichiamo:
+In alternativa, è possibile utilizzare **picocom** attraverso il comando `sudo picocom -b 115200 -r -l /dev/ttyUSB0 --imap delbs -s "ascii-xfr -sv -l100 -c10"`, in cui specifichiamo:
 
 * baudrate a 115200 bps
 * `--imap delbs` per usare il backspace per cancellare caratteri
@@ -147,7 +145,7 @@ start.elf
 kernel.img
 ```
 
-È possibile, quindi, inserire la scheda SD nel Raspberry&trade; Pi, connetterlo al computer con il cavo USB-seriale e, con minicom avviato secondo le modalità dette in precedenza, collegare il Raspberry&trade; Pi all'alimentazione.
+È possibile, quindi, inserire la scheda SD nel Raspberry&trade; Pi, connetterlo al computer con il cavo USB-seriale e, con minicom/picocom avviato secondo le modalità dette in precedenza, collegare il Raspberry&trade; Pi all'alimentazione.
 
 ## Descrizione dei Componenti
 
@@ -157,7 +155,7 @@ Si tratta di un cavo con, all'interno, un convertitore USB-seriale TTL basato su
 
 I livelli logici di funzionamento sono 3.3V per il segnale TXD, mentre per il segnale RXD è accettato in ingresso una tensione compresa tra 3V e 5V.
 
-È dotato di un buffer in ricezione da 128 B ed uno in trasmissione da 256 B, cosa che garantisce robustezza in trasmissioni fino a 3Mbaud/s. Collegando opportunamente il dispositivo target ad un computer dotato di ingresso USB, questo riconoscerà la connessione come una VirtualCOM Port seriale (VCP), con cui emulare la porta seriale RS232, senza bisogno di alcuna modifica. 
+È dotato di un buffer in ricezione da 128 B ed uno in trasmissione da 256 B, cosa che garantisce robustezza in trasmissioni fino a 3Mbaud/s. Collegando opportunamente il dispositivo target ad un computer dotato di ingresso USB, questo riconoscerà la connessione come una VirtualCOM Port seriale (VCP), con cui emulare la porta seriale RS232, senza bisogno di alcuna modifica.
 
 Nel nostro caso, trattandosi di un collegamento SPI asincrono, è stato necessario specificare i parametri di sincronizzazione, come il baud rate e la dimensione (in bit) dei dati.
 
@@ -165,9 +163,28 @@ Nel nostro caso, trattandosi di un collegamento SPI asincrono, è stato necessar
 
 <img src='images/components/temp_hum_sensor.jpeg' alt='Sensore di umidità e temperatura DHT22' width='80' style='float: right; margin: 5px 10px;'>
 
-Il sensore permette il monitoraggio della temperatura e dell'umidità nell'ambiente circostante, ed è caratterizzato da un sensore di base della famiglia AM2302, che si caratterizza per la capacità di gestione di segnali digitali con una precisione di &pm;0.5 °C per la temperatura e di &pm;2% RH per l'umidità, rilevando valori di temperatura tra i -40°C e i +80°C e di umidità tra lo 0% e il 100%. 
+Il sensore permette il monitoraggio della temperatura e dell'umidità nell'ambiente circostante, ed è caratterizzato da un sensore di base della famiglia AM2302, che si caratterizza per la capacità di gestione di segnali digitali con una precisione di &pm;0.5 °C per la temperatura e di &pm;2% RH per l'umidità, rilevando valori di temperatura tra i -40°C e i +80°C e di umidità tra lo 0% e il 100%.
 
 Il sensore dispone di interfaccia seriale a filo singolo che ne facilita l'utilizzo. Il sensore DHT22 viene calibrato in modo estremamente preciso, essendo che i coefficienti di calibrazione sono memorizzati nella memoria OTP e vengono richiamati durante il processo di rilevamento: in questo modo non vi è alcuna necessità di ricalibrare il sensore.
+
+La trasmissione dei dati avviene secondo uno specifico protocollo di comunicazione, suddiviso in due fasi:
+
+1. La prima fase è quella in cui il microcontrollore invia un **segnale iniziale** al sensore, con quest'ultimo che risponde al microcontrollore.
+   Dato che, inizialmente, il data bus del sensore è impostato su HIGH, la prima cosa che il microcontrollore deve fare è **abbassare** tale bus per almeno 1 ~ 10 ms (per dar modo al bus di rilevare tale comunicazione), salvo poi **rialzarlo** per 20 ~ 40 µs e **rimanere in attesa** della risposta del sensore.
+   Nel momento in cui **il sensore AM2302** rileva il segnale di inizio, **abbassa** il data bus per 80 µs come risposta, salvo poi **rialzarlo** per altri 80 µs e iniziare l'effettiva trasmissione dei dati. L'intera prima fase avviene secondo un diagramma di tensione sul data bus come il seguente
+   
+   ![Fase 1 del Rilevamento AM2302](images/dht22/trans1.png)
+
+2. La seconda fase, in cui avviene il rilevamento vero e proprio, prevede che il sensore invii **un bit per volta**, distinguendo tra 0 e 1 in base al tempo in cui il data bus viene mantenuto su HIGH dopo una fase in cui è stato tenuto LOW, sempre presente e della durata di 50 µs. Se la trasmissione del bit dura 26 ~ 28 µs, il bit trasmesso sarà uno 0, mentre, se la trasmissione durera ~ 70 µs, il bit trasmesso sarà un 1. La trasmissione di un bit segue un diagramma di tensione come i seguenti  
+   
+   ![Fase 2 del Rilevamento AM2302](images/dht22/trans2.png)
+
+I dati trasmessi ad ogni ciclo sono un totale di 40 bit, di cui i primi 16 costituenti l'**umidità relativa** (RH), i secondi sedici la **temperatura** (T) in gradi Celsius, e gli ultimi 8 bit una **checksum** per validare il rilevamento.
+
+**N.B.** ad ogni rilevamento bisognerà seguire l'intero protocollo, dato che il sensore, senza aver ricevuto un segnale di avvio, non inizierà ad inviare dati.
+
+La conversione da sequenza di bit a dato numerico è piuttosto semplice: basterà **dividere il valore** (espresso in base decimale) **per 10**, così da ricavare **parte intera** e **parte frazionaria** della grandezza fisica (es. `0x028C` corrisponde a 652, da cui si ricava un valore di 65.2).
+Il calcolo della `sum`, in contrapposizione con la `checksum`, prevede che si separino i 32 bit misurati in byte, che si effettui la somma e che si consideri il byte finale. Se tale risultato è pari alla checksum, la trasmissione è avvenuta correttamente, altrimenti il contrario (es. `0x028C015F` produce una `sum` pari a `0xEE`).
 
 ### Ventola di raffreddamento a 5V 2 pin
 
