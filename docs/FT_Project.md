@@ -28,10 +28,9 @@
 
 <img src='./images/schema_FT.png' >
 
-
 ## Descrizione Componenti
 
-### Raspberry&trade;Pi 1 B
+### Raspberry&trade;Pi 1 B [1]
 
 È il **dispositivo target** del progetto. Esso monta il [SoC Broadcom 2835](https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf) con processore ARM1176JZFS a $700 \mathrm{MHz}$ che, nonostante le caratteristiche non più all'avanguardia, si presta ancora bene nella gestione dei compiti richiesti.
 
@@ -80,7 +79,7 @@ Il modulo FTDI è connesso al computer tramite la porta USB e alla UART1 del Pi 
 |    TX    |   GPIO15 / RXD0   |
 |   GND   |        GND        |
 
-### Modulo Display I2C LCD2004 [1]
+### Modulo Display I2C LCD2004 [2]
 
 <img src='https://m.media-amazon.com/images/I/61JbSbfWshL.jpg' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
 
@@ -115,7 +114,7 @@ Il modulo LCD2004 è connesso al Pi secondo la seguente configurazione:
 |     SDA     |   GPIO2 / SDA1   |
 |     SCL     |   GPIO3 / SCL1   |
 
-### Modulo per la Serializzazione - I2C Backpack [2]
+### Modulo per la Serializzazione - I2C Backpack [3]
 
 Si tratta di un modulo usato tipicamente per serializzare la comunicazione tra un microcontrollore e un altro device. Nel caso specifico, il modulo si presenta nella forma di un backpack da saldare al display (nel nostro caso era già saldato) e caratterizzato da quattro pin per il collegamento con il MCU:
 
@@ -127,7 +126,7 @@ A questi, si aggiungono altri 9 pin, di cui 8 usati come bus di dati e uno usato
 
 Il modulo richiede una tensione di $5 \mathrm V$ ed è provvisto di un potenziometro per il **controllo del contrasto** dei caratteri. Il controllo della luminosità è possibile via hardware, tramite una circuiteria *ad hoc*, o via software, tramite opportune istruzioni.
 
-### Sensore di temperatura e umidità DHT22 [3]
+### Sensore di temperatura e umidità DHT22 [4]
 
 <img src='https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/4e1160ec5dfb387ab03c938666ab9c5e.jpg?imageMogr2/auto-orient%7CimageView2/2/w/1300/q/80/format/webp' width="320" style='float:right; border: 1px solid; margin-left: 5px'>
 
@@ -171,10 +170,10 @@ Tuttavia, c'è un aspetto cruciale da tenere a mente: la necessità di una resis
 
 Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono pilotati i LED:
 
-|  LED  | Raspberry Pi Pin |
-| :---: | :---------------: |
-|  RED  |      GPIO23      |
-| GREEN |      GPIO24      |
+|  LED  |      Raspberry Pi Pin      |
+| :---: | :-------------------------: |
+|  RED  | GPIO23 (tramite Breadboard) |
+| GREEN | GPIO24 (tramite Breadboard) |
 
 ### Pulsante
 
@@ -187,7 +186,8 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono p
 | Button Pin | Raspberry Pi Pin |
 | :--------: | :---------------: |
 | DATA WIRE |       GPIO8       |
-|   GREEN   |      GPIO24      |
+|    VCC    |       +3V3       |
+|   GROUND   |        GND        |
 
 ### Ventola di Raffreddamento 5V-3 pin
 
@@ -209,14 +209,14 @@ Poiché questo progetto incorpora una serie di componenti esterni fondamentali p
 
 Nella tabella sottostante, vi è riassunta la panoramica dei pin GPIO utilizzati. Essa ha lo scopo di tenere traccia dei collegamenti e delle assegnazioni dei pin, semplificando la manutenzione futura e agevolando il lavoro di chiunque debba comprendere o estendere il progetto.
 
-|   GPIO Pin   | Function | col3 |
-| :----------: | -------- | ---- |
-| GPIO2 / SDA1 |          |      |
-| GPIO3 / SCL1 |          |      |
-|    GPIO8    |          |      |
-|    GPIO18    |          |      |
-|    GPIO23    |          |      |
-|    GPIO24    |          |      |
+|   GPIO Pin   | Function    | Device              |
+| :----------: | ----------- | ------------------- |
+| GPIO2 / SDA1 | ALT0 / SDA1 | LCD2004             |
+| GPIO3 / SCL1 | ALT0 / SCL1 | LCD2004             |
+|    GPIO8    | INPUT       | BUTTON              |
+|    GPIO18    | INPUT       | DHT22/AM2302        |
+|    GPIO23    | OUTPUT      | LED Rosso           |
+|    GPIO24    | OUTPUT      | LED Verde / Ventola |
 
 # Environment
 
@@ -325,6 +325,11 @@ In questo senso, possibili espansioni riguardano l'inserimento di attuatori e se
 Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al codice di poter essere riutilizzato anche su altri dispositivi target, semplicemente variando alcuni parametri di configurazione opportunamente astratti.
 
 # References
+
+[1] *"BCM2835 ARM Peripherals"*, Broadcom Corporation
+[2] *"Specification For LCD Module 2004A"*, SHENZHEN EONE ELECTRONICS CO.
+[3] *"PCF8574; PCF8574A Remote 8-bit I/O expander for I2C-bus with interrupt Rev. 5"*, NXP Microelectronics
+[4] *"Digital relative humidity & temperature sensor AM2302/DHT22"*, Liu T.
 
 ## Flusso degli Eventi
 
