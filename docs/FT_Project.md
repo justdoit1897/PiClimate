@@ -158,8 +158,17 @@ I livelli logici di funzionamento sono 3.3V per il segnale TXD, mentre per il se
 È dotato di un buffer in ricezione da 128 B ed uno in trasmissione da 256 B, cosa che garantisce robustezza in trasmissioni fino a 3Mbaud/s. Collegando opportunamente il dispositivo target ad un computer dotato di ingresso USB, questo riconoscerà la connessione come una VirtualCOM Port seriale (VCP), con cui emulare la porta seriale RS232, senza bisogno di alcuna modifica.
 
 Nel nostro caso, trattandosi di un collegamento SPI asincrono, è stato necessario specificare i parametri di sincronizzazione, come il baud rate e la dimensione (in bit) dei dati.
+s
+### Display LCD 2004
 
-### Sensore di temperatura e umidità TZT DHT22
+Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle informazioni all'utente finale ed è caratterizzato da una griglia 20 $times$ 4 di **caratteri**, ciascuno dei quali costituito da un valore standard di 5 $times$ 8 **dots**, codificati ASCII.
+Il display presenta un'**interfaccia parallela** (visibile in figura) per la gestione della comunicazione con il microcontrollore, caratterizzata **da 12 pin**, utilizzata per inviare dati e/o segnali di controllo.
+Previsto nella circuiteria del display, vi è anche un modulo per il **controllo del contrasto** dei caratteri, regolato semplicemente da una vite, la cui rotazione determina il livello di contrasto.
+Nello specifico, il modello scelto, supporta anche **moduli per la serializzazione**, come quelli utilizzati nell'implementazione del protocollo I2C, per ridurre il numero di connessioni MCU-LCD e semplificare l'invio di dati completi.
+
+
+
+### Sensore di temperatura e umidità TZT DHT22 [2]
 
 <img src='images/components/temp_hum_sensor.jpeg' alt='Sensore di umidità e temperatura DHT22' width='80' style='float: right; margin: 5px 10px;'>
 
@@ -221,3 +230,7 @@ Dopo una prima, lunga, fase di impostazione dell'attività progettuale, legata p
 In questo senso, possibili espansioni riguardano l'inserimento di attuatori e sensori che possano permettere alla soluzione di interfacciarsi con altri dispositivi e di fungere da regolatore del comportamento di questi ultimi, senza, peraltro, dover modificare il codice sorgente fin dove scritto: nel caso domestico, per esempio, si potrebbe pensare di centralizzare il controllo della temperatura aggiungendo pulsanti, per la determinazione dei valori desiderati, e altra componentistica, per permettere la comunicazione con le unità di controllo del clima (es. climatizzatori) e l'imposizione di tali valori fino al soddisfacimento di condizioni sia temporali che ambientali.
 
 Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al codice di poter essere riutilizzato anche su altri dispositivi target, semplicemente variando alcuni parametri di configurazione opportunamenti astratti.
+
+# Bibliografia
+[2] *Digital relative humidity & temperature sensor AM2302
+AM2302/DHT22*, Liu T.
