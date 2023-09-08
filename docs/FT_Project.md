@@ -217,7 +217,9 @@ Il calcolo della `sum`, in contrapposizione con la `checksum`, prevede che si se
 
 ### Bottone a Pressione
 
+![Schema Bottone a Pressione in Pull-up](images/components/pullup.png)
 
+Si tratta di un semplice bottone a pressione caratterizzato da **quattro pin**, per uno **switch a due poli**. Nella nostra implementazione, il pulsante è configurato in modalità **pull-up** per cui, se il pulsante è in **posizione di riposo** (non premuto), i contatti (visibili in figura) non sono connessi e **la corrente può fluire**. Alla pressione, i due poli vegono connessi, eseguendo un'**azione bloccante** rispetto alla corrente, per mandare in **reset** il sistema.
 
 ### Ventola di Raffreddamento 5V-2 pin
 
