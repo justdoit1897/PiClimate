@@ -26,6 +26,9 @@
 
 ## Breadboard Schematic
 
+<img src='./images/schema_FT.png' >
+
+
 ## Descrizione Componenti
 
 ### Raspberry&trade;Pi 1 B
@@ -106,8 +109,8 @@ Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle info
 Il modulo LCD2004 è connesso al Pi secondo la seguente configurazione:
 
 | LCD2004 Pin | Raspberry Pi Pin |
-| :---------: | :---------------:|
-|     GND     |        GND       |
+| :---------: | :---------------: |
+|     GND     |        GND        |
 |     VCC     |        5V        |
 |     SDA     |   GPIO2 / SDA1   |
 |     SCL     |   GPIO3 / SCL1   |
@@ -181,11 +184,10 @@ Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli. Per 
 
 Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono pilotati i LED:
 
-|  Button Pin  | Raspberry Pi Pin |
-| :---: | :---------------: |
-|  DATA WIRE  |      GPIO8      |
-| GREEN |      GPIO24      |
-
+| Button Pin | Raspberry Pi Pin |
+| :--------: | :---------------: |
+| DATA WIRE |       GPIO8       |
+|   GREEN   |      GPIO24      |
 
 ### Ventola di Raffreddamento 5V-3 pin
 
