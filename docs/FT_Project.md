@@ -24,14 +24,6 @@
 |         Cavo USB-A a Mini USB         |     1     |
 |            Cavetti Jumper            |   Q. B.   |
 
->>>>>>> 611a04e (2023-09-08, 12:11)
->>>>>>>
->>>>>>
->>>>>
->>>>
->>>
->>
-
 ## Breadboard Schematic
 
 ## Descrizione Componenti
@@ -95,15 +87,27 @@ Questo modulo è noto per la sua versatilità e facilità d'uso grazie all'**int
 
 Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle informazioni all'utente finale ed è caratterizzato da una griglia 20 $\times$ 4 di **caratteri**, ciascuno dei quali costituito da un valore standard di 5 $\times$ 8 **dots**, codificati ASCII (la cui gestione da parte della ROM del modulo è visibile in figura).
 
-![Codifica ASCII e Gestione ROM LCD 2004](https://file+.vscode-resource.vscode-cdn.net/home/mario/Scrivania/embedded_systems/EmbeddedSystems_Proj_FT/docs/images/lcd2004/ascii_lcd.png)
-
-<pre class="vditor-reset" placeholder="" contenteditable="true" spellcheck="false"><p data-block="0"><img src="https://file+.vscode-resource.vscode-cdn.net/home/mario/Scrivania/embedded_systems/EmbeddedSystems_Proj_FT/docs/images/lcd2004/parallel_int.png" alt="Interfaccia Parallela LCD 2004"/></p><p data-block="0"><img src="https://file+.vscode-resource.vscode-cdn.net/home/mario/Scrivania/embedded_systems/EmbeddedSystems_Proj_FT/docs/images/lcd2004/pin_funcs.png" alt="Caratteristiche dei pin LCD 2004"/></p></pre>
+<table style='border:none; text-align: center;'>
+   <tr style='border:none'>
+      <td rowspan="2" style='border:none'>
+         <img src="images/lcd2004/ascii_lcd.png" alt="Codifica ASCII e Gestione ROM LCD 2004" style="display: inline; position: relative; left: 0%; margin-top:50px; border: 1px solid;" />
+      </td>
+      <td style='border:none'>
+         <img src="images/lcd2004/parallel_int.png" alt="Interfaccia Parallela LCD 2004" style="display: inline; position: relative; margin-top:50px; border: 1px solid;" />
+      </td>
+   </tr>
+   <tr style='border:none'>
+      <td style='border:none'>
+         <img src="images/lcd2004/pin_funcs.png" alt="Caratteristiche dei pin LCD 2004" style="display: inline; position: relative; margin-top:50px; border: 1px solid; " />
+      </td>
+   </tr>
+</table>
 
 Il modulo LCD2004 è connesso al Pi secondo la seguente configurazione:
 
 | LCD2004 Pin | Raspberry Pi Pin |
-| :---------: | :---------------: |
-|     GND     |        GND        |
+| :---------: | :---------------:|
+|     GND     |        GND       |
 |     VCC     |        5V        |
 |     SDA     |   GPIO2 / SDA1   |
 |     SCL     |   GPIO3 / SCL1   |
@@ -152,9 +156,9 @@ Il calcolo della `sum`, in contrapposizione con la `checksum`, prevede che si se
 
 Un LED, acronimo di Light Emitting Diode, è un dispositivo semiconduttore che emette luce quando una corrente elettrica passa attraverso di esso. Questi piccoli dispositivi sono diventati una parte fondamentale della tecnologia moderna, con applicazioni in una vasta gamma di settori.
 
-Nel sistema in esame sono presenti due LED, uno rosso e uno verde, che hanno lo scopo di indicare lo stato del cancello.
+Nel sistema in esame sono presenti due LED, uno rosso e uno verde, che hanno lo scopo di indicare la bontà dei parametri.
 
-Il LED rosso lampeggiante indica che il cancello è in fase di chiusura, mentre un LED verde lampeggiante indica che il cancello è in fase di apertura. Questa indicazione visiva ha lo scopo di trasmettere una informazione immediata agli utenti in quanto, essendo facilmente comprensibile, fornisce loro un feedback chiaro sullo stato del cancello.
+Il LED rosso lampeggiante indica che i valori sono fuori scala e bisogna fare qualcosa per riportarli alla normalità, mentre un LED verde acceso indica che i valori registrati sono buoni e l'ambiente è idoneo. Questa indicazione visiva ha lo scopo di trasmettere una informazione immediata agli utenti in quanto, essendo facilmente comprensibile, fornisce loro un feedback chiaro sullo stato ambientale.
 
 I LED hanno due connessioni, l'**anodo** (+) e il **catodo** (-), che devono essere collegate correttamente per farli funzionare.
 
@@ -169,28 +173,27 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono p
 |  RED  |      GPIO23      |
 | GREEN |      GPIO24      |
 
-### Pulsanti
+### Pulsante
+
+<img src='images/components/pullup.png' alt='Schema Elettrico di Resistenza in Pullup' width="100" style='float:left; margin-right: 10px; border: 1px solid; margin-left: 5px'>
+
+Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli. Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pullup (il cui schema esemplificativo è presentato in figura), per cui, in fase di riposo (pulsante non premuto), la corrente può circolare, permettendo al sistema di funzionare, mentre, a seguito di una pressione, viene effettuata un'azione bloccante rispetto alla corrente, che impedisce al sistema di funzionare, mandandolo in reset.
+
+Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono pilotati i LED:
+
+|  Button Pin  | Raspberry Pi Pin |
+| :---: | :---------------: |
+|  DATA WIRE  |      GPIO8      |
+| GREEN |      GPIO24      |
+
 
 ### Ventola di Raffreddamento 5V-3 pin
 
-<img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
+<img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='margin-top:50px; border: 1px solid; margin-left: 5px'>
 
 Si tratta di una ventola di dimensioni 60x60x10 mm, capace di lavorare a una tensione di 5V e garantire una velocità di rotazione di circa 3300 RPM, permettendo quindi un flusso d'aria di 13,8 CFM.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-a ventola è connessa al Pi secondo la seguente configurazione:
+La ventola è connessa al Pi secondo la seguente configurazione:
 
 | Fan Pin | Raspberry Pi Pin |
 | :------: | :---------------: |
@@ -342,6 +345,5 @@ L'invio del file avviene attraverso minicom:
 ## Descrizione dei Moduli
 
 ## Considerazioni Finali
-
 
 # Bibliografia
