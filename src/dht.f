@@ -153,7 +153,7 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ DHT>CMD ( -- )
 \\ Parola comprensiva per stampare su riga di comando i valori di temperatura e di umidità ricavati
 \\ 
-: DHT>CMD TEMPERATURE>CMD S" -" PRINT_STR HUMIDITY>CMD CR ;
+: DHT>CMD TEMPERATURE>CMD S"  - " PRINT_STR HUMIDITY>CMD CR ;
 \\ 
 \\ MEASURE ( -- )
 \\ Parola comprensiva per l'esecuzione dell'intero processo per una singola misurazione del sensore
