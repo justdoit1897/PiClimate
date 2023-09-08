@@ -36,24 +36,6 @@
 
 ## Descrizione Componenti
 
-<<<<<<< HEAD
-
-| FUN       | DEVICE      | HEADER | PIN | PIN | HEADER | DEVICE       | FUN    |
-| --------- | ----------- | ------ | --- | --- | ------ | ------------ | ------ |
-|           |             | +3V3   | 1   | 2   | +5V    |              |        |
-| ALT0/SDA1 | LCD2004/I2C | GPIO2  | 3   | 4   | +5V    |              |        |
-| ALT0/SCL1 | LCD2004/I2C | GPIO3  | 5   | 6   | GND    | USB-SERIAL   |        |
-|           |             | GPIO4  | 7   | 8   | TXD0   | USB-SERIAL   |        |
-|           |             | GND    | 9   | 10  | RXD0   | USB-SERIAL   |        |
-|           |             | GPIO17 | 11  | 12  | GPIO18 | DHT22/AM2302 | INPUT  |
-|           |             | GPIO27 | 13  | 14  | GND    |              |        |
-|           |             | GPIO22 | 15  | 16  | GPIO23 | RED LED      | OUTPUT |
-|           |             | +3V3   | 17  | 18  | GPIO24 | GREEN LED    | OUTPUT |
-|           |             | GPIO10 | 19  | 20  | GND    |              |        |
-|           |             | GPIO9  | 21  | 22  | GPIO25 |              |        |
-|           |             | GPIO11 | 23  | 24  | GPIO8  | BUTTON       | INPUT  |
-|           |             | GND    | 25  | 26  | GPIO7  |              |        |
-
 ### Raspberry&trade;Pi 1 B
 
 È il **dispositivo target** del progetto. Esso monta il [SoC Broadcom 2835](https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf) con processore ARM1176JZFS a $700 \mathrm{MHz}$ che, nonostante le caratteristiche non più all'avanguardia, si presta ancora bene nella gestione dei compiti richiesti.
@@ -189,13 +171,32 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono p
 
 ### Pulsanti
 
-### Ventola di Raffreddamento 5V-2 pin
+### Ventola di Raffreddamento 5V-3 pin
 
 <img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
 
 Si tratta di una ventola di dimensioni 60x60x10 mm, capace di lavorare a una tensione di 5V e garantire una velocità di rotazione di circa 3300 RPM, permettendo quindi un flusso d'aria di 13,8 CFM.
 
-(*Da fare dopo aver acquistato i componenti*)
+
+
+
+
+
+
+
+
+
+
+
+
+
+a ventola è connessa al Pi secondo la seguente configurazione:
+
+| Fan Pin | Raspberry Pi Pin |
+| :------: | :---------------: |
+|   GND   |        GND        |
+|   VCC   |        5V        |
+|    EN    |      GPIO24      |
 
 ## GPIO assignment
 
@@ -310,7 +311,13 @@ PRIMA DI PASSARE AL CODICE, VERRÀ ELENCATO IL FLUSSO DEGLI EVENTI, AL FINE DI U
 
 ## Codice
 
-# Conclusioni
+# Considerazioni Finali
+
+Dopo una prima, lunga, fase di impostazione dell'attività progettuale, legata principalmente al reperimento della componentistica e all'apprendimento dell'ambiente di sviluppo (essendo la prima esperienza di programmazione a un così basso livello), possiamo affermare che la soluzione proposta rappresenti un punto di partenza per future espansioni e adattamenti a vari contesti, che vanno dalla domotica ad applicazioni industriali, in cui il rilevamento dei valori di temperatura e di umidità in tempo reale possa essere un *game-changer*.
+
+In questo senso, possibili espansioni riguardano l'inserimento di attuatori e sensori che possano permettere alla soluzione di interfacciarsi con altri dispositivi e di fungere da regolatore del comportamento di questi ultimi, senza, peraltro, dover modificare il codice sorgente fin dove scritto: nel caso domestico, per esempio, si potrebbe pensare di centralizzare il controllo della temperatura aggiungendo pulsanti, per la determinazione dei valori desiderati, e altra componentistica, per permettere la comunicazione con le unità di controllo del clima (es. climatizzatori) e l'imposizione di tali valori fino al soddisfacimento di condizioni sia temporali che ambientali.
+
+Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al codice di poter essere riutilizzato anche su altri dispositivi target, semplicemente variando alcuni parametri di configurazione opportunamente astratti.
 
 # References
 
@@ -336,14 +343,5 @@ L'invio del file avviene attraverso minicom:
 
 ## Considerazioni Finali
 
-Dopo una prima, lunga, fase di impostazione dell'attività progettuale, legata principalmente al reperimento della componentistica e all'apprendimento dell'ambiente di sviluppo (essendo la prima esperienza di programmazione a un così basso livello), possiamo affermare che la soluzione proposta rappresenti un punto di partenza per future espansioni e adattamenti a vari contesti, che vanno dalla domotica ad applicazioni industriali, in cui il rilevamento dei valori di temperatura e di umidità in tempo reale possa essere un *game-changer*.
-
-In questo senso, possibili espansioni riguardano l'inserimento di attuatori e sensori che possano permettere alla soluzione di interfacciarsi con altri dispositivi e di fungere da regolatore del comportamento di questi ultimi, senza, peraltro, dover modificare il codice sorgente fin dove scritto: nel caso domestico, per esempio, si potrebbe pensare di centralizzare il controllo della temperatura aggiungendo pulsanti, per la determinazione dei valori desiderati, e altra componentistica, per permettere la comunicazione con le unità di controllo del clima (es. climatizzatori) e l'imposizione di tali valori fino al soddisfacimento di condizioni sia temporali che ambientali.
-
-Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al codice di poter essere riutilizzato anche su altri dispositivi target, semplicemente variando alcuni parametri di configurazione opportunamenti astratti.
 
 # Bibliografia
-
-[1] *"Specification For LCD Module 2004A"*, SHENZHEN EONE ELECTRONICS CO.,LTD
-[2] *"PCF8574; PCF8574A Remote 8-bit I/O expander for I2C-bus with interrupt Rev. 5"*, NXP Semiconductors
-[3] *"Digital relative humidity & temperature sensor AM2302 AM2302/DHT22"*, Liu T.
