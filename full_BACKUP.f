@@ -53,13 +53,132 @@
 
 \ *********** UTILS.f ***********
 
+: BILS 1 SWAP LSHIFT ;
+
+: BIC INVERT AND ;
+
+\ *********** GPIO.f *********** 
+
 HEX
 
 20000000            CONSTANT RPI1_BASE
 
-: BILS 1 SWAP LSHIFT ;
+RPI1_BASE 200000 +  CONSTANT GPIO_BASE
 
-: BIC INVERT AND ;
+GPIO_BASE           CONSTANT GPFSEL0
+GPIO_BASE 04 +      CONSTANT GPFSEL1
+GPIO_BASE 08 +      CONSTANT GPFSEL2
+GPIO_BASE 1C +      CONSTANT GPSET0
+GPIO_BASE 28 +      CONSTANT GPCLR0
+GPIO_BASE 34 +      CONSTANT GPLEV0
+
+GPIO_BASE 94 +      CONSTANT GPPUD
+GPIO_BASE 98 +      CONSTANT GPPUDCLK0
+
+\ **** Gestione GPIO ****
+
+\ *** Costanti ***
+
+DECIMAL
+
+0   BILS            CONSTANT GPIO0
+1   BILS            CONSTANT GPIO1
+2   BILS            CONSTANT GPIO2
+3   BILS            CONSTANT GPIO3
+4   BILS            CONSTANT GPIO4
+5   BILS            CONSTANT GPIO5
+6   BILS            CONSTANT GPIO6
+7   BILS            CONSTANT GPIO7
+8   BILS            CONSTANT GPIO8
+9   BILS            CONSTANT GPIO9
+
+10  BILS            CONSTANT GPIO10
+11  BILS            CONSTANT GPIO11
+12  BILS            CONSTANT GPIO12
+13  BILS            CONSTANT GPIO13
+14  BILS            CONSTANT GPIO14
+15  BILS            CONSTANT GPIO15
+16  BILS            CONSTANT GPIO16
+17  BILS            CONSTANT GPIO17
+18  BILS            CONSTANT GPIO18
+19  BILS            CONSTANT GPIO19
+20  BILS            CONSTANT GPIO20
+
+21  BILS            CONSTANT GPIO21
+22  BILS            CONSTANT GPIO22
+23  BILS            CONSTANT GPIO23
+24  BILS            CONSTANT GPIO24
+25  BILS            CONSTANT GPIO25
+26  BILS            CONSTANT GPIO26
+27  BILS            CONSTANT GPIO27
+
+\ ** Costanti FSEL **
+
+0                   CONSTANT INP
+1                   CONSTANT OUT
+2                   CONSTANT ALT5
+3                   CONSTANT ALT4
+4                   CONSTANT ALT0
+5                   CONSTANT ALT1
+6                   CONSTANT ALT2
+7                   CONSTANT ALT3
+
+\ *** Word(s) ***
+
+: N_GPIO 
+    0 SWAP 
+    BEGIN 
+        DUP 2 MOD 
+        0 = IF 
+            1 RSHIFT SWAP 1+ SWAP 
+        ELSE 
+        THEN 
+        DUP 2 = 
+    UNTIL 
+    DROP 1+ ;
+
+: GPIO_LSB N_GPIO 10 MOD 3 * ;
+
+\ ** Word(s) FSEL **
+
+: FSEL_MASK 
+    DUP DUP
+    2 + >R
+    1 + >R
+    BILS
+    R> BILS OR
+    R> BILS OR ;
+
+: FSEL GPIO_LSB DUP FSEL_MASK ;
+
+: MODE SWAP GPIO_LSB LSHIFT ;
+
+( GPIOn )
+: GPFSEL
+    N_GPIO 10 / 4 * GPFSEL0 + ;
+
+\ ** Word(s) GPSET & GPCLR ** 
+
+: GPSET N_GPIO 32 / 4 * GPSET0 + ;
+: GPCLR N_GPIO 32 / 4 * GPCLR0 + ;
+
+\ ** Word(s) GPLEV **
+
+: GPLEV 32 / 4 * GPLEV0 + ;
+
+: PIN_LEVEL 
+    DUP GPLEV @ 
+    SWAP 32 MOD 
+    BILS AND 
+    IF 
+        1 
+    ELSE 
+        0
+    THEN ;
+
+\ **** Abilitazione GPIO ****
+
+\ Word(s)
 
 \ QUESTA WORD HA LO SCOPO DI EFFETTUARE UNA SET FUNCTION PER IL PIN GPIOn
 \ AD ESEMPIO POSSO SETTARE IL PIN GPIO23 IN MODALITÀ OUTPUT
@@ -111,8 +230,6 @@ TIMER_BASE 4 +      CONSTANT TIMER_COUNT
 
 : ABS DUP 0< IF -1 * THEN ;
 
-SYSTEM_TIME_BASE 4 + CONSTANT CLO_REGISTER
-
 DECIMAL
 
 : MILLISECONDS 1000 * ;
@@ -126,13 +243,13 @@ DECIMAL
     UNTIL 
     DROP ;
 
-: CLK_DELAY CURRENT_TIME BEGIN 2DUP CURRENT_TIME - ABS SWAP > UNTIL 2DROP ;
-
 : uS>mS 1000 / ;
 
 : CURRENT_TIME ( -- time ) TIMER_COUNT @ ;
 
 : CURRENT_TIME_MS CURRENT_TIME uS>mS ;
+
+: CLK_DELAY CURRENT_TIME BEGIN 2DUP CURRENT_TIME - ABS SWAP > UNTIL 2DROP ;
 
 ( MILLISECONDS -- )
 \ : DELAY
@@ -145,124 +262,6 @@ DECIMAL
 \         <=
 \     UNTIL 
 \     DROP DROP ;
-
-\ *********** GPIO.f *********** 
-
-HEX
-
-RPI1_BASE 200000 +  CONSTANT GPIO_BASE
-
-GPIO_BASE           CONSTANT GPFSEL0
-GPIO_BASE 04 +      CONSTANT GPFSEL1
-GPIO_BASE 08 +      CONSTANT GPFSEL2
-GPIO_BASE 1C +      CONSTANT GPSET0
-GPIO_BASE 28 +      CONSTANT GPCLR0
-GPIO_BASE 34 +      CONSTANT GPLEV0
-
-GPIO_BASE 94 +      CONSTANT GPPUD
-GPIO_BASE 98 +      CONSTANT GPPUDCLK0
-
-DECIMAL
-
-0   BILS            CONSTANT GPIO0
-1   BILS            CONSTANT GPIO1
-2   BILS            CONSTANT GPIO2
-3   BILS            CONSTANT GPIO3
-4   BILS            CONSTANT GPIO4
-5   BILS            CONSTANT GPIO5
-6   BILS            CONSTANT GPIO6
-7   BILS            CONSTANT GPIO7
-8   BILS            CONSTANT GPIO8
-9   BILS            CONSTANT GPIO9
-
-10  BILS            CONSTANT GPIO10
-11  BILS            CONSTANT GPIO11
-12  BILS            CONSTANT GPIO12
-13  BILS            CONSTANT GPIO13
-14  BILS            CONSTANT GPIO14
-15  BILS            CONSTANT GPIO15
-16  BILS            CONSTANT GPIO16
-17  BILS            CONSTANT GPIO17
-18  BILS            CONSTANT GPIO18
-19  BILS            CONSTANT GPIO19
-20  BILS            CONSTANT GPIO20
-
-21  BILS            CONSTANT GPIO21
-22  BILS            CONSTANT GPIO22
-23  BILS            CONSTANT GPIO23
-24  BILS            CONSTANT GPIO24
-25  BILS            CONSTANT GPIO25
-26  BILS            CONSTANT GPIO26
-27  BILS            CONSTANT GPIO27
-
-\ Word(s)
-
-: N_GPIO 
-    0 SWAP 
-    BEGIN 
-        DUP 2 MOD 
-        0 = IF 
-            1 RSHIFT SWAP 1+ SWAP 
-        ELSE 
-        THEN 
-        DUP 2 = 
-    UNTIL 
-    DROP 1+ ;
-
-: GPIO_LSB N_GPIO 10 MOD 3 * ;
-
-\ **** Gestione FSEL ****
-
-\ Costanti
-
-0                   CONSTANT INP
-1                   CONSTANT OUT
-2                   CONSTANT ALT5
-3                   CONSTANT ALT4
-4                   CONSTANT ALT0
-5                   CONSTANT ALT1
-6                   CONSTANT ALT2
-7                   CONSTANT ALT3
-
-\ Word(s)
-
-: FSEL_MASK 
-    DUP DUP
-    2 + >R
-    1 + >R
-    BILS
-    R> BILS OR
-    R> BILS OR ;
-
-: FSEL GPIO_LSB DUP FSEL_MASK ;
-
-: MODE SWAP GPIO_LSB LSHIFT ;
-
-( GPIOn )
-: GPFSEL
-    N_GPIO 10 / 4 * GPFSEL0 + ;
-
-
-
-\ ********************************
-
-
-
-
-: GPSET N_GPIO 32 / 4 * GPSET0 + ;
-: GPCLR N_GPIO 32 / 4 * GPCLR0 + ;
-
-: GPLEV 32 / 4 * GPLEV0 + ;
-
-: PIN_LEVEL 
-    DUP GPLEV @ 
-    SWAP 32 MOD 
-    BILS AND 
-    IF 
-        1 
-    ELSE 
-        0
-    THEN ;
 
 \ *********** LED.f ***********
 
@@ -599,7 +598,7 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
     GPIO18 DUP GPSET !
     DHT_INPUT ;
 
-: READ_BIT DUP WAIT_PULLDOWN CLO_REGISTER @ SWAP WAIT_PULLUP CLO_REGISTER @ SWAP - 50 > IF 1 ELSE 0 THEN ;
+: READ_BIT DUP WAIT_PULLDOWN TIMER_COUNT @ SWAP WAIT_PULLUP TIMER_COUNT @ SWAP - 50 > IF 1 ELSE 0 THEN ;
 
 : READ_DATA 
     GPIO18 N_GPIO DUP DUP DUP WAIT_PULLDOWN WAIT_PULLUP

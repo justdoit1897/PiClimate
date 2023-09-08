@@ -1,31 +1,42 @@
 <link rel="stylesheet" type="text/css" href="stili.css">
 
-# BM - Termostato (Nome Provvisorio)
+# Introduzione
 
-## Descrizione del progetto
+# Hardware
 
-Il progetto nasce per definire, in forma embrionale, un sistema di gestione del clima in ambienti chiusi, nello specifico un ambiente simile a una sala server, ossia uno in cui sono richieste specifiche condizioni ambientali per garantire il corretto funzionamento della struttura.
-Il sistema target scelto è un **Raspberry&trade; Pi**, nella sua variante 1B, usato come microcontrollore per veicolare le informazioni e i calcoli da un componente all'altro.
-L'obiettivo di questa prima forma del sistema è quello di permettere la visualizzazione, in modo continuato nel tempo, della condizione climatica dell'ambiente in cui ci si trova, avendo riscontro dell'eventuale presenza di valori registrati critici, e potendo interrompere il monitoraggio da input dell'utente.
+## Lista Componenti
 
-## Componenti Hardware
+|                 Nome                 | Quantità |
+| :-----------------------------------: | :-------: |
+|        Raspberry&trade;Pi 1 B        |     1     |
+|        Cavo USB-A a Micro USB        |     1     |
+|             MicroSD 32GB             |     1     |
+|  FTDI FT232RL UART to USB interface  |     1     |
+|              Breadboard              |     1     |
+|             Sensore DHT22             |     1     |
+|          Display I2C LCD2004          |     1     |
+|           LED colore ROSSO           |     1     |
+|           LED colore VERDE           |     1     |
+|     Resistori da$\ 100 \Omega$     |     2     |
+|      Ventola$\ 5 \mathrm V$ DC      |     1     |
+|               Pulsanti               |     1     |
+| Resistori da$\ 10 \mathrm k \Omega$ |     1     |
+|         Cavo USB-A a Mini USB         |     1     |
+|            Cavetti Jumper            |   Q. B.   |
 
-Per la realizzazione di questo progetto, sono stati necessari:
+>>>>>>> 611a04e (2023-09-08, 12:11)
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
 
-1. 1x Raspberry&trade; Pi 1B
-2. 1x Cavo USB-micro USB per l'alimentazione
-3. 1x MicroSD 32GB
-4. 1x Cavo USB-seriale TTL per usare l'interfaccia seriale UART
-5. 1x Display LCD 2004
-6. 1x Sensore Temperatura e Umidità **TZT DHT22**
-7. 1x Ventola di raffreddamento a 5V 2 pin
-8. 2x LED (1x LED rosso, 1x LED verde)
-9. 1x Pulsante a pressione
-10. Breadboard MB-102 da 400 pin
+## Breadboard Schematic
 
-### Schema del Sistema
+## Descrizione Componenti
 
-![Componenti e interconnessioni]()
+<<<<<<< HEAD
 
 | FUN       | DEVICE      | HEADER | PIN | PIN | HEADER | DEVICE       | FUN    |
 | --------- | ----------- | ------ | --- | --- | ------ | ------------ | ------ |
@@ -43,9 +54,9 @@ Per la realizzazione di questo progetto, sono stati necessari:
 |           |             | GPIO11 | 23  | 24  | GPIO8  | BUTTON       | INPUT  |
 |           |             | GND    | 25  | 26  | GPIO7  |              |        |
 
-### Dispositivo Target
+### Raspberry&trade;Pi 1 B
 
-Come detto, il target del nostro progetto è il **Raspberry&trade; Pi 1B**. Esso monta il SoC Broadcom 2835 con processore ARM1176JZFS a 700 Mhz che, nonostante le caratteristiche non più all'avanguardia, risulta capace nella gestione dei compiti richiesti.
+È il **dispositivo target** del progetto. Esso monta il [SoC Broadcom 2835](https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf) con processore ARM1176JZFS a $700 \mathrm{MHz}$ che, nonostante le caratteristiche non più all'avanguardia, si presta ancora bene nella gestione dei compiti richiesti.
 
 <img src='./images/raspberry-pi-1-modello-b.jpg' alt='Raspberry Pi 1B' width="50%">
 
@@ -54,12 +65,12 @@ Come detto, il target del nostro progetto è il **Raspberry&trade; Pi 1B**. Esso
 Specifiche di sistema:
 
 * SoC Broadcom BCM2835
-* CPU ARM1176JZF-S core a 700 MHz
+* CPU ARM1176JZF-S core a $700 \mathrm{MHz}$
 * GPU Broadcom VideoCore IV
-* 512 MB RAM
-* 2 Porte USB2.0
+* $512 \mathrm {MB}$
+* 2 Porte USB 2.0
 * Video Output Composito (PAL e NTSC), HDMI o LCD diretto (DSI)
-* Audio Output tramite Jack 3.5mm o Audio over HDMI
+* Audio Output tramite Jack $3.5 \mathrm{mm}$ o Audio over HDMI
 * Archiviazione: SD/MMC/SDIO
 * 10/100 Ethernet (RJ45)
 * Periferiche di Basso Livello:
@@ -67,17 +78,148 @@ Specifiche di sistema:
   * UART
   * bus I2C
   * bus SPI con due chip selects
-  * +3.3V
-  * +5V
-  * massa
-* Requisiti di alimentazione: 5V @ 700 mA tramite MicroUSB o Header GPIO
+  * $+3.3 \mathrm V$
+  * $+5 \mathrm V$
+  * GND
+* Requisiti di alimentazione: $5 \mathrm V$ @ $700 \mathrm{mA}$ tramite MicroUSB o Header GPIO
 
-## Componenti Software
+### Modulo FTDI FT232RL
 
-Per l'implementazione sono stati utilizzati:
+<img src='https://ae01.alicdn.com/kf/Sf822fcc1fa73463884bf733913cd6d36M/FT232RL-FT232-FTDI-3-3V-5-5V-modulo-adattatore-convertitore-seriale-TYPE-C-Mini-porta-per.jpg' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
 
-* PC con distribuzione Linux (Ubuntu) con installato G-Forth, minicom e picocom;
-* Interprete FORTH per soluzioni bare-metal pijFORTHos (via *https://github.com/organix/pijFORTHos*)
+L'FTDI FT232RL è un convertitore USB-to-Serial, un dispositivo che traduce i dati tra il protocollo USB (Universal Serial Bus) e il protocollo seriale RS-232. Questo chip è ampiamente utilizzato per collegare dispositivi seriali, come microcontrollori, a computer moderni dotati di porte USB.
+
+È noto per la sua semplicità d'uso e la compatibilità con numerosi sistemi operativi.
+
+Può essere alimentato direttamente dalla porta USB del computer, eliminando la necessità di un'alimentazione esterna.
+
+Questo modulo è necessario per fornire una porta di comunicazione virtuale al dispositivo di sviluppo (il PC) e consentire di inviare dati al dispositivo target (Il Raspberry Pi).
+
+Il modulo FTDI è connesso al computer tramite la porta USB e alla UART1 del Pi secondo la seguente configurazione:
+
+| FTDI Pin | Raspberry Pi Pin |
+| :------: | :---------------: |
+|    RX    |   GPIO14 / TXD0   |
+|    TX    |   GPIO15 / RXD0   |
+|   GND   |        GND        |
+
+### Modulo Display I2C LCD2004 [1]
+
+<img src='https://m.media-amazon.com/images/I/61JbSbfWshL.jpg' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
+
+Il modulo Display I2C LCD2004 è un componente ampiamente utilizzato in progetti elettronici per visualizzare testo e informazioni su un display LCD (Liquid Crystal Display) alfanumerico con 20 caratteri per 4 righe.
+
+Questo modulo è noto per la sua versatilità e facilità d'uso grazie all'**interfaccia I2C**, che semplifica notevolmente la connessione e il controllo da parte di microcontrollori e dispositivi embedded, oltre a ridurre notevolmente il numero di pin necessari per il collegamento.
+
+Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle informazioni all'utente finale ed è caratterizzato da una griglia 20 $\times$ 4 di **caratteri**, ciascuno dei quali costituito da un valore standard di 5 $\times$ 8 **dots**, codificati ASCII (la cui gestione da parte della ROM del modulo è visibile in figura).
+
+![Codifica ASCII e Gestione ROM LCD 2004](https://file+.vscode-resource.vscode-cdn.net/home/mario/Scrivania/embedded_systems/EmbeddedSystems_Proj_FT/docs/images/lcd2004/ascii_lcd.png)
+
+<pre class="vditor-reset" placeholder="" contenteditable="true" spellcheck="false"><p data-block="0"><img src="https://file+.vscode-resource.vscode-cdn.net/home/mario/Scrivania/embedded_systems/EmbeddedSystems_Proj_FT/docs/images/lcd2004/parallel_int.png" alt="Interfaccia Parallela LCD 2004"/></p><p data-block="0"><img src="https://file+.vscode-resource.vscode-cdn.net/home/mario/Scrivania/embedded_systems/EmbeddedSystems_Proj_FT/docs/images/lcd2004/pin_funcs.png" alt="Caratteristiche dei pin LCD 2004"/></p></pre>
+
+Il modulo LCD2004 è connesso al Pi secondo la seguente configurazione:
+
+| LCD2004 Pin | Raspberry Pi Pin |
+| :---------: | :---------------: |
+|     GND     |        GND        |
+|     VCC     |        5V        |
+|     SDA     |   GPIO2 / SDA1   |
+|     SCL     |   GPIO3 / SCL1   |
+
+### Modulo per la Serializzazione - I2C Backpack [2]
+
+Si tratta di un modulo usato tipicamente per serializzare la comunicazione tra un microcontrollore e un altro device. Nel caso specifico, il modulo si presenta nella forma di un backpack da saldare al display (nel nostro caso era già saldato) e caratterizzato da quattro pin per il collegamento con il MCU:
+
+* due pin, rispettivamente **VCC** e **GND**, usati per l'alimentazione del modulo;
+* un pin, chiamato **SDA**, per l'invio dei dati serializzati;
+* un pin, chiamato **SCL**, per la sincronizzazione dei segnali di clock.
+
+A questi, si aggiungono altri 9 pin, di cui 8 usati come bus di dati e uno usato (eventualmente) per la gestione degli interrupt inviati dal MCU.
+
+Il modulo richiede una tensione di $5 \mathrm V$ ed è provvisto di un potenziometro per il **controllo del contrasto** dei caratteri. Il controllo della luminosità è possibile via hardware, tramite una circuiteria *ad hoc*, o via software, tramite opportune istruzioni.
+
+### Sensore di temperatura e umidità DHT22 [3]
+
+<img src='https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/4e1160ec5dfb387ab03c938666ab9c5e.jpg?imageMogr2/auto-orient%7CimageView2/2/w/1300/q/80/format/webp' width="320" style='float:right; border: 1px solid; margin-left: 5px'>
+
+Il sensore permette il monitoraggio della temperatura e dell'umidità nell'ambiente circostante, ed è caratterizzato da un sensore di base della famiglia AM2302, che si caratterizza per la capacità di gestione di segnali digitali con una precisione di 0.5 °C per la temperatura e di 2% RH per l'umidità, rilevando valori di temperatura tra i -40°C e i +80°C e di umidità tra lo 0% e il 100%.
+
+Il sensore dispone di interfaccia seriale a filo singolo che ne facilita l'utilizzo. Il sensore DHT22 viene calibrato in modo estremamente preciso, essendo che i coefficienti di calibrazione sono memorizzati nella memoria OTP e vengono richiamati durante il processo di rilevamento: in questo modo non vi è alcuna necessità di ricalibrare il sensore.
+
+La trasmissione dei dati avviene secondo uno specifico protocollo di comunicazione, suddiviso in due fasi:
+
+1. La prima fase è quella in cui il microcontrollore invia un **segnale iniziale** al sensore, con quest'ultimo che risponde al microcontrollore.
+   Dato che, inizialmente, il data bus del sensore è impostato su HIGH, la prima cosa che il microcontrollore deve fare è **abbassare** tale bus per almeno 1 ~ 10 ms (per dar modo al bus di rilevare tale comunicazione), salvo poi **rialzarlo** per 20 ~ 40 µs e **rimanere in attesa** della risposta del sensore.
+   Nel momento in cui **il sensore AM2302** rileva il segnale di inizio, **abbassa** il data bus per 80 µs come risposta, salvo poi **rialzarlo** per altri 80 µs e iniziare l'effettiva trasmissione dei dati. L'intera prima fase avviene secondo un diagramma di tensione sul data bus come il seguente
+
+   ![Fase 1 del Rilevamento AM2302](images/dht22/trans1.png)
+2. La seconda fase, in cui avviene il rilevamento vero e proprio, prevede che il sensore invii **un bit per volta**, distinguendo tra 0 e 1 in base al tempo in cui il data bus viene mantenuto su HIGH dopo una fase in cui è stato tenuto LOW, sempre presente e della durata di 50 µs. Se la trasmissione del bit dura 26 ~ 28 µs, il bit trasmesso sarà uno 0, mentre, se la trasmissione durera ~ 70 µs, il bit trasmesso sarà un 1. La trasmissione di un bit segue un diagramma di tensione come i seguenti
+
+   ![Fase 2 del Rilevamento AM2302](images/dht22/trans2.png)
+
+I dati trasmessi ad ogni ciclo sono un totale di 40 bit, di cui i primi 16 costituenti l'**umidità relativa** (RH), i secondi sedici la **temperatura** (T) in gradi Celsius, e gli ultimi 8 bit una **checksum** per validare il rilevamento.
+
+**N.B.** ad ogni rilevamento bisognerà seguire l'intero protocollo, dato che il sensore, senza aver ricevuto un segnale di avvio, non inizierà ad inviare dati.
+
+La conversione da sequenza di bit a dato numerico è piuttosto semplice: basterà **dividere il valore** (espresso in base decimale) **per 10**, così da ricavare **parte intera** e **parte frazionaria** della grandezza fisica (es. `0x028C` corrisponde a 652, da cui si ricava un valore di 65.2).
+Il calcolo della `sum`, in contrapposizione con la `checksum`, prevede che si separino i 32 bit misurati in byte, che si effettui la somma e che si consideri il byte finale. Se tale risultato è pari alla checksum, la trasmissione è avvenuta correttamente, altrimenti il contrario (es. `0x028C015F` produce una `sum` pari a `0xEE`).
+
+### LEDs
+
+<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/LEDs.jpg/1200px-LEDs.jpg' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
+
+Un LED, acronimo di Light Emitting Diode, è un dispositivo semiconduttore che emette luce quando una corrente elettrica passa attraverso di esso. Questi piccoli dispositivi sono diventati una parte fondamentale della tecnologia moderna, con applicazioni in una vasta gamma di settori.
+
+Nel sistema in esame sono presenti due LED, uno rosso e uno verde, che hanno lo scopo di indicare lo stato del cancello.
+
+Il LED rosso lampeggiante indica che il cancello è in fase di chiusura, mentre un LED verde lampeggiante indica che il cancello è in fase di apertura. Questa indicazione visiva ha lo scopo di trasmettere una informazione immediata agli utenti in quanto, essendo facilmente comprensibile, fornisce loro un feedback chiaro sullo stato del cancello.
+
+I LED hanno due connessioni, l'**anodo** (+) e il **catodo** (-), che devono essere collegate correttamente per farli funzionare.
+
+In un microcontrollore o in una scheda come il Raspberry Pi, i pin GPIO sono i nostri strumenti per controllare i componenti elettronici. Per connettere un LED, il suo anodo (+) viene collegato a uno dei pin GPIO, mentre il catodo (-) viene connesso a terra (GND).
+
+Tuttavia, c'è un aspetto cruciale da tenere a mente: la necessità di una resistenza. Quando un LED è collegato direttamente a una sorgente di tensione senza una resistenza, la corrente può diventare troppo elevata e danneggiare il LED. Le resistenze svolgono il ruolo di "limitatori di corrente", regolando la quantità di corrente che fluisce attraverso il LED. La giusta resistenza assicura che il LED funzioni in modo sicuro e durevole.
+
+Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono pilotati i LED:
+
+|  LED  | Raspberry Pi Pin |
+| :---: | :---------------: |
+|  RED  |      GPIO23      |
+| GREEN |      GPIO24      |
+
+### Pulsanti
+
+### Ventola di Raffreddamento 5V-2 pin
+
+<img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
+
+Si tratta di una ventola di dimensioni 60x60x10 mm, capace di lavorare a una tensione di 5V e garantire una velocità di rotazione di circa 3300 RPM, permettendo quindi un flusso d'aria di 13,8 CFM.
+
+(*Da fare dopo aver acquistato i componenti*)
+
+## GPIO assignment
+
+Poiché questo progetto incorpora una serie di componenti esterni fondamentali per il suo funzionamento, è cruciale avere una panoramica chiara e ben organizzata dei pin GPIO coinvolti e delle rispettive funzioni a cui sono assegnati. Questa informazione è essenziale per garantire che il sistema funzioni in modo impeccabile e che i collegamenti tra i componenti siano stabiliti correttamente.
+
+Nella tabella sottostante, vi è riassunta la panoramica dei pin GPIO utilizzati. Essa ha lo scopo di tenere traccia dei collegamenti e delle assegnazioni dei pin, semplificando la manutenzione futura e agevolando il lavoro di chiunque debba comprendere o estendere il progetto.
+
+|   GPIO Pin   | Function | col3 |
+| :----------: | -------- | ---- |
+| GPIO2 / SDA1 |          |      |
+| GPIO3 / SCL1 |          |      |
+|    GPIO8    |          |      |
+|    GPIO18    |          |      |
+|    GPIO23    |          |      |
+|    GPIO24    |          |      |
+
+# Environment
+
+Per la fase di sviluppo sono stati utilizzati:
+
+* PC con distribuzione Linux (Ubuntu) con installato G-Forth, minicom e picocom
+* Interprete FORTH per soluzioni bare-metal [pijFORTHos](https://github.com/organix/pijFORTHos).
+
+## pijFORTHos
 
 ## Preparazione Ambiente di Sviluppo
 
@@ -121,6 +263,8 @@ In alternativa, è possibile utilizzare **picocom** attraverso il comando `sudo 
 * `--imap delbs` per usare il backspace per cancellare caratteri
 * `-s "ascii-xfr -sv -l100 -c10"` permette di specificare il protocollo ASCII-XFR per lo scambio di file, con un ritardo di 100 ms tra l'invio di una riga e l'altra e un intervallo di 10 ms tra l'invio di un carattere e l'altro.
 
+### Creazione `avvio_picocom.sh`
+
 ## Preparazione della Scheda SD e dell'Interprete
 
 Per procedere all'installazione di pijFORTHos sulla scheda SD si possono seguire direttamente le istruzioni fornite dal gestore della repo *organix*, che riportiamo per completezza.
@@ -150,86 +294,25 @@ kernel.img
 
 È possibile, quindi, inserire la scheda SD nel Raspberry&trade; Pi, connetterlo al computer con il cavo USB-seriale e, con minicom/picocom avviato secondo le modalità dette in precedenza, collegare il Raspberry&trade; Pi all'alimentazione.
 
-## Descrizione dei Componenti
+# Software
 
-### Cavo USB-Seriale
+PRIMA DI PASSARE AL CODICE, VERRÀ ELENCATO IL FLUSSO DEGLI EVENTI, AL FINE DI UNA MAGGIOR COMPRENSIONE E REPLICABILITÀ DEL PROGETTO.
 
-Si tratta di un cavo con, all'interno, un convertitore USB-seriale TTL basato sul chip PL2303HX. Dispone di connettore USB tipo A da un lato e 4 fili con connettori singoli dall'altro, con pinout: filo rosso Vcc, filo nero GND, verde TXD e bianco RXD
+## Flusso di Lavoro
 
-I livelli logici di funzionamento sono 3.3V per il segnale TXD, mentre per il segnale RXD è accettato in ingresso una tensione compresa tra 3V e 5V.
+**ESEMPIO:**
 
-È dotato di un buffer in ricezione da 128 B ed uno in trasmissione da 256 B, cosa che garantisce robustezza in trasmissioni fino a 3Mbaud/s. Collegando opportunamente il dispositivo target ad un computer dotato di ingresso USB, questo riconoscerà la connessione come una VirtualCOM Port seriale (VCP), con cui emulare la porta seriale RS232, senza bisogno di alcuna modifica.
+1. Il sistema è in modalità di attesa, monitorando costantemente il pulsante dedicato per l'apertura o la chiusura del cancello.
+2. Quando l'utente preme il pulsante di apertura, il sistema apre automaticamente il cancello.
+3. Il sistema monitora costantemente il sensore di movimento lungo il percorso di chiusura del cancello.
+4. Se il sensore di movimento rileva un movimento nell'area del cancello durante la chiusura, il sistema arresta immediatamente la chiusura del cancello per evitare collisioni.
+5. Gli utenti autorizzati possono premere il pulsante di chiusura per chiudere manualmente il cancello.
 
-Nel nostro caso, trattandosi di un collegamento SPI asincrono, è stato necessario specificare i parametri di sincronizzazione, come il baud rate e la dimensione (in bit) dei dati.
+## Codice
 
-### Display LCD 2004 [1]
+# Conclusioni
 
-![Modulo LCD 2004](images/lcd2004/lcd2004.jpg)
-
-Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle informazioni all'utente finale ed è caratterizzato da una griglia 20 $times$ 4 di **caratteri**, ciascuno dei quali costituito da un valore standard di 5 $times$ 8 **dots**, codificati ASCII (la cui gestione da parte della ROM del modulo è visibile in figura).
-
-![Codifica ASCII e Gestione ROM LCD 2004](images/lcd2004/ascii_lcd.png)
-
-Il display presenta un'**interfaccia parallela** (visibile in figura) per la gestione della comunicazione con il microcontrollore, caratterizzata **da 16 pin**, utilizzata per inviare dati e/o segnali di controllo.
-Nello specifico, il modello scelto, supporta anche **moduli per la serializzazione**, come quelli utilizzati nell'implementazione del protocollo I2C, per ridurre il numero di connessioni MCU-LCD e semplificare l'invio di dati completi.
-
-![Interfaccia Parallela LCD 2004](images/lcd2004/parallel_int.png)
-
-![Caratteristiche dei pin LCD 2004](images/lcd2004/pin_funcs.png)
-
-### Modulo per la Serializzazione - I2C Backpack [2]
-
-![I2C Backpack](images/i2c_backpack/module.jpeg)
-
-Si tratta di un modulo usato tipicamente per serializzare la comunicazione tra un microcontrollore e un altro device. Nel caso specifico, il modulo si presenta nella forma di un backpack da saldare al display (nel nostro caso era già saldato) e caratterizzato da quattro pin per il collegamento con il MCU:
-
-* due pin, rispettivamente **VCC** e **GND**, usati per l'alimentazione del modulo;
-* un pin, chiamato **SDA**, per l'invio dei dati serializzati;
-* un pin, chiamato **SCL**, per la sincronizzazione dei segnali di clock.
-
-A questi, si aggiungono altri 9 pin, di cui 8 usati come bus di dati e uno usato (eventualmente) per la gestione degli interrupt inviati dal MCU.
-
-Il modulo richiede una tensione di 5 V ed è provvisto di un potenziometro per il **controllo del contrasto** dei caratteri. Il controllo della luminosità è possibile via hardware, tramite una circuiteria *ad hoc*, o via software, tramite opportune istruzioni.
-
-### Sensore di temperatura e umidità TZT DHT22 [3]
-
-![Sensore di umidità e temperatura DHT22](images/dht22/module.jpeg)
-
-Il sensore permette il monitoraggio della temperatura e dell'umidità nell'ambiente circostante, ed è caratterizzato da un sensore di base della famiglia AM2302, che si caratterizza per la capacità di gestione di segnali digitali con una precisione di &pm;0.5 °C per la temperatura e di &pm;2% RH per l'umidità, rilevando valori di temperatura tra i -40°C e i +80°C e di umidità tra lo 0% e il 100%.
-
-Il sensore dispone di interfaccia seriale a filo singolo che ne facilita l'utilizzo. Il sensore DHT22 viene calibrato in modo estremamente preciso, essendo che i coefficienti di calibrazione sono memorizzati nella memoria OTP e vengono richiamati durante il processo di rilevamento: in questo modo non vi è alcuna necessità di ricalibrare il sensore.
-
-La trasmissione dei dati avviene secondo uno specifico protocollo di comunicazione, suddiviso in due fasi:
-
-1. La prima fase è quella in cui il microcontrollore invia un **segnale iniziale** al sensore, con quest'ultimo che risponde al microcontrollore.
-   Dato che, inizialmente, il data bus del sensore è impostato su HIGH, la prima cosa che il microcontrollore deve fare è **abbassare** tale bus per almeno 1 ~ 10 ms (per dar modo al bus di rilevare tale comunicazione), salvo poi **rialzarlo** per 20 ~ 40 µs e **rimanere in attesa** della risposta del sensore.
-   Nel momento in cui **il sensore AM2302** rileva il segnale di inizio, **abbassa** il data bus per 80 µs come risposta, salvo poi **rialzarlo** per altri 80 µs e iniziare l'effettiva trasmissione dei dati. L'intera prima fase avviene secondo un diagramma di tensione sul data bus come il seguente
-
-   ![Fase 1 del Rilevamento AM2302](images/dht22/trans1.png)
-2. La seconda fase, in cui avviene il rilevamento vero e proprio, prevede che il sensore invii **un bit per volta**, distinguendo tra 0 e 1 in base al tempo in cui il data bus viene mantenuto su HIGH dopo una fase in cui è stato tenuto LOW, sempre presente e della durata di 50 µs. Se la trasmissione del bit dura 26 ~ 28 µs, il bit trasmesso sarà uno 0, mentre, se la trasmissione durera ~ 70 µs, il bit trasmesso sarà un 1. La trasmissione di un bit segue un diagramma di tensione come i seguenti
-
-   ![Fase 2 del Rilevamento AM2302](images/dht22/trans2.png)
-
-I dati trasmessi ad ogni ciclo sono un totale di 40 bit, di cui i primi 16 costituenti l'**umidità relativa** (RH), i secondi sedici la **temperatura** (T) in gradi Celsius, e gli ultimi 8 bit una **checksum** per validare il rilevamento.
-
-**N.B.** ad ogni rilevamento bisognerà seguire l'intero protocollo, dato che il sensore, senza aver ricevuto un segnale di avvio, non inizierà ad inviare dati.
-
-La conversione da sequenza di bit a dato numerico è piuttosto semplice: basterà **dividere il valore** (espresso in base decimale) **per 10**, così da ricavare **parte intera** e **parte frazionaria** della grandezza fisica (es. `0x028C` corrisponde a 652, da cui si ricava un valore di 65.2).
-Il calcolo della `sum`, in contrapposizione con la `checksum`, prevede che si separino i 32 bit misurati in byte, che si effettui la somma e che si consideri il byte finale. Se tale risultato è pari alla checksum, la trasmissione è avvenuta correttamente, altrimenti il contrario (es. `0x028C015F` produce una `sum` pari a `0xEE`).
-
-### Bottone a Pressione
-
-![Schema Bottone a Pressione in Pull-up](images/components/pullup.png)
-
-Si tratta di un semplice bottone a pressione caratterizzato da **quattro pin**, per uno **switch a due poli**. Nella nostra implementazione, il pulsante è configurato in modalità **pull-up** per cui, se il pulsante è in **posizione di riposo** (non premuto), i contatti (visibili in figura) non sono connessi e **la corrente può fluire**. Alla pressione, i due poli vegono connessi, eseguendo un'**azione bloccante** rispetto alla corrente, per mandare in **reset** il sistema.
-
-### Ventola di Raffreddamento 5V-2 pin
-
-![Ventola di raffreddamento](images/components/cool_fan.jpg)
-
-Si tratta di una ventola di dimensioni 60x60x10 mm, capace di lavorare a una tensione di 5V e garantire una velocità di rotazione di circa 3300 RPM, permettendo quindi un flusso d'aria di 13,8 CFM.
-
-(*Da fare dopo aver acquistato i componenti*)
+# References
 
 ## Flusso degli Eventi
 
