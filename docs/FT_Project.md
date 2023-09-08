@@ -4,45 +4,48 @@
 
 ## Descrizione del progetto
 
-Il progetto nasce per definire, in forma embrionale, un sistema di gestione del clima in ambienti chiusi, nello specifico un ambiente simile a una sala server, ossia uno in cui sono richieste specifiche condizioni ambientali per garantire il corretto funzionamento della struttura. Il sistema target scelto è un **Raspberry&trade; Pi**, nella sua variante 1B, attraverso cui viene visualizzata, in modo continuato nel tempo, la condizione climatica dell'ambiente in cui ci si trova.
+Il progetto nasce per definire, in forma embrionale, un sistema di gestione del clima in ambienti chiusi, nello specifico un ambiente simile a una sala server, ossia uno in cui sono richieste specifiche condizioni ambientali per garantire il corretto funzionamento della struttura.
+Il sistema target scelto è un **Raspberry&trade; Pi**, nella sua variante 1B, usato come microcontrollore per veicolare le informazioni e i calcoli da un componente all'altro.
+L'obiettivo di questa prima forma del sistema è quello di permettere la visualizzazione, in modo continuato nel tempo, della condizione climatica dell'ambiente in cui ci si trova, avendo riscontro dell'eventuale presenza di valori registrati critici, e potendo interrompere il monitoraggio da input dell'utente.
 
 ## Componenti Hardware
 
 Per la realizzazione di questo progetto, sono stati necessari:
 
-1. Raspberry&trade; Pi 1B
-2. Cavo USB-micro USB per l'alimentazione
-3. MicroSD 32GB
-4. Cavo USB-seriale TTL per usare l'interfaccia seriale UART
-5. Display (*TBD*)
-6. Sensore Temperatura e Umidità **TZT DHT22**
-7. Ventola di raffreddamento a 5V 2 pin
-8. 2x LED (*TBD*)
-9. Breadboard MB-102 da 400 pin
+1. 1x Raspberry&trade; Pi 1B
+2. 1x Cavo USB-micro USB per l'alimentazione
+3. 1x MicroSD 32GB
+4. 1x Cavo USB-seriale TTL per usare l'interfaccia seriale UART
+5. 1x Display LCD 2004
+6. 1x Sensore Temperatura e Umidità **TZT DHT22**
+7. 1x Ventola di raffreddamento a 5V 2 pin
+8. 2x LED (1x LED rosso, 1x LED verde)
+9. 1x Pulsante a pressione
+10. Breadboard MB-102 da 400 pin
 
 ### Schema del Sistema
 
 ![Componenti e interconnessioni]()
 
-| FUN | CONN | HEADER | PIN | PIN | HEADER  | CONN | FUN |
-| --- | ---- | ------ | --- | --- | ------- | ---- | --- |
-|     |      |        | 1   | 2   |         |      |     |
-|     |      |        | 3   | 4   |         |      |     |
-|     |      |        | 5   | 6   | GND     |      |     |
-|     |      |        | 7   | 8   | UART TX | TXD  |     |
-|     |      |        | 9   | 10  | UART RX | RXD  |     |
-|     |      |        | 11  | 12  |         |      |     |
-|     |      |        | 13  | 14  |         |      |     |
-|     |      |        | 15  | 16  |         |      |     |
-|     |      |        | 17  | 18  |         |      |     |
-|     |      |        | 19  | 20  |         |      |     |
-|     |      |        | 21  | 22  |         |      |     |
-|     |      |        | 23  | 24  |         |      |     |
-|     |      |        | 25  | 26  |         |      |     |
+| FUN       | DEVICE      | HEADER | PIN | PIN | HEADER | DEVICE       | FUN    |
+| --------- | ----------- | ------ | --- | --- | ------ | ------------ | ------ |
+|           |             | +3V3   | 1   | 2   | +5V    |              |        |
+| ALT0/SDA1 | LCD2004/I2C | GPIO2  | 3   | 4   | +5V    |              |        |
+| ALT0/SCL1 | LCD2004/I2C | GPIO3  | 5   | 6   | GND    | USB-SERIAL   |        |
+|           |             | GPIO4  | 7   | 8   | TXD0   | USB-SERIAL   |        |
+|           |             | GND    | 9   | 10  | RXD0   | USB-SERIAL   |        |
+|           |             | GPIO17 | 11  | 12  | GPIO18 | DHT22/AM2302 | INPUT  |
+|           |             | GPIO27 | 13  | 14  | GND    |              |        |
+|           |             | GPIO22 | 15  | 16  | GPIO23 | RED LED      | OUTPUT |
+|           |             | +3V3   | 17  | 18  | GPIO24 | GREEN LED    | OUTPUT |
+|           |             | GPIO10 | 19  | 20  | GND    |              |        |
+|           |             | GPIO9  | 21  | 22  | GPIO25 |              |        |
+|           |             | GPIO11 | 23  | 24  | GPIO8  | BUTTON       | INPUT  |
+|           |             | GND    | 25  | 26  | GPIO7  |              |        |
 
 ### Dispositivo Target
 
-Come detto, il target del nostro progetto è il **Raspberry&trade; Pi 1B**. Esso monta il SoC Broadcom 2835 con processore ARM1176JZFS a 700 Mhz che, nonostante le caratteristiche non più all'avanguardia, si dimostra particolarmente potente nella gestione dei compiti richiesti.
+Come detto, il target del nostro progetto è il **Raspberry&trade; Pi 1B**. Esso monta il SoC Broadcom 2835 con processore ARM1176JZFS a 700 Mhz che, nonostante le caratteristiche non più all'avanguardia, risulta capace nella gestione dei compiti richiesti.
 
 <img src='./images/raspberry-pi-1-modello-b.jpg' alt='Raspberry Pi 1B' width="50%">
 
@@ -201,11 +204,10 @@ La trasmissione dei dati avviene secondo uno specifico protocollo di comunicazio
 1. La prima fase è quella in cui il microcontrollore invia un **segnale iniziale** al sensore, con quest'ultimo che risponde al microcontrollore.
    Dato che, inizialmente, il data bus del sensore è impostato su HIGH, la prima cosa che il microcontrollore deve fare è **abbassare** tale bus per almeno 1 ~ 10 ms (per dar modo al bus di rilevare tale comunicazione), salvo poi **rialzarlo** per 20 ~ 40 µs e **rimanere in attesa** della risposta del sensore.
    Nel momento in cui **il sensore AM2302** rileva il segnale di inizio, **abbassa** il data bus per 80 µs come risposta, salvo poi **rialzarlo** per altri 80 µs e iniziare l'effettiva trasmissione dei dati. L'intera prima fase avviene secondo un diagramma di tensione sul data bus come il seguente
-   
-   ![Fase 1 del Rilevamento AM2302](images/dht22/trans1.png)
 
-2. La seconda fase, in cui avviene il rilevamento vero e proprio, prevede che il sensore invii **un bit per volta**, distinguendo tra 0 e 1 in base al tempo in cui il data bus viene mantenuto su HIGH dopo una fase in cui è stato tenuto LOW, sempre presente e della durata di 50 µs. Se la trasmissione del bit dura 26 ~ 28 µs, il bit trasmesso sarà uno 0, mentre, se la trasmissione durera ~ 70 µs, il bit trasmesso sarà un 1. La trasmissione di un bit segue un diagramma di tensione come i seguenti  
-   
+   ![Fase 1 del Rilevamento AM2302](images/dht22/trans1.png)
+2. La seconda fase, in cui avviene il rilevamento vero e proprio, prevede che il sensore invii **un bit per volta**, distinguendo tra 0 e 1 in base al tempo in cui il data bus viene mantenuto su HIGH dopo una fase in cui è stato tenuto LOW, sempre presente e della durata di 50 µs. Se la trasmissione del bit dura 26 ~ 28 µs, il bit trasmesso sarà uno 0, mentre, se la trasmissione durera ~ 70 µs, il bit trasmesso sarà un 1. La trasmissione di un bit segue un diagramma di tensione come i seguenti
+
    ![Fase 2 del Rilevamento AM2302](images/dht22/trans2.png)
 
 I dati trasmessi ad ogni ciclo sono un totale di 40 bit, di cui i primi 16 costituenti l'**umidità relativa** (RH), i secondi sedici la **temperatura** (T) in gradi Celsius, e gli ultimi 8 bit una **checksum** per validare il rilevamento.
@@ -258,6 +260,7 @@ In questo senso, possibili espansioni riguardano l'inserimento di attuatori e se
 Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al codice di poter essere riutilizzato anche su altri dispositivi target, semplicemente variando alcuni parametri di configurazione opportunamenti astratti.
 
 # Bibliografia
+
 [1] *"Specification For LCD Module 2004A"*, SHENZHEN EONE ELECTRONICS CO.,LTD
 [2] *"PCF8574; PCF8574A Remote 8-bit I/O expander for I2C-bus with interrupt Rev. 5"*, NXP Semiconductors
 [3] *"Digital relative humidity & temperature sensor AM2302 AM2302/DHT22"*, Liu T.
