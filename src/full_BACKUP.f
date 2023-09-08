@@ -322,9 +322,6 @@ GREEN GPFSEL        CONSTANT GREEN_GPFSEL
 
 \ *********** I2C.f ***********
 
-
-: HUMIDITY>CMD S" Humidity: " PRINT_STR HUMIDITY_IP ? S" . " PRINT_STR  HUMIDITY_DP ? S" %" PRINT_STR ;
-
 HEX
 
 GPIO2 FSEL          CONSTANT GPIO2_FSEL
@@ -392,23 +389,39 @@ BSC1 10 +           CONSTANT FIFO_REGISTER
 
 \ Word(s)
 
+\ Word che serve per memorizzare dati o comandi nel FIFO REGISTER
 : >FIFO FIFO_REGISTER ! ;
+
+\ Word che serve per ricevere dati o comandi dal FIFO REGISTER
 : FIFO> FIFO_REGISTER @ ;
+
+\ Word che ha lo scopo di 
+\   * impostare il CONTROL REGISTER in modalità di scrittura
+\   * abilitare un nuovo trasferimento di dati
+\   * attivare
 
 : I2C_SEND
     SET_WRITE
     START_TRANSFER
     I2C_ENABLE ;
 
+
+\ Word che consente di
+\   * memorizzare il dato/comando nel FIFO REGISTER
+\   * impostare la lunghezza ...
+\   * richiamare la subroutine I2C_SEND    
 : >I2C
     >FIFO
     SET_DLEN
     I2C_SEND ;
 
-: INIT_I2C ( -- ) I2C_PINS ACTIVATE ;
+\ Word di inizializzazione del bus I2C. Ha lo scopo di attivare i pin SDA1 e SCL1.
+: INIT_I2C ( -- ) 
+    I2C_PINS ACTIVATE ;
 
 \ *********** LCD.f ***********
 
+\ Word creata con lo scopo di restituire TRUE se ciò che è presente nel TOS è un comando. FALSE altrimenti.
 : ?CMD DUP 8 RSHIFT 1 = ;
 
 : CMD 100 OR ;
@@ -426,6 +439,7 @@ BSC1 10 +           CONSTANT FIFO_REGISTER
     ?CMD_OR_CHAR SWAP
     8 OR SWAP ;
 
+( c --  )
 : BYTE
     ?CMD SWAP 2DUP
     F0 AND NIBBLE 
@@ -433,6 +447,7 @@ BSC1 10 +           CONSTANT FIFO_REGISTER
     F AND 4 LSHIFT NIBBLE
     2SWAP ;
 
+( c1 c2 c3 c4 -- )
 : SEND
     >I2C 1 MILLISECONDS DELAY
     >I2C 2 MILLISECONDS DELAY
@@ -478,6 +493,7 @@ VARIABLE COL
 
 VARIABLE LEN
 
+( c1 c2 c3 ... cn -- )
 : PRINT 
     DEPTH LEN !
     BEGIN 
@@ -488,6 +504,7 @@ VARIABLE LEN
 
 VARIABLE STR_LEN
 
+( s_addr s_len -- )
 : PRINT_STR
     STR_LEN !
     BEGIN
@@ -498,41 +515,54 @@ VARIABLE STR_LEN
     UNTIL
     DROP ;
 
-: HUMIDITY>CMD S" Humidity: " HUMIDITY_IP ? S" . " HUMIDITY_DP ? S" %" PRINT_STR ;
+\ : HUMIDITY>CMD S" Humidity: " HUMIDITY_IP ? S" . " HUMIDITY_DP ? S" %" PRINT_STR ;
 
-: SUBJECT 
+: SUBJECT ( -- )
     CLEAR_DISPLAY CMD >LCD
     ROW2 CMD 2 SET_CURSOR S" Embedded Systems" PRINT_STR
     ROW3 CMD 2 SET_CURSOR S" A.A.   2022/2023" PRINT_STR ;
 
-: MARIO 
+: MARIO ( -- )
     CLEAR_DISPLAY CMD >LCD
     ROW2 CMD 2 SET_CURSOR S" Mario Tortorici" PRINT_STR
     ROW3 CMD 2 SET_CURSOR S" Matr.   0737892" PRINT_STR ;
 
-: VINCENZO
+: VINCENZO ( -- )
     CLEAR_DISPLAY CMD >LCD
     ROW2 CMD 2 SET_CURSOR S" Vincenzo Fardella" PRINT_STR
     ROW3 CMD 2 SET_CURSOR S" Matr.     07XXXXX" PRINT_STR ;
 
-: STUDENTS
+: STUDENTS ( -- )
     VINCENZO                                                        3 SECONDS DELAY
     MARIO                                                           3 SECONDS DELAY ;
 
-: PROJECT
+: PROJECT ( -- )
     CLEAR_DISPLAY CMD >LCD
     ROW2 CMD 6 SET_CURSOR S" PiServer " PRINT_STR
     ROW3 CMD 2 SET_CURSOR S" Climate Control" PRINT_STR ;
 
-: WELCOME_MSG
+: WELCOME_MSG ( -- )
     SUBJECT                                                         3 SECONDS DELAY
     STUDENTS
     PROJECT ;
 
-: LOAD_MSG
+: LOAD_MSG ( -- )
     CLEAR_DISPLAY CMD >LCD
     ROW2 CMD 2 SET_CURSOR S" Inizializzazione " PRINT_STR
     ROW3 CMD 6 SET_CURSOR S" in corso" PRINT_STR ;
+
+: CELSIUS ( -- )
+    ROW2 CMD 10# 18 SET_CURSOR 43 DF PRINT ;
+
+: TEMP ( -- )
+    ROW2 >LCD
+    S" Temperature:" PRINT_STR
+    CELSIUS ;
+
+: HUM ( -- )
+    ROW3 >LCD
+    S" Humidity:" PRINT_STR
+    ROW3 CMD 10# 19 SET_CURSOR S" %" PRINT_STR ;
 
 : INIT_LCD ( -- ) 
     SET_SLAVE 02 CMD >LCD
