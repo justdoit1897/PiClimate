@@ -158,19 +158,39 @@ I livelli logici di funzionamento sono 3.3V per il segnale TXD, mentre per il se
 È dotato di un buffer in ricezione da 128 B ed uno in trasmissione da 256 B, cosa che garantisce robustezza in trasmissioni fino a 3Mbaud/s. Collegando opportunamente il dispositivo target ad un computer dotato di ingresso USB, questo riconoscerà la connessione come una VirtualCOM Port seriale (VCP), con cui emulare la porta seriale RS232, senza bisogno di alcuna modifica.
 
 Nel nostro caso, trattandosi di un collegamento SPI asincrono, è stato necessario specificare i parametri di sincronizzazione, come il baud rate e la dimensione (in bit) dei dati.
-s
-### Display LCD 2004
 
-Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle informazioni all'utente finale ed è caratterizzato da una griglia 20 $times$ 4 di **caratteri**, ciascuno dei quali costituito da un valore standard di 5 $times$ 8 **dots**, codificati ASCII.
-Il display presenta un'**interfaccia parallela** (visibile in figura) per la gestione della comunicazione con il microcontrollore, caratterizzata **da 12 pin**, utilizzata per inviare dati e/o segnali di controllo.
-Previsto nella circuiteria del display, vi è anche un modulo per il **controllo del contrasto** dei caratteri, regolato semplicemente da una vite, la cui rotazione determina il livello di contrasto.
+### Display LCD 2004 [1]
+
+![Modulo LCD 2004](images/lcd2004/lcd2004.jpg)
+
+Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle informazioni all'utente finale ed è caratterizzato da una griglia 20 $times$ 4 di **caratteri**, ciascuno dei quali costituito da un valore standard di 5 $times$ 8 **dots**, codificati ASCII (la cui gestione da parte della ROM del modulo è visibile in figura).
+
+![Codifica ASCII e Gestione ROM LCD 2004](images/lcd2004/ascii_lcd.png)
+
+Il display presenta un'**interfaccia parallela** (visibile in figura) per la gestione della comunicazione con il microcontrollore, caratterizzata **da 16 pin**, utilizzata per inviare dati e/o segnali di controllo.
 Nello specifico, il modello scelto, supporta anche **moduli per la serializzazione**, come quelli utilizzati nell'implementazione del protocollo I2C, per ridurre il numero di connessioni MCU-LCD e semplificare l'invio di dati completi.
 
+![Interfaccia Parallela LCD 2004](images/lcd2004/parallel_int.png)
 
+![Caratteristiche dei pin LCD 2004](images/lcd2004/pin_funcs.png)
 
-### Sensore di temperatura e umidità TZT DHT22 [2]
+### Modulo per la Serializzazione - I2C Backpack [2]
 
-<img src='images/components/temp_hum_sensor.jpeg' alt='Sensore di umidità e temperatura DHT22' width='80' style='float: right; margin: 5px 10px;'>
+![I2C Backpack](images/i2c_backpack/module.jpeg)
+
+Si tratta di un modulo usato tipicamente per serializzare la comunicazione tra un microcontrollore e un altro device. Nel caso specifico, il modulo si presenta nella forma di un backpack da saldare al display (nel nostro caso era già saldato) e caratterizzato da quattro pin per il collegamento con il MCU:
+
+* due pin, rispettivamente **VCC** e **GND**, usati per l'alimentazione del modulo;
+* un pin, chiamato **SDA**, per l'invio dei dati serializzati;
+* un pin, chiamato **SCL**, per la sincronizzazione dei segnali di clock.
+
+A questi, si aggiungono altri 9 pin, di cui 8 usati come bus di dati e uno usato (eventualmente) per la gestione degli interrupt inviati dal MCU.
+
+Il modulo richiede una tensione di 5 V ed è provvisto di un potenziometro per il **controllo del contrasto** dei caratteri. Il controllo della luminosità è possibile via hardware, tramite una circuiteria *ad hoc*, o via software, tramite opportune istruzioni.
+
+### Sensore di temperatura e umidità TZT DHT22 [3]
+
+![Sensore di umidità e temperatura DHT22](images/dht22/module.jpeg)
 
 Il sensore permette il monitoraggio della temperatura e dell'umidità nell'ambiente circostante, ed è caratterizzato da un sensore di base della famiglia AM2302, che si caratterizza per la capacità di gestione di segnali digitali con una precisione di &pm;0.5 °C per la temperatura e di &pm;2% RH per l'umidità, rilevando valori di temperatura tra i -40°C e i +80°C e di umidità tra lo 0% e il 100%.
 
@@ -195,9 +215,13 @@ I dati trasmessi ad ogni ciclo sono un totale di 40 bit, di cui i primi 16 costi
 La conversione da sequenza di bit a dato numerico è piuttosto semplice: basterà **dividere il valore** (espresso in base decimale) **per 10**, così da ricavare **parte intera** e **parte frazionaria** della grandezza fisica (es. `0x028C` corrisponde a 652, da cui si ricava un valore di 65.2).
 Il calcolo della `sum`, in contrapposizione con la `checksum`, prevede che si separino i 32 bit misurati in byte, che si effettui la somma e che si consideri il byte finale. Se tale risultato è pari alla checksum, la trasmissione è avvenuta correttamente, altrimenti il contrario (es. `0x028C015F` produce una `sum` pari a `0xEE`).
 
-### Ventola di raffreddamento a 5V 2 pin
+### Bottone a Pressione
 
-<img src='images/components/cool_fan.jpg' alt='Ventola di raffreddamento' width='96' style='float: left; margin: 10px 10px;'>
+
+
+### Ventola di Raffreddamento 5V-2 pin
+
+![Ventola di raffreddamento](images/components/cool_fan.jpg)
 
 Si tratta di una ventola di dimensioni 60x60x10 mm, capace di lavorare a una tensione di 5V e garantire una velocità di rotazione di circa 3300 RPM, permettendo quindi un flusso d'aria di 13,8 CFM.
 
@@ -232,5 +256,6 @@ In questo senso, possibili espansioni riguardano l'inserimento di attuatori e se
 Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al codice di poter essere riutilizzato anche su altri dispositivi target, semplicemente variando alcuni parametri di configurazione opportunamenti astratti.
 
 # Bibliografia
-[2] *Digital relative humidity & temperature sensor AM2302
-AM2302/DHT22*, Liu T.
+[1] *"Specification For LCD Module 2004A"*, SHENZHEN EONE ELECTRONICS CO.,LTD
+[2] *"PCF8574; PCF8574A Remote 8-bit I/O expander for I2C-bus with interrupt Rev. 5"*, NXP Semiconductors
+[3] *"Digital relative humidity & temperature sensor AM2302 AM2302/DHT22"*, Liu T.
