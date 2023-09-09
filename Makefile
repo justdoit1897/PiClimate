@@ -5,13 +5,14 @@ clean:
 	rm -f final.f
 
 code.f:
-	cat ~/EmbeddedSystems_Proj_FT/basejonesforth.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/jonesforth.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/utils.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/gpio.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/timer.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/led.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/i2c.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/lcd.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/dht.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/button.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/main.f >> code.f
 	grep -v '^ *\\' code.f > final.f
-# cat lcd.f >> code.f
-# cat led.f >> code.f
-# cat pad.f >> code.f
-# cat hdmi.f >> code.f
-# cat timer.f >> code.f
-# cat button.f >> code.f
-# cat main.f >> code.f
-	
