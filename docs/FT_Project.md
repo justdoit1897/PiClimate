@@ -21,6 +21,7 @@
 |      Ventola$\ 5 \mathrm V$ DC      |     1     |
 |               Pulsanti               |     1     |
 | Resistori da$\ 10 \mathrm k \Omega$ |     1     |
+|        Cavo USB-A a Mini USB        |     1     |
 |            Cavetti Jumper            |   Q. B.   |
 
 ## Breadboard Schematic
