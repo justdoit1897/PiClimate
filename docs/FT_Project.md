@@ -935,8 +935,11 @@ Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al
 # References
 
 [1] *"BCM2835 ARM Peripherals"*, Broadcom Corporation
+
 [2] *"Specification For LCD Module 2004A"*, SHENZHEN EONE ELECTRONICS CO.
+
 [3] *"PCF8574; PCF8574A Remote 8-bit I/O expander for I2C-bus with interrupt Rev. 5"*, NXP Microelectronics
+
 [4] *"Digital relative humidity & temperature sensor AM2302/DHT22"*, Liu T.
 
 ## Flusso degli Eventi
