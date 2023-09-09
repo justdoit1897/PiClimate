@@ -578,23 +578,23 @@ HIDE WELCOME
 Il file è necessario in quanto contiene alcune funzioni utilizzate in tutto il resto dell'applicazione, evitando di scrivere codice superfluo.
 
 ```
-\ 
+ 
 \ ABS ( n -- |n| )
 \ Parola usata per sostituire un numero passato in input con il suo valore assoluto
-\ 
+
 : ABS DUP 0< IF -1 * THEN ;
-\ 
+ 
 \ BILS ( disp -- 1<<disp )
 \ Parola usata per generare un bit shiftato di un numero di posizioni passato in input
-\ 
+ 
 : BILS 1 SWAP LSHIFT ;
-\ 
+ 
 \ BIC ( a1 a2 -- a1&!a2 )
 \ Parola usata per eseguire un'operazione di bit-clear. Dati due valori in input, viene
 \ restituito il primo valore, in cui sono stati azzerati i bit posti a 1 del secondo valore.
-\ 
+ 
 : BIC INVERT AND ;
-\ 
+ 
 ```
 
 ### gpio.f
@@ -607,52 +607,50 @@ Il file è necessario in quanto abbiamo deciso che la gestione dei tempi meritas
 
 ```
 HEX
-\ 
+ 
 \ Per avere una gestione dei tempi quanto più real-time, usiamo il System Timer del RPi.
 \ È dotato di quattro registri a 32-bit (canali) per la gestione del tempo ed un contatore a 64-bit
 \ Ognuno dei canali è associato ad un registro di confronto dell'output, usato per un confronto con
 \ i 32 bit meno significativi del contatore. Quando i due valori coincidono, il System Timer genera un segnale
 \ che indica l'avvenuta coincidenza per un certo canale, passato in input al controller per gli interrupt
 \ L'indirizzo fisico (hardware) del System Timer per quest'implementazione è 0x20003000
-\ 
+ 
 RPI1_BASE 3000 +    CONSTANT TIMER_BASE
 TIMER_BASE 4 +      CONSTANT TIMER_COUNT
-\ 
+ 
 DECIMAL
-\ 
+ 
 \ MILLISECONDS ( ms -- us )
 \ Permette di convertire in microsecondi un numero di millisecondi passato in input
-\ 
+ 
 : MILLISECONDS 1000 * ;
-\ 
+ 
 \ SECONDS ( s -- us )
 \ Permette di convertire in microsecondi un numero di secondi passato in input
-\ 
+ 
 : SECONDS 1000 * MILLISECONDS ;
-\ 
+ 
 \ DELAY ( nops -- )
 \ Manda il sistema in uno stato di busy-wait per un numero di operazioni passato in input
 \ simulando un cronometro
-\ 
+ 
 : DELAY 
     BEGIN 
         1 - DUP
         0 =   
     UNTIL 
     DROP ;
-\ 
-: uS>mS 1000 / ;
-\ 
+
 \ CURRENT_TIME ( -- time )
 \ Permette di prelevare il valore di clock attuale del CLO_REGISTER 
-\ 
+ 
 : CURRENT_TIME ( -- time ) TIMER_COUNT @ ;
-\ 
+ 
 \ CLK_DELAY ( us -- )
 \ Pone il sistema in busy-wait per un certo numero di microsecondi passato in input
-\ 
+ 
 : CLK_DELAY CURRENT_TIME BEGIN 2DUP CURRENT_TIME - ABS SWAP > UNTIL 2DROP ;
-\ 
+ 
 ```
 
 ### led.f
@@ -685,78 +683,79 @@ Il file permette la gestione di un sensore DHT22/AM2302 secondo le modalità des
 
 ```
 DECIMAL
-\ 
+ 
 \ Definizione di costanti legate al sensore in uso, tra cui umidità minima, umidità massima,
 \ temperatura minima e temperatura massima registrabili
-\ 
+ 
 -40                 CONSTANT MIN_TEMP
 80                  CONSTANT MAX_TEMP
 0                   CONSTANT MIN_HUM
 100                 CONSTANT MAX_HUM
-\ 
+ 
 \ Definizione di variabili usate per contenere i dati raccolti
-\ 
+ 
 \ Dati e checksum
 VARIABLE DATA
 VARIABLE CHECKSUM
-\ 
+ 
 \ Parti intere e parti decimali di umidità e temperatura
-\ 
+ 
 VARIABLE HUMIDITY_IP
 VARIABLE HUMIDITY_DP
 VARIABLE TEMPERATURE_IP
 VARIABLE TEMPERATURE_DP
-\ 
+ 
 \ Definizione di costanti legate alla connessione sensore-microcontrollore, nello specifico
 \ maschera di FSEL per il pin in uso, valore da scrivere in GPFSEL per il pin in uso e per le 
 \ modalità input e output e registro GPFSEL associato al pin in uso.
-\ 
+ 
 GPIO18 FSEL          CONSTANT GPIO18_FSEL
 GPIO18 OUT MODE      CONSTANT GPIO18_OUT
 GPIO18 INP MODE      CONSTANT GPIO18_INP
 GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
-\ 
+ 
 \ WAIT_PULLDOWN ( n_gpio --  )
 \ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 1 a 0 nel
 \ registro GPLEV e sul bit associati al pin cui è collegato il sensore
-\ 
+ 
 : WAIT_PULLDOWN 
     BEGIN 
         DUP PIN_LEVEL 
         0 = WHILE 
     REPEAT 
     DROP ;
-\ 
+ 
 \ WAIT_PULLUP ( n_gpio --  )
 \ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 0 a 1 nel
 \ registro GPLEV e sul bit associati al pin cui è collegato il sensore
-\ 
+ 
 : WAIT_PULLUP 
     BEGIN 
         DUP PIN_LEVEL 
         1 = WHILE 
     REPEAT 
     DROP ;
-\  
+  
 \ DHT_PIN_OUT ( -- )
 \ Scorciatoia per settare i parametri utili ad impostare la FSEL per il pin utilizzato in modalità output
-\ 
+ 
 : DHT_PIN_OUT GPIO18_FSEL GPIO18_OUT GPIO18_GPFSEL ;
-\ 
+ 
 \ DHT_OUT ( -- )
 \ Imposta il pin in modalità output
-\ 
+ 
 : DHT_OUT DHT_PIN_OUT ENABLE_PIN ;
-\  
+  
 \ DHT_PIN_INP ( -- )
 \ Scorciatoia per settare i parametri utili ad impostare la FSEL per il pin utilizzato in modalità input
-\ 
+ 
 : DHT_PIN_INP GPIO18_FSEL GPIO18_INP GPIO18_GPFSEL ;
-\ 
+ 
 \ DHT_INPUT ( -- )
 \ Imposta il pin in modalità input
-\ 
+ 
 : DHT_INPUT DHT_PIN_INP ENABLE_PIN ;
+
 \ SETUP_SENSOR (  --  )
 \ Esegue le istruzioni necessarie a mandare lo start signal al sensore, necessario al rilevamento da parte di
 \ quest'ultimo. Nello specifico:
@@ -764,26 +763,26 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \ - attiva il bit associato al pin nel GPCLR opportuno e attende 1 ms
 \ - attiva il bit associato al pin nel GPSET opportuno
 \ - imposta il pin in input mode
-\ 
+ 
 : SETUP_SENSOR 
     DHT_OUT
     GPIO18 DUP GPCLR !
     1 MILLISECONDS CLK_DELAY
     GPIO18 DUP GPSET !
     DHT_INPUT ;
-\ 
+ 
 \ READ_BIT ( -- )
 \ Viene usata per determinare se il sensore ha inviato al MCU uno 0 o un 1.
 \ Calcoliamo la differenza tra il momento in cui avviene un pullup (fine dell'inizio trasmissione)
 \ e quello, precedente, in cui è avvenuto un pulldown, che dev'essere almeno di 50 us, 
 \ la soglia che permette di affermare se è stato trasmesso uno 0 o un 1.
-\ 
+ 
 : READ_BIT DUP WAIT_PULLDOWN TIMER_COUNT @ SWAP WAIT_PULLUP TIMER_COUNT @ SWAP - 50 > IF 1 ELSE 0 THEN ;
-\ 
+ 
 \ READ_DATA ( -- )
 \ Viene usata per effettuare la lettura di 40 bit per volta, conservando i primi 32 come dati effettivi nella
 \ variabile DATA, mentre gli altri 8 saranno usati come checksum nella variabile omonima.
-\ 
+ 
 : READ_DATA 
     GPIO18 N_GPIO DUP DUP DUP WAIT_PULLDOWN WAIT_PULLUP
     39 BEGIN
@@ -796,10 +795,10 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
         OR SWAP !
         1 - DUP 0 >
     WHILE REPEAT 2DROP ;
-\ 
+ 
 \ GET_HUMIDITY ( -- )
 \ Viene usata per ricavare la parte intera e la parte frazionaria dell'umidità dalla variabile DATA
-\ 
+ 
 : GET_HUMIDITY 
     DATA @ 16 RSHIFT 10 /MOD DUP DUP MIN_HUM >= SWAP MAX_HUM <= AND
     IF
@@ -808,10 +807,10 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
     ELSE
         2DROP
     THEN ;
-\ 
+ 
 \ GET_TEMPERATURE ( -- )
 \ Viene usata per ricavare la parte intera e la parte frazionaria della temperatura dalla variabile DATA
-\ 
+ 
 : GET_TEMPERATURE 
     DATA @ 65535 AND 10 /MOD DUP DUP MIN_TEMP >= SWAP MAX_TEMP <= AND
     IF
@@ -820,32 +819,32 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
     ELSE
         2DROP
     THEN ;
-\ 
+ 
 \ GET_READING ( -- )
 \ Parola comprensiva per ricavare i valori interi e decimali di temperatura e umidità
-\ 
+ 
 : GET_READING GET_HUMIDITY GET_TEMPERATURE ;
-\ 
+ 
 \ HUMIDITY>CMD ( -- )
 \ Parola usata per stampare su riga di comando il valore di umidità ricavato
-\ 
+ 
 : HUMIDITY>CMD S" Humidity: " PRINT_STR HUMIDITY_IP ? S" . " PRINT_STR HUMIDITY_DP ? S" %" PRINT_STR ;
-\ 
+ 
 \ TEMPERATURE>CMD ( -- )
 \ Parola usata per stampare su riga di comando il valore di temperatura ricavato
-\ 
+ 
 : TEMPERATURE>CMD S" Temperature: " PRINT_STR TEMPERATURE_IP ? S" . " PRINT_STR TEMPERATURE_DP ? S" *C" PRINT_STR ;
-\ 
+ 
 \ DHT>CMD ( -- )
 \ Parola comprensiva per stampare su riga di comando i valori di temperatura e di umidità ricavati
-\ 
+ 
 : DHT>CMD TEMPERATURE>CMD S"  - " PRINT_STR HUMIDITY>CMD CR ;
-\ 
+ 
 \ MEASURE ( -- )
 \ Parola comprensiva per l'esecuzione dell'intero processo per una singola misurazione del sensore
-\ 
+ 
 : MEASURE 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD DROP ;
-\ 
+ 
 ```
 
 ### button.f
@@ -854,25 +853,25 @@ Il file permette di utilizzare il pulsante di reset previsto dal sistema. Contie
 
 ```
 HEX
-\ 
+ 
 \ Definizione di costanti per il setting del registro GPPUD
-\ 
+ 
 1                   CONSTANT DOWN
 2                   CONSTANT UP
-\ 
+ 
 \ Definizione di costanti per la gestione del GPIO associato al bottone di reset
-\ 
+ 
 GPIO8               CONSTANT RESET_BTN
 GPIO8 FSEL          CONSTANT GPIO8_FSEL
 GPIO8 INP MODE      CONSTANT GPIO8_INPUT
 GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
-\ 
+ 
 \ RESET_PIN ( -- fsel input_mode gpfsel )
 \ Permette di caricare sullo stack le informazioni per impostare il pin associato
 \ al bottone di reset in modalità input
-\ 
+ 
 : RESET_PIN GPIO8_FSEL GPIO8_INPUT GPIO8_GPFSEL ;
-\ 
+ 
 \ SET_PULL ( gpio pud --  )
 \ Permette di eseguire le operazioni necessarie all'impostazione di un pin passato in input
 \ in pull-up/pull-down (modalità passata in input). Avendo utilizzato un modello precedente al 4
@@ -885,7 +884,7 @@ GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
 \ Dal momento che il pulsante dev'essere in pullup perpetuo, vengono omesse le ultime due fasi:
 \ 5. scrivere nel registro GPPUD per rimuovere il segnale di controllo
 \ 6. scrivere nel registro GPPUDCLK0/1 per rimuovere il clock
-\ 
+ 
 : SET_PULL
     GPPUD !
     150 MILLISECONDS DELAY
@@ -895,26 +894,26 @@ GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
     OR OVER !
     150 MILLISECONDS DELAY
     R> SWAP ! ;
-\ 
+ 
 \ INIT_BTN ( -- )
 \ Permette di inizializzare il pulsante di reset, abilitando la modalità di input sul pin associato,
 \ impostando per esso la modalità pull-up e attivando due registri per l'individuazione di eventi:
 \ GPREN0 (per il rilevamento di innalzamenti di tensione, ossia transizioni del tipo '011') e GPFEN0
 \ (per il rilevamento di abbassamenti di tensione, ossia transizioni del tipo '100').
-\ 
+ 
 : INIT_BTN ( -- )
     RESET_PIN ENABLE
     RESET_BTN UP SET_PULL
     RESET_BTN GPREN0 !
     RESET_BTN GPFEN0 ! ;
-\ 
+ 
 \ IS_CLICKED ( gpio --  )
 \ Parola che permette di controllare se un evento è stato registrato per il pin associato. L'evento,
 \ se esiste, viene scritto nel registro GPEDS0 al bit corrispondente dopo che viene rilevata una transizione
 \ '010', motivo per cui devono essere stati abilitati i bit corrispondenti nei registri GPREN0 e GPFEN0.
-\ 
+ 
 : IS_CLICKED DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF 0 ELSE 1 THEN ;
-\ 
+ 
 ```
 
 ### main.f
