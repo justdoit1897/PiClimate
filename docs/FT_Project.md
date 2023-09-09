@@ -6,15 +6,15 @@ I software embedded rappresentano il cuore invisibile di molte delle tecnologie 
 
 **Progetto Embedded per la Gestione della Temperatura e dell'Umidità in una Sala Server:**
 
-Immagina una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. La temperatura e l'umidità in questa sala devono essere attentamente monitorate e regolate per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa. Qui entra in gioco un progetto embedded dedicato alla gestione di questi parametri ambientali cruciali.
+Immaginiamo una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. La temperatura e l'umidità in questa sala devono essere attentamente monitorate e regolate per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa. Qui entra in gioco un progetto embedded dedicato alla gestione di questi parametri ambientali cruciali.
 
 Questo sistema embedded è progettato per:
 
 1. **Monitoraggio Costante** : Utilizza sensori di temperatura e umidità per monitorare costantemente le condizioni all'interno della sala server.
 2. **Controllo Automatico** : In base ai dati raccolti dai sensori, il sistema può attivare o disattivare sistemi di raffreddamento o umidificatori per mantenere le condizioni ottimali.
-3. **Allarmi e Notifiche** : Se il sistema rileva condizioni fuori norma, può generare allarmi e notifiche per il personale responsabile, consentendo di reagire rapidamente a eventuali problemi.
-4. **Interfaccia Utente** : Fornisce un'interfaccia utente per la supervisione e il controllo manuale, consentendo agli amministratori di intervenire quando necessario.
-5. **Archiviazione Dati** : Registra e archivia i dati ambientali nel tempo, consentendo l'analisi delle tendenze e la conformità alle normative.
+3. **Allarmi e Notifiche** : Se il sistema rileva condizioni fuori norma, può generare allarmi visivi per il personale responsabile, consentendo di reagire rapidamente a eventuali problemi.
+4. ~~**Interfaccia Utente** : Fornisce un'interfaccia utente per la supervisione e il controllo manuale, consentendo agli amministratori di intervenire quando necessario.~~
+5. ~~**Archiviazione Dati** : Registra e archivia i dati ambientali nel tempo, consentendo l'analisi delle tendenze e la conformità alle normative.~~
 
 Questo progetto embedded rappresenta un esempio concreto di come i sistemi embedded siano essenziali per garantire l'affidabilità delle infrastrutture tecnologiche moderne. La sua capacità di monitorare e gestire in modo autonomo le condizioni ambientali contribuisce in modo significativo alla continuità operativa delle aziende e alla protezione delle risorse informatiche critiche.
 
@@ -308,13 +308,13 @@ Per la fase di sviluppo sono stati utilizzati:
 
 ## pijFORTHos
 
-Gli interpreti FORTH possono essere facilmente implementati su macchine con risorse limitate senza la necessità di un sistema operativo, rendendoli particolarmente adatti per lo sviluppo interattivo "bare-metal". 
+Gli interpreti FORTH possono essere facilmente implementati su macchine con risorse limitate senza la necessità di un sistema operativo, rendendoli particolarmente adatti per lo sviluppo interattivo "bare-metal".
 
 L'ambiente **pijFORTHos** si basa su un interprete FORTH in assembly chiamato **JonesForth**, inizialmente sviluppato per l'architettura i686 da Richard WM Jones.
 
 JonesForth è noto per la sua semplicità ed è stato adattato con successo a numerose architetture diverse. Uno di questi adattamenti, noto come Jonesforth-ARM, ha portato all'implementazione di un interprete FORTH "bare-metal" per il Raspberry Pi, noto come **pijFORTHos**.
 
-Questo interprete non solo permette l'esecuzione di codice FORTH direttamente sulla piattaforma Raspberry Pi, ma consente anche la connessione con altre macchine attraverso la console seriale del Raspberry Pi. 
+Questo interprete non solo permette l'esecuzione di codice FORTH direttamente sulla piattaforma Raspberry Pi, ma consente anche la connessione con altre macchine attraverso la console seriale del Raspberry Pi.
 
 Questa capacità di comunicazione seriale offre un'interessante opportunità per il controllo e la comunicazione remota con il Raspberry Pi, rendendo **pijFORTHos** un ambiente versatile per lo sviluppo e l'interazione con il sistema embedded.
 
@@ -376,7 +376,7 @@ Inoltre, l'uso di `ascii-xfr` indica che verrà utilizzato un protocollo di tras
 #!/bin/bash
 
 DEVICE=/dev/ttyUSB0 
-BAUD=115200    
+BAUD=115200  
 
 sudo picocom -b $BAUD -r -l $DEVICE --imap delbs -s "ascii-xfr -sv -l100 -c10"
 ```
@@ -424,7 +424,7 @@ Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in
 2. L'utente **carica**, secondo le modalità descritte in precedenza, **il codice sorgente** completo dell'applicazione
 3. Il sistema entra **immediatamente in modalità di misurazione**, monitorando ogni 2 secondi le condizioni ambientali e controllando che il pulsante dedicato per il reset del sistema non sia stato premuto.
    1. Se l'utente **preme il pulsante** di reset:
-      1. il sistema esce dalla fase di monitoraggio 
+      1. il sistema esce dalla fase di monitoraggio
       2. il sistema ritorna al passo 1.
    2. Altrimenti, il sistema controlla che i valori registrati di temperatura e umidità siano **entro le condizioni operative ottimali**:
       1. Se i valori di una o dell'altra quantità sono fuori scala:
@@ -433,7 +433,7 @@ Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in
 
 ## Codice
 
-L'approccio seguito in fase di scrittura del software prevede la produzione di moduli a sé stanti, con la condizione di essere caricati solo successivamente ad alcuni file essenziali per la definizione di funzioni di utilità e costanti di interfacciamento con il microcontrollore. 
+L'approccio seguito in fase di scrittura del software prevede la produzione di moduli a sé stanti, con la condizione di essere caricati solo successivamente ad alcuni file essenziali per la definizione di funzioni di utilità e costanti di interfacciamento con il microcontrollore.
 
 ### Makefile
 
@@ -459,7 +459,7 @@ code.f:
 
 ### jonesforth.f
 
-Il file è necessario in quanto contiene parole normalmente definite in FORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel <a href='https://github.com/organix/pijFORTHos'>repository</a> su github.com.
+Il file è necessario in quanto contiene parole normalmente definite in FORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel `<a href='https://github.com/organix/pijFORTHos'>`repository`</a>` su github.com.
 
 ```
 : '\n' 10 ;
@@ -637,7 +637,7 @@ DECIMAL
 : DELAY 
     BEGIN 
         1 - DUP
-        0 =     
+        0 =   
     UNTIL 
     DROP ;
 \ 
