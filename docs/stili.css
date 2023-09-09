@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
 
+* {
+    font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+}
+
 img {
     display: block;
     margin-left: auto;
@@ -9,6 +13,7 @@ img {
 table {
     width: 100%;
     border-collapse: collapse;
+    margin-inline: auto;
   }
   
 table tr:nth-of-type(odd) {

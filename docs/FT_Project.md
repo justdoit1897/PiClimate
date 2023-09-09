@@ -21,7 +21,6 @@
 |      Ventola$\ 5 \mathrm V$ DC      |     1     |
 |               Pulsanti               |     1     |
 | Resistori da$\ 10 \mathrm k \Omega$ |     1     |
-|         Cavo USB-A a Mini USB         |     1     |
 |            Cavetti Jumper            |   Q. B.   |
 
 ## Breadboard Schematic
@@ -43,7 +42,7 @@ Specifiche di sistema:
 * SoC Broadcom BCM2835
 * CPU ARM1176JZF-S core a $700 \mathrm{MHz}$
 * GPU Broadcom VideoCore IV
-* $512 \mathrm {MB}$
+* 512 MB RAM
 * 2 Porte USB 2.0
 * Video Output Composito (PAL e NTSC), HDMI o LCD diretto (DSI)
 * Audio Output tramite Jack $3.5 \mathrm{mm}$ o Audio over HDMI
@@ -170,10 +169,10 @@ Tuttavia, c'è un aspetto cruciale da tenere a mente: la necessità di una resis
 
 Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono pilotati i LED:
 
-|  LED  |      Raspberry Pi Pin      |
-| :---: | :-------------------------: |
-|  RED  | GPIO23 (tramite Breadboard) |
-| GREEN | GPIO24 (tramite Breadboard) |
+|  LED  | Raspberry Pi Pin |
+| :---: | :---------------: |
+|  RED  |      GPIO23      |
+| GREEN |      GPIO24      |
 
 ### Pulsante
 
