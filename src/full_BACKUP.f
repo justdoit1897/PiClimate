@@ -515,8 +515,6 @@ VARIABLE STR_LEN
     UNTIL
     DROP ;
 
-\ : HUMIDITY>CMD S" Humidity: " HUMIDITY_IP ? S" . " HUMIDITY_DP ? S" %" PRINT_STR ;
-
 : SUBJECT ( -- )
     CLEAR_DISPLAY CMD >LCD
     ROW2 CMD 2 SET_CURSOR S" Embedded Systems" PRINT_STR

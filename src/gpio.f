@@ -65,8 +65,9 @@ DECIMAL
 
 \ *** Word(s) ***
 
-\ Questa word ha lo scopo di prelevare il valore in cima al TOS, corrispondente alla maschera per il pin GPIO n, e di restituire un numero 
-\ decimale corrispondente alla rappresentazione numerica del bit più significativo impostato a 1 nella maschera. È l'inver
+\ Questa word ha lo scopo di prelevare il valore in cima al TOS, corrispondente alla maschera per il pin GPIO n, e di restituire 
+\ un numero decimale corrispondente alla rappresentazione numerica del bit più significativo impostato a 1 nella maschera.
+\ È l'operazione inversa a BILS.
 
 ( gpio_mask -- gpio_number )
 : N_GPIO 
@@ -80,6 +81,9 @@ DECIMAL
         DUP 2 = 
     UNTIL 
     DROP 1+ ;
+
+\ Questa word ha lo scopo di prelevare il valore in cima al TOS, corrispondente alla maschera per il pin GPIO n, e di ritornare
+\ un numero decimale corrispondente alla rappresentazione numerica del bit meno significativo
 
 ( gpio_mask -- gpio_lsb )
 : GPIO_LSB N_GPIO 10 MOD 3 * ;
@@ -121,12 +125,15 @@ DECIMAL
         0
     THEN ;
 
-\ **** Abilitazione GPIO ****
+\ **** Impostazione GPIO ****
+
+\ Variabili
+
+VARIABLE TIMES
 
 \ Word(s)
 
-\ QUESTA WORD HA LO SCOPO DI EFFETTUARE UNA SET FUNCTION PER IL PIN GPIOn
-\ AD ESEMPIO POSSO SETTARE IL PIN GPIO23 IN MODALITÀ OUTPUT
+\ Questa word ha lo scopo di effettuare una SET FUNCTION per il pin GPIOn.
 ( GPIOn_FSEL GPIOn_XMODE GPFSELm -- )
 : ENABLE_PIN
     DUP                 ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 GPFSEL2 )
@@ -138,16 +145,21 @@ DECIMAL
     OR 
     R> ! ;          
 
-\ QUESTA WORD HA LO SCOPO DI EFFETTUARE UNA CLEAR FUNCTION PER IL PIN GPIOn
-( GPIOn_FSEL GPIOn_XMODE GPFSELm -- )
+\ Questa word è opposta alla funzione ENABLE_PIN ed ha lo scopo di effettuare una CLEAR FUNCTION per il pin GPIOn.
+( fsel_n mode_n gpfsel_n -- )
 : DISABLE_PIN
     NIP
     DUP >R
     @ SWAP BIC
     R> ! ;
 
-VARIABLE TIMES
-
+\ Questa word ha lo scopo di effettuare una SET FUNCTION per un serie di pin GPIO un numero di volte specificato 
+\ dalla costante TIMES. Partendo dalla considerazione che la word ENABLE_PIN richiede che siano presenti 3 elementi 
+\ sullo stack, viene calcolata la divisione intera tra la profondità dello stack e 3 e il risultato viene memorizzato
+\ nella variabile TIMES. All'interno del ciclo BEGIN...UNTIL viene richiamata la word ENABLE_PIN per attivare uno specifico
+\ pin, viene decrementato il valore di TIMES di 1 ad ogni iterazione e viene verificato se la condizione di uscita è soddisfatta
+\ per interrompere il ciclo.
+( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )
 : ACTIVATE 
     DEPTH 3 /
     TIMES !
@@ -157,6 +169,9 @@ VARIABLE TIMES
         TIMES @ 0=                          \ CONDIZIONE DI USCITA
     UNTIL ;
 
+\ Questa word è opposta alla funzione ACTIVATE ed ha lo scopo di effettuare una CLEAR FUNCTION per un serie di pin GPIO un 
+\ numero di volte specificato dalla costante TIMES.
+( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )
 : DEACTIVATE
     DEPTH 3 /
     TIMES !
@@ -165,3 +180,4 @@ VARIABLE TIMES
         TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
         TIMES @ 0=                          \ CONDIZIONE DI USCITA
     UNTIL ;
+
