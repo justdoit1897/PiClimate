@@ -2,7 +2,7 @@
 
 # Introduzione
 
-I sistemi embedded rappresentano il cuore invisibile di molte delle tecnologie che utilizziamo quotidianamente. Sono sistemi specializzati, incorporati in dispositivi elettronici e macchinari industriali, progettati per eseguire specifiche funzioni senza l'interfaccia di un utente. Questi sistemi sono onnipresenti, dall'elettronica domestica agli impianti industriali, e forniscono l'automazione e il controllo necessari per semplificare le nostre vite e migliorare l'efficienza in molti settori.
+I software embedded rappresentano il cuore invisibile di molte delle tecnologie che utilizziamo quotidianamente. Sono software specializzati, incorporati in dispositivi elettronici e macchinari industriali, progettati per eseguire specifiche funzioni senza l'interfaccia di un utente. Questi sistemi sono onnipresenti, dall'elettronica domestica agli impianti industriali, e forniscono l'automazione e il controllo necessari per semplificare le nostre vite e migliorare l'efficienza in molti settori.
 
 **Progetto Embedded per la Gestione della Temperatura e dell'Umidità in una Sala Server:**
 
@@ -254,16 +254,9 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono p
 
 Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli. Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pull-Prima di immergerci nel codice sorgente e nelle specifiche implementazioni tecniche, è essenziale stabilire una base solida di comprensione del flusso degli eventi del progetto. Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in prospettiva le diverse parti del progetto e a chiarire l'ordine sequenziale in cui avvengono gli eventi.up (il cui schema esemplificativo è presentato in figura), per cui, in fase di riposo (pulsante non premuto), la corrente può circolare, permettendo al sistema di funzionare, mentre, a seguito di una pressione, viene effettuata un'azione bloccante rispetto alla corrente, che impedisce al sistema di funzionare, mandandolo in reset.
 
-
 <img src='https://global.discourse-cdn.com/nvidia/original/3X/b/8/b886440071a627ea9efbae5b2638a8625214d9ca.png' width="320" style='float:right; margin-right: 10px; border: 1px solid; margin-right: 15px'>
 
-
-
-
-
-
-
-Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono pilotati i LED:
+Nella tabella sottostante sono riportati i pin GPIO attraverso i quali viene pilotato il pulsante:
 
 | Button Pin | Raspberry Pi Pin |
 | :--------: | :---------------: |
@@ -280,10 +273,6 @@ Si tratta di una ventola di dimensioni 60x60x10 mm, utilizzata per dissipare il 
 1. **GND (Ground)** : Questo pin è collegato alla terra e serve come riferimento elettrico per il circuito della ventola.
 2. **VCC (Voltage Common Collector)** : Questo pin fornisce l'alimentazione elettrica alla ventola e deve essere collegato a una sorgente di alimentazione a 5V per far funzionare correttamente la ventola.
 3. **GPIO (General-Purpose Input/Output)** : Questo pin è utilizzato per controllare la ventola. Può essere collegato a una porta GPIO di un microcontrollore o di un computer, come il Raspberry Pi, per regolare la velocità della ventola o attivarla/disattivarla in base alle necessità di raffreddamento.
-
-
-
-
 
 La ventola è connessa al Pi secondo la seguente configurazione:
 
@@ -304,6 +293,8 @@ Nella tabella sottostante, vi è riassunta la panoramica dei pin GPIO utilizzati
 | GPIO2 / SDA1 | ALT0 / SDA1 |       LCD2004       |
 | GPIO3 / SCL1 | ALT0 / SCL1 |       LCD2004       |
 |    GPIO8    |    INPUT    |       BUTTON       |
+|    GPIO14    |     TX     |  UART Transmitter  |
+|    GPIO15    |     RX     |    UART Receiver    |
 |    GPIO18    |    INPUT    |    DHT22/AM2302    |
 |    GPIO23    |   OUTPUT   |      LED Rosso      |
 |    GPIO24    |   OUTPUT   | LED Verde / Ventola |
@@ -316,6 +307,16 @@ Per la fase di sviluppo sono stati utilizzati:
 * Interprete FORTH per soluzioni bare-metal [pijFORTHos](https://github.com/organix/pijFORTHos).
 
 ## pijFORTHos
+
+Gli interpreti FORTH possono essere facilmente implementati su macchine con risorse limitate senza la necessità di un sistema operativo, rendendoli particolarmente adatti per lo sviluppo interattivo "bare-metal". 
+
+L'ambiente **pijFORTHos** si basa su un interprete FORTH in assembly chiamato **JonesForth**, inizialmente sviluppato per l'architettura i686 da Richard WM Jones.
+
+JonesForth è noto per la sua semplicità ed è stato adattato con successo a numerose architetture diverse. Uno di questi adattamenti, noto come Jonesforth-ARM, ha portato all'implementazione di un interprete FORTH "bare-metal" per il Raspberry Pi, noto come **pijFORTHos**.
+
+Questo interprete non solo permette l'esecuzione di codice FORTH direttamente sulla piattaforma Raspberry Pi, ma consente anche la connessione con altre macchine attraverso la console seriale del Raspberry Pi. 
+
+Questa capacità di comunicazione seriale offre un'interessante opportunità per il controllo e la comunicazione remota con il Raspberry Pi, rendendo **pijFORTHos** un ambiente versatile per lo sviluppo e l'interazione con il sistema embedded.
 
 ## Preparazione Ambiente di Sviluppo
 
@@ -359,7 +360,26 @@ In alternativa, è possibile utilizzare **picocom** attraverso il comando `sudo 
 * `--imap delbs` per usare il backspace per cancellare caratteri
 * `-s "ascii-xfr -sv -l100 -c10"` permette di specificare il protocollo ASCII-XFR per lo scambio di file, con un ritardo di 100 ms tra l'invio di una riga e l'altra e un intervallo di 10 ms tra l'invio di un carattere e l'altro.
 
-### Creazione `avvio_picocom.sh`
+### Automatizzazione della Connessione Seriale con Picocom: `avvio_picocom.sh`
+
+Il seguente script Bash svolge un ruolo fondamentale nella gestione di una connessione seriale tramite il programma Picocom, uno strumento molto utile quando si lavora con dispositivi embedded o hardware, poiché consente di stabilire una comunicazione seriale tra un computer host e il dispositivo target.
+
+In questo script, definiamo alcune variabili chiave che determinano i parametri della connessione seriale. Il dispositivo di destinazione è specificato come **/dev/ttyUSB0**, che è spesso utilizzato per rappresentare una porta seriale USB su sistemi Linux.
+
+La **velocità di trasmissione** (BAUD) è impostata su **115200 bit al secondo**, un valore comune nelle comunicazioni seriali.
+
+Il comando principale all'interno dello script è l'invocazione di Picocom con le opzioni appropriate per stabilire la connessione seriale. In particolare, notiamo l'uso del flag `-r`, che abilita la registrazione della sessione seriale in un file di log, e l'opzione `--imap delbs`, che specifica come gestire i caratteri di cancellazione "Backspace" nella comunicazione.
+
+Inoltre, l'uso di `ascii-xfr` indica che verrà utilizzato un protocollo di trasferimento dati ASCII durante la comunicazione seriale, il che può essere particolarmente utile per il trasferimento di dati tra il computer host e il dispositivo target.
+
+```
+#!/bin/bash
+
+DEVICE=/dev/ttyUSB0 
+BAUD=115200    
+
+sudo picocom -b $BAUD -r -l $DEVICE --imap delbs -s "ascii-xfr -sv -l100 -c10"
+```
 
 ## Preparazione della Scheda SD e dell'Interprete
 
@@ -392,7 +412,6 @@ kernel.img
 
 # Software
 
-
 ## Flusso di Lavoro
 
 Prima di immergerci nel codice sorgente e nelle specifiche implementazioni tecniche, è essenziale stabilire una base solida di comprensione del **flusso di lavoro** del progetto.
@@ -401,13 +420,174 @@ Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in
 
 **ESEMPIO:**
 
-1. Il sistema è in modalità di attesa, monitorando costantemente il pulsante dedicato per l'apertura o la chiusura del cancello.
-2. Quando l'utente preme il pulsante di apertura, il sistema apre automaticamente il cancello.
-3. Il sistema monitora costantemente il sensore di movimento lungo il percorso di chiusura del cancello.
-4. Se il sensore di movimento rileva un movimento nell'area del cancello durante la chiusura, il sistema arresta immediatamente la chiusura del cancello per evitare collisioni.
-5. Gli utenti autorizzati possono premere il pulsante di chiusura per chiudere manualmente il cancello.
+1. All'accensione, il sistema avvia automaticamente l'interprete pijFORTHos, fornendo una shell interattiva all'utente
+2. L'utente **carica**, secondo le modalità descritte in precedenza, **il codice sorgente** completo dell'applicazione
+3. Il sistema entra **immediatamente in modalità di misurazione**, monitorando costantemente le condizioni ambientali e controllando che il pulsante dedicato per il reset del sistema non sia stato premuto.
+   1. Se l'utente **preme il pulsante** di reset:
+      1. il sistema esce dalla fase di monitoraggio 
+      2. il sistema ritorna al passo 1.
+   2. Altrimenti, il sistema controlla che i valori registrati di temperatura e umidità siano **entro le condizioni operative ottimali**:
+      1. Se i valori di una o dell'altra quantità sono fuori scala:
+         1. il sistema mostra feedback visivi (tramite i LED e il display) del problema
+         2. il sistema attiva la ventola di areazione finché non vengono rilevati valori normali
 
 ## Codice
+
+L'approccio seguito in fase di scrittura del software prevede la produzione di moduli a sé stanti, con la condizione di essere caricati solo successivamente ad alcuni file essenziali per la definizione di funzioni di utilità e costanti di interfacciamento con il microcontrollore. 
+
+### Makefile
+
+Per il deployment del sistema completo è stato realizzato un semplice makefile che concatena tutti i singoli file nell'ordine corretto e, per non appesantire il trasferimento all'interno del MCU, elimina tutti i commenti all'interno del sorgente completo, come si evince dal seguente listato
+
+```
+all: code.f
+
+clean:
+	rm -f code.f
+	rm -f final.f
+
+code.f:
+	cat ./src/useful_jf.f >> code.f
+	cat ./src/utils.f >> code.f
+	cat ./src/gpio_FT.f >> code.f
+	cat ./src/timer.f >> code.f
+	cat ./src/dht_sensor.f >> code.f
+	grep -v '^ *\\' code.f > final.f
+```
+
+**DEFINIRE LISTA E NOMI FILE IN SEGUITO**
+
+### jonesforth.f
+
+Il file è necessario in quanto contiene parole normalmente definite in FORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel <a href='https://github.com/organix/pijFORTHos'>repository</a> su github.com.
+
+```
+: '\n' 10 ;
+: BL 32 ;
+: ':' [ CHAR : ] LITERAL ;
+: ';' [ CHAR ; ] LITERAL ;
+: '(' [ CHAR ( ] LITERAL ;
+: ')' [ CHAR ) ] LITERAL ;
+: '"' [ CHAR " ] LITERAL ;
+: 'A' [ CHAR A ] LITERAL ;
+: '0' [ CHAR 0 ] LITERAL ;
+: '-' [ CHAR - ] LITERAL ;
+: '.' [ CHAR . ] LITERAL ;
+: ( IMMEDIATE 1 BEGIN KEY DUP '(' = IF DROP 1+ ELSE ')' = IF 1- THEN THEN DUP 0= UNTIL DROP ;
+: SPACES ( n -- ) BEGIN DUP 0> WHILE SPACE 1- REPEAT DROP ;
+: WITHIN -ROT OVER <= IF > IF TRUE ELSE FALSE THEN ELSE 2DROP FALSE THEN ;
+: ALIGNED ( c-addr -- a-addr ) 3 + 3 INVERT AND ;
+: ALIGN HERE @ ALIGNED HERE ! ;
+: C, HERE @ C! 1 HERE +! ;
+: S" IMMEDIATE ( -- addr len )
+	STATE @ IF
+		' LITS , HERE @ 0 ,
+		BEGIN KEY DUP '"'
+                <> WHILE C, REPEAT
+		DROP DUP HERE @ SWAP - 4- SWAP ! ALIGN
+	ELSE
+		HERE @
+		BEGIN KEY DUP '"'
+                <> WHILE OVER C! 1+ REPEAT
+		DROP HERE @ - HERE @ SWAP
+	THEN
+;
+: ." IMMEDIATE ( -- )
+	STATE @ IF
+		[COMPILE] S" ' TELL ,
+	ELSE
+		BEGIN KEY DUP '"' = IF DROP EXIT THEN EMIT AGAIN
+	THEN
+;
+: DICT WORD FIND ;
+: VALUE ( n -- ) WORD CREATE DOCOL , ' LIT , , ' EXIT , ;
+: TO IMMEDIATE ( n -- )
+        DICT >DFA 4+
+	STATE @ IF ' LIT , , ' ! , ELSE ! THEN
+;
+: +TO IMMEDIATE
+        DICT >DFA 4+
+	STATE @ IF ' LIT , , ' +! , ELSE +! THEN
+;
+: ID. 4+ COUNT F_LENMASK AND BEGIN DUP 0> WHILE SWAP COUNT EMIT SWAP 1- REPEAT 2DROP ;
+: ?HIDDEN 4+ C@ F_HIDDEN AND ;
+: ?IMMEDIATE 4+ C@ F_IMMED AND ;
+: WORDS LATEST @ BEGIN ?DUP WHILE DUP ?HIDDEN NOT IF DUP ID. SPACE THEN @ REPEAT CR ;
+: FORGET DICT DUP @ LATEST ! HERE ! ;
+: CFA> LATEST @ BEGIN ?DUP WHILE 2DUP SWAP < IF NIP EXIT THEN @ REPEAT DROP 0 ;
+: SEE
+	DICT HERE @ LATEST @
+	BEGIN 2 PICK OVER <> WHILE NIP DUP @ REPEAT
+	DROP SWAP ':' EMIT SPACE DUP ID. SPACE
+	DUP ?IMMEDIATE IF ." IMMEDIATE " THEN
+	>DFA BEGIN 2DUP
+        > WHILE DUP @ CASE
+		' LIT OF 4 + DUP @ . ENDOF
+		' LITS OF [ CHAR S ] LITERAL EMIT '"' EMIT SPACE
+			4 + DUP @ SWAP 4 + SWAP 2DUP TELL '"' EMIT SPACE + ALIGNED 4 -
+		ENDOF
+		' 0BRANCH OF ." 0BRANCH ( " 4 + DUP @ . ." ) " ENDOF
+		' BRANCH OF ." BRANCH ( " 4 + DUP @ . ." ) " ENDOF
+		' ' OF [ CHAR ' ] LITERAL EMIT SPACE 4 + DUP @ CFA> ID. SPACE ENDOF
+		' EXIT OF 2DUP 4 + <> IF ." EXIT " THEN ENDOF
+		DUP CFA> ID. SPACE
+	ENDCASE 4 + REPEAT
+	';' EMIT CR 2DROP
+;
+: :NONAME 0 0 CREATE HERE @ DOCOL , ] ;
+: ['] IMMEDIATE ' LIT , ;
+: EXCEPTION-MARKER RDROP 0 ;
+: CATCH ( xt -- exn? ) DSP@ 4+ >R ' EXCEPTION-MARKER 4+ >R EXECUTE ;
+: THROW ( n -- ) ?DUP IF
+	RSP@ BEGIN DUP R0 4-
+        < WHILE DUP @ ' EXCEPTION-MARKER 4+
+		= IF 4+ RSP! DUP DUP DUP R> 4- SWAP OVER ! DSP! EXIT THEN
+	4+ REPEAT DROP
+	CASE
+		0 1- OF ." ABORTED" CR ENDOF
+		." UNCAUGHT THROW " DUP . CR
+	ENDCASE QUIT THEN
+;
+: ABORT ( -- ) 0 1- THROW ;
+: PRINT-STACK-TRACE
+	RSP@ BEGIN DUP R0 4-
+        < WHILE DUP @ CASE
+		' EXCEPTION-MARKER 4+ OF ." CATCH ( DSP=" 4+ DUP @ U. ." ) " ENDOF
+		DUP CFA> ?DUP IF 2DUP ID. [ CHAR + ] LITERAL EMIT SWAP >DFA 4+ - . THEN
+	ENDCASE 4+ REPEAT DROP CR
+;
+: BINARY ( -- ) 2 BASE ! ;
+: OCTAL ( -- ) 8 BASE ! ;
+: 2# BASE @ 2 BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: 8# BASE @ 8 BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: # ( b -- n ) BASE @ SWAP BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: UNUSED ( -- n ) PAD HERE @ - 4/ ;
+: WELCOME
+	S" TEST-MODE" FIND NOT IF
+		." JONESFORTH VERSION " VERSION . CR
+		UNUSED . ." CELLS REMAINING" CR
+		." OK "
+	THEN
+;
+WELCOME
+HIDE WELCOME
+```
+
+### utils.f
+
+Il file è necessario in quanto contiene alcune funzioni utilizzate in tutto il resto dell'applicazione, evitando di scrivere codice superfluo.
+
+```
+
+```
+
+### gpio.f
+
+Il file è necessario in quanto contiene tutte le definizioni di parole e costanti necessarie ad operare con i pin GPIO del Raspberry&trade; Pi.
+
+###
+
+### i2c.f
 
 # Considerazioni Finali
 
