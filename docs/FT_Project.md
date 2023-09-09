@@ -2,7 +2,27 @@
 
 # Introduzione
 
+I sistemi embedded rappresentano il cuore invisibile di molte delle tecnologie che utilizziamo quotidianamente. Sono sistemi specializzati, incorporati in dispositivi elettronici e macchinari industriali, progettati per eseguire specifiche funzioni senza l'interfaccia di un utente. Questi sistemi sono onnipresenti, dall'elettronica domestica agli impianti industriali, e forniscono l'automazione e il controllo necessari per semplificare le nostre vite e migliorare l'efficienza in molti settori.
+
+**Progetto Embedded per la Gestione della Temperatura e dell'Umidità in una Sala Server:**
+
+Immagina una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. La temperatura e l'umidità in questa sala devono essere attentamente monitorate e regolate per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa. Qui entra in gioco un progetto embedded dedicato alla gestione di questi parametri ambientali cruciali.
+
+Questo sistema embedded è progettato per:
+
+1. **Monitoraggio Costante** : Utilizza sensori di temperatura e umidità per monitorare costantemente le condizioni all'interno della sala server.
+2. **Controllo Automatico** : In base ai dati raccolti dai sensori, il sistema può attivare o disattivare sistemi di raffreddamento o umidificatori per mantenere le condizioni ottimali.
+3. **Allarmi e Notifiche** : Se il sistema rileva condizioni fuori norma, può generare allarmi e notifiche per il personale responsabile, consentendo di reagire rapidamente a eventuali problemi.
+4. **Interfaccia Utente** : Fornisce un'interfaccia utente per la supervisione e il controllo manuale, consentendo agli amministratori di intervenire quando necessario.
+5. **Archiviazione Dati** : Registra e archivia i dati ambientali nel tempo, consentendo l'analisi delle tendenze e la conformità alle normative.
+
+Questo progetto embedded rappresenta un esempio concreto di come i sistemi embedded siano essenziali per garantire l'affidabilità delle infrastrutture tecnologiche moderne. La sua capacità di monitorare e gestire in modo autonomo le condizioni ambientali contribuisce in modo significativo alla continuità operativa delle aziende e alla protezione delle risorse informatiche critiche.
+
 # Hardware
+
+In questa sezione verranno elencati i componenti hardware necessari all'implementazione del progetto e verrà illustrato lo schema di collegamento degli stessi.
+
+Successivamente, si andrà a descrivere nel dettaglio ciascun componente, in modo da offrire una guida a chiunque voglia intraprendere un progetto simile.
 
 ## Lista Componenti
 
@@ -21,7 +41,7 @@
 |      Ventola$\ 5 \mathrm V$ DC      |     1     |
 |               Pulsanti               |     1     |
 | Resistori da$\ 10 \mathrm k \Omega$ |     1     |
-|        Cavo USB-A a Mini USB        |     1     |
+|         Cavo USB-A a Mini USB         |     1     |
 |            Cavetti Jumper            |   Q. B.   |
 
 ## Breadboard Schematic
@@ -43,7 +63,7 @@ Specifiche di sistema:
 * SoC Broadcom BCM2835
 * CPU ARM1176JZF-S core a $700 \mathrm{MHz}$
 * GPU Broadcom VideoCore IV
-* 512 MB RAM
+* 512 MB
 * 2 Porte USB 2.0
 * Video Output Composito (PAL e NTSC), HDMI o LCD diretto (DSI)
 * Audio Output tramite Jack $3.5 \mathrm{mm}$ o Audio over HDMI
@@ -100,7 +120,58 @@ Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle info
    </tr>
    <tr style='border:none'>
       <td style='border:none'>
-         <img src="images/lcd2004/pin_funcs.png" alt="Caratteristiche dei pin LCD 2004" style="display: inline; position: relative; margin-top:50px; border: 1px solid; " />
+         <table style="border: 1px solid">
+        <tr>
+            <th>Pin</th>
+            <th>Simbolo</th>
+            <th>Funzione</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>VSS</td>
+            <td>Power Ground</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>VDD</td>
+            <td>Power supply for logic ciurcuit +5V</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>V0</td>
+            <td>For LCD drive voltage (variable)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>RS(C/D)</td>
+            <td>H: Display Data <br> L: Display Instruction</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>R/W</td>
+            <td>H: Data Read (LCM to MPU) <br> L: Data Write (MPU to LCM)</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>E</td>
+            <td style="text-align: left;">Enable Signal. <br> Write mode (R/W = L) data of DB <0:7> <br> is latched at the falling edge of E. <br> Read mode (R/W = H) DB <0:7> appears <br> the reading data while E is at high level. </td>
+        </tr>
+        <tr>
+            <td>7-14</td>
+            <td>DB0-DB7</td>
+            <td>Data bus. There state I/O common terminal.</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>A</td>
+            <td>Power for LED Backlight (+5V)</td>
+        </tr>
+        <tr>
+            <td>16</td>
+            <td>K</td>
+            <td>Power for LED Backlight (GND)</td>
+        </tr>
+    	</table>
       </td>
    </tr>
 </table>
@@ -115,6 +186,8 @@ Il modulo LCD2004 è connesso al Pi secondo la seguente configurazione:
 |     SCL     |   GPIO3 / SCL1   |
 
 ### Modulo per la Serializzazione - I2C Backpack [3]
+
+<img src='https://m.media-amazon.com/images/I/61xWHXGsnsL.jpg' width="320" style='float:left; margin-top:50px; border: 1px solid; margin-right: 30px'>
 
 Si tratta di un modulo usato tipicamente per serializzare la comunicazione tra un microcontrollore e un altro device. Nel caso specifico, il modulo si presenta nella forma di un backpack da saldare al display (nel nostro caso era già saldato) e caratterizzato da quattro pin per il collegamento con il MCU:
 
@@ -177,30 +250,47 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono p
 
 ### Pulsante
 
-<img src='images/components/pullup.png' alt='Schema Elettrico di Resistenza in Pullup' width="100" style='float:left; margin-right: 10px; border: 1px solid; margin-left: 5px'>
+<img src='https://learningscratch519975251.files.wordpress.com/2021/04/button-fig-1.png?w=536' width="320" style='float:left; margin-right: 10px; border: 1px solid; margin-right: 15px'>
 
-Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli. Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pullup (il cui schema esemplificativo è presentato in figura), per cui, in fase di riposo (pulsante non premuto), la corrente può circolare, permettendo al sistema di funzionare, mentre, a seguito di una pressione, viene effettuata un'azione bloccante rispetto alla corrente, che impedisce al sistema di funzionare, mandandolo in reset.
+Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli. Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pull-Prima di immergerci nel codice sorgente e nelle specifiche implementazioni tecniche, è essenziale stabilire una base solida di comprensione del flusso degli eventi del progetto. Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in prospettiva le diverse parti del progetto e a chiarire l'ordine sequenziale in cui avvengono gli eventi.up (il cui schema esemplificativo è presentato in figura), per cui, in fase di riposo (pulsante non premuto), la corrente può circolare, permettendo al sistema di funzionare, mentre, a seguito di una pressione, viene effettuata un'azione bloccante rispetto alla corrente, che impedisce al sistema di funzionare, mandandolo in reset.
+
+
+<img src='https://global.discourse-cdn.com/nvidia/original/3X/b/8/b886440071a627ea9efbae5b2638a8625214d9ca.png' width="320" style='float:right; margin-right: 10px; border: 1px solid; margin-right: 15px'>
+
+
+
+
+
+
 
 Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono pilotati i LED:
 
 | Button Pin | Raspberry Pi Pin |
 | :--------: | :---------------: |
 | DATA WIRE |       GPIO8       |
-|    VCC    |       +3V3       |
+|    VCC    | $+3.3\mathrm V$ |
 |   GROUND   |        GND        |
 
 ### Ventola di Raffreddamento 5V-3 pin
 
-<img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='margin-top:50px; border: 1px solid; margin-left: 5px'>
+<img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='float:left; margin-top:50px; border: 1px solid; margin-right: 30px'>
 
-Si tratta di una ventola di dimensioni 60x60x10 mm, capace di lavorare a una tensione di 5V e garantire una velocità di rotazione di circa 3300 RPM, permettendo quindi un flusso d'aria di 13,8 CFM.
+Si tratta di una ventola di dimensioni 60x60x10 mm, utilizzata per dissipare il calore e mantenere una temperatura ottimale all'interno di dispositivi elettronici. È composta da 3 pin:
+
+1. **GND (Ground)** : Questo pin è collegato alla terra e serve come riferimento elettrico per il circuito della ventola.
+2. **VCC (Voltage Common Collector)** : Questo pin fornisce l'alimentazione elettrica alla ventola e deve essere collegato a una sorgente di alimentazione a 5V per far funzionare correttamente la ventola.
+3. **GPIO (General-Purpose Input/Output)** : Questo pin è utilizzato per controllare la ventola. Può essere collegato a una porta GPIO di un microcontrollore o di un computer, come il Raspberry Pi, per regolare la velocità della ventola o attivarla/disattivarla in base alle necessità di raffreddamento.
+
+
+
+
 
 La ventola è connessa al Pi secondo la seguente configurazione:
 
 | Fan Pin | Raspberry Pi Pin |
 | :------: | :---------------: |
 |   GND   |        GND        |
-|   VCC   |        5V        |
+|   VCC   | $+5 \mathrm V$ |
 |    EN    |      GPIO24      |
 
 ## GPIO assignment
@@ -209,14 +299,14 @@ Poiché questo progetto incorpora una serie di componenti esterni fondamentali p
 
 Nella tabella sottostante, vi è riassunta la panoramica dei pin GPIO utilizzati. Essa ha lo scopo di tenere traccia dei collegamenti e delle assegnazioni dei pin, semplificando la manutenzione futura e agevolando il lavoro di chiunque debba comprendere o estendere il progetto.
 
-|   GPIO Pin   | Function    | Device              |
-| :----------: | ----------- | ------------------- |
-| GPIO2 / SDA1 | ALT0 / SDA1 | LCD2004             |
-| GPIO3 / SCL1 | ALT0 / SCL1 | LCD2004             |
-|    GPIO8    | INPUT       | BUTTON              |
-|    GPIO18    | INPUT       | DHT22/AM2302        |
-|    GPIO23    | OUTPUT      | LED Rosso           |
-|    GPIO24    | OUTPUT      | LED Verde / Ventola |
+|   GPIO Pin   |  Function  |       Device       |
+| :----------: | :---------: | :-----------------: |
+| GPIO2 / SDA1 | ALT0 / SDA1 |       LCD2004       |
+| GPIO3 / SCL1 | ALT0 / SCL1 |       LCD2004       |
+|    GPIO8    |    INPUT    |       BUTTON       |
+|    GPIO18    |    INPUT    |    DHT22/AM2302    |
+|    GPIO23    |   OUTPUT   |      LED Rosso      |
+|    GPIO24    |   OUTPUT   | LED Verde / Ventola |
 
 # Environment
 
@@ -302,9 +392,12 @@ kernel.img
 
 # Software
 
-PRIMA DI PASSARE AL CODICE, VERRÀ ELENCATO IL FLUSSO DEGLI EVENTI, AL FINE DI UNA MAGGIOR COMPRENSIONE E REPLICABILITÀ DEL PROGETTO.
 
 ## Flusso di Lavoro
+
+Prima di immergerci nel codice sorgente e nelle specifiche implementazioni tecniche, è essenziale stabilire una base solida di comprensione del **flusso di lavoro** del progetto.
+
+Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in prospettiva le diverse parti del progetto e a chiarire l'ordine sequenziale in cui avvengono gli eventi.
 
 **ESEMPIO:**
 
