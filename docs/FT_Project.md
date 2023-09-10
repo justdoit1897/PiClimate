@@ -418,6 +418,15 @@ Prima di immergerci nel codice sorgente e nelle specifiche implementazioni tecni
 
 Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in prospettiva le diverse parti del progetto e a chiarire l'ordine sequenziale in cui avvengono gli eventi.
 
+1. **Inizializzazione** : All'avvio, il sistema esegue un'operazione di **inizializzazione**, configurando il sensore di temperatura e umidità, gli attuatori (ventola e LED), e imposta le soglie di temperatura e umidità desiderate (**20-24 °C** e **40-60%** di umidità). Il sistema entra quindi in uno stato di attesa.
+2. **Monitoraggio Continuo** : Il sistema monitora costantemente i dati proveniente dal sensore di temperatura e umidità per rilevare eventuali variazioni. Questo monitoraggio avviene in un ciclo continuo.
+3. **Controllo della Temperatura e dell'Umidità** : Quando il sistema rileva che la temperatura o l'umidità escono dai range desiderati, attiva un LED rosso lampeggiante per indicare un problema. La ventola di raffreddamento può essere attivata per abbassare la temperatura.
+4. **Raffreddamento** : Nel caso la temperatura sia troppo alta, il sistema attiva una ventola di raffreddamento per abbassare la temperatura all'interno della sala server. La ventola rimane accesa fino a quando la temperatura non rientra nei limiti accettabili.
+5. **Controllo della Temperatura e dell'Umidità Ridotto** : Una volta che la temperatura e l'umidità rientrano nei range desiderati, il sistema spegne la ventola di raffreddamento e disattiva il LED rosso lampeggiante.
+6. **Indicazione di Normale Funzionamento** : Quando la temperatura e l'umidità sono nuovamente sotto controllo, il sistema attiva un LED verde per indicare che tutto funziona normalmente.
+7. **Controllo del Pulsante di Reset** : Il sistema monitora costantemente il pulsante di reset. Se il pulsante viene premuto, il sistema esce dal ciclo di monitoraggio e rientra in uno stato di attesa.
+8. **Monitoraggio Continuo (Ripetizione)** : Il sistema embedded continua a monitorare costantemente i dati dai sensori e ripete il processo di controllo della temperatura e dell'umidità, verificando anche lo stato del pulsante di reset.
+
 **ESEMPIO:**
 
 1. All'accensione, il sistema avvia automaticamente l'interprete pijFORTHos, fornendo una shell interattiva all'utente
@@ -459,7 +468,7 @@ code.f:
 
 ### jonesforth.f
 
-Il file è necessario in quanto contiene parole normalmente definite in FORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel `<a href='https://github.com/organix/pijFORTHos'>`repository`</a>` su github.com.
+Il file è necessario in quanto contiene parole normalmente definite in FORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel `<a href='https://github.com/organix/pijFORTHos'>`repository `</a>` su github.com.
 
 ```
 : '\n' 10 ;

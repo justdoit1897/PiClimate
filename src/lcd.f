@@ -202,3 +202,13 @@ VARIABLE STR_LEN
     SET_SLAVE 02 CMD >LCD
     WELCOME_MSG ;
 
+: LCD_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." lcd.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE dht.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+LCD_OK

@@ -99,11 +99,11 @@
 : # ( b -- n ) BASE @ SWAP BASE ! WORD NUMBER DROP SWAP BASE ! ;
 : UNUSED ( -- n ) PAD HERE @ - 4/ ;
 : WELCOME
-	S" TEST-MODE" FIND NOT IF
-		." JONESFORTH VERSION " VERSION . CR
-		UNUSED . ." CELLS REMAINING" CR
-		." OK "
-	THEN
-;
+	S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." jonesforth.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE gpio.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
 WELCOME
-HIDE WELCOME

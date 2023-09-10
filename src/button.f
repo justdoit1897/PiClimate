@@ -60,3 +60,14 @@ GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
 \\ 
 : IS_CLICKED DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF 0 ELSE 1 THEN ;
 \\ 
+
+: BUTTON_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." button.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE main.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+BUTTON_OK

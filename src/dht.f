@@ -160,3 +160,14 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ 
 : MEASURE 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD DROP ;
 \\ 
+
+: DHT_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." dht.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE button.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+DHT_OK

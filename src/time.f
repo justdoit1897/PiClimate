@@ -1,3 +1,4 @@
+
 HEX
 \ 
 \ Per avere una gestione dei tempi quanto più real-time, usiamo il System Timer del RPi.
@@ -42,4 +43,14 @@ DECIMAL
 \\ Pone il sistema in busy-wait per un certo numero di microsecondi passato in input
 \\ 
 : CLK_DELAY CURRENT_TIME BEGIN 2DUP CURRENT_TIME - ABS SWAP > UNTIL 2DROP ;
-\\ 
+
+: TIME_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." time.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE led.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+TIME_OK

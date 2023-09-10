@@ -123,3 +123,14 @@ BSC1 10 +           CONSTANT FIFO_REGISTER
 ( -- )
 : INIT_I2C I2C_PINS ACTIVATE ;
 
+: I2C_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." i2c.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE lcd.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+I2C_OK
+

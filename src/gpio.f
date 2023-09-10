@@ -181,3 +181,14 @@ VARIABLE TIMES
         TIMES @ 0=                          \ CONDIZIONE DI USCITA
     UNTIL ;
 
+: GPIO_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." gpio.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE time.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+GPIO_OK
+

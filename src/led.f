@@ -59,3 +59,19 @@ VARIABLE IS_WARNING
         BLINK
     THEN ;
 
+( -- )
+: INIT_LEDS
+    LED_PINS ACTIVATE ;
+
+( -- )
+: LED_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." led.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE fan.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+LED_OK
+
