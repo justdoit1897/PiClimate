@@ -89,7 +89,9 @@ DECIMAL
 : GPIO_LSB N_GPIO 10 MOD 3 * ;
 
 \ ** Word(s) FSEL **
-
+\ Questa word ha lo scopo di prelevare il valore in cima allo stack, corrispondente alla maschera per il pin GPIO, e di restituire
+\ la maschera FSEL di tre bit ad esso corrispondente
+\ es. GPIO2 (1<<6) FSEL_MASK -> 7<<6
 : FSEL_MASK 
     DUP DUP
     2 + >R
@@ -97,24 +99,30 @@ DECIMAL
     BILS
     R> BILS OR
     R> BILS OR ;
-
+\ Word comprensiva per ricavare i parametri utili alla FSEL di un pin GPIO passato in input, dato che restituisce il bit meno
+\ signficativo della maschera e la maschera stessa.
 : FSEL GPIO_LSB DUP FSEL_MASK ;
-
+\ Questa word ha lo scopo di preparare il valore da scrivere nel registro FSEL opportuno, dato un pin GPIO e una AF in input
 : MODE SWAP GPIO_LSB LSHIFT ;
-
-( GPIOn )
-: GPFSEL
-    N_GPIO 10 / 4 * GPFSEL0 + ;
+\ 
+\ ( GPIOn -- GPFSELx )
+\ Questa word ha lo scopo di ricavare il registro GPFSEL opportuno per un pin GPIO passato in input.
+: GPFSEL N_GPIO 10 / 4 * GPFSEL0 + ;
 
 \ ** Word(s) GPSET & GPCLR ** 
-
+\ ( GPIOn -- GPSETx)
+\ Questa word ha lo scopo di ricavare il registro GPSET opportuno per un pin GPIO passato in input
 : GPSET N_GPIO 32 / 4 * GPSET0 + ;
+\ ( GPIOn -- GPCLRx)
+\ Questa word ha lo scopo di ricavare il registro GPCLR opportuno per un pin GPIO passato in input
 : GPCLR N_GPIO 32 / 4 * GPCLR0 + ;
 
 \ ** Word(s) GPLEV **
-
+\ ( GPIOn -- GPLEVx)
+\ Questa word ha lo scopo di ricavare il registro GPLEV opportuno per un pin GPIO passato in input
 : GPLEV 32 / 4 * GPLEV0 + ;
-
+\ ( GPIOn -- 0|1)
+\ Questa word ha lo scopo di ricavare il valore logico del bit associato a un pin GPIO passato in input
 : PIN_LEVEL 
     DUP GPLEV @ 
     SWAP 32 MOD 
