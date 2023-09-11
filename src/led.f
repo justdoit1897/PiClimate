@@ -43,7 +43,7 @@ VARIABLE IS_WARNING
 ( n -- )
 ( ES: BLINK -> FA ACCENDERE E SPEGNERE IL LED 5 VOLTE )
 : BLINK 
-    5 FLAG !
+    FLAG !
     BEGIN 
         RED LED ON
         300 MILLISECONDS DELAY 
@@ -68,7 +68,7 @@ VARIABLE IS_WARNING
     S" TEST-MODE" FIND NOT IF 
         CR ."           **********" CR
         ." led.f CARICATO CORRETTAMENTE" CR 
-        ." SUCCESSIVAMENTE CARICARE fan.f" CR 
+        ." SUCCESSIVAMENTE CARICARE i2c.f" CR 
         ." OK " CR
         ."           **********" CR
     THEN ;

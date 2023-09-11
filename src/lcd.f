@@ -144,20 +144,20 @@ VARIABLE STR_LEN
 ( -- )
 : SUBJECT
     CLEAR_DISPLAY CMD >LCD
-    ROW2 CMD 2 SET_CURSOR S" Embedded Systems" PRINT_STR
-    ROW3 CMD 2 SET_CURSOR S" A.A.   2022/2023" PRINT_STR ;
+    ROW2 2 SET_CURSOR S" Embedded Systems" PRINT_STR
+    ROW3 2 SET_CURSOR S" A.A.   2022/2023" PRINT_STR ;
 
 ( -- )
 : MARIO
     CLEAR_DISPLAY CMD >LCD
-    ROW2 CMD 2 SET_CURSOR S" Mario Tortorici" PRINT_STR
-    ROW3 CMD 2 SET_CURSOR S" Matr.   0737892" PRINT_STR ;
+    ROW2 2 SET_CURSOR S" Mario Tortorici" PRINT_STR
+    ROW3 2 SET_CURSOR S" Matr.   0737892" PRINT_STR ;
 
 ( -- )
 : VINCENZO
     CLEAR_DISPLAY CMD >LCD
-    ROW2 CMD 2 SET_CURSOR S" Vincenzo Fardella" PRINT_STR
-    ROW3 CMD 2 SET_CURSOR S" Matr.     07XXXXX" PRINT_STR ;
+    ROW2 2 SET_CURSOR S" Vincenzo Fardella" PRINT_STR
+    ROW3 2 SET_CURSOR S" Matr.     07XXXXX" PRINT_STR ;
 
 ( -- )
 : STUDENTS
@@ -167,8 +167,8 @@ VARIABLE STR_LEN
 ( -- )
 : PROJECT
     CLEAR_DISPLAY CMD >LCD
-    ROW2 CMD 6 SET_CURSOR S" PiServer " PRINT_STR
-    ROW3 CMD 2 SET_CURSOR S" Climate Control" PRINT_STR ;
+    ROW2 6 SET_CURSOR S" PiServer " PRINT_STR
+    ROW3 2 SET_CURSOR S" Climate Control" PRINT_STR ;
 
 ( -- )
 : WELCOME_MSG
@@ -179,23 +179,28 @@ VARIABLE STR_LEN
 ( -- )
 : LOAD_MSG
     CLEAR_DISPLAY CMD >LCD
-    ROW2 CMD 2 SET_CURSOR S" Inizializzazione " PRINT_STR
-    ROW3 CMD 6 SET_CURSOR S" in corso" PRINT_STR ;
+    ROW2 2 SET_CURSOR S" Inizializzazione " PRINT_STR
+    ROW3 6 SET_CURSOR S" in corso" PRINT_STR ;
 
 ( -- )
 : CELSIUS 
     ROW2 CMD 10# 18 SET_CURSOR 43 DF PRINT ;
 ( -- )
 : TEMP 
-    ROW2 >LCD
-    S" Temperature:" PRINT_STR
+    ROW2 CMD >LCD
+    S" Temperature:   .  " PRINT_STR
     CELSIUS ;
 
 ( -- )
 : HUM 
-    ROW3 >LCD
-    S" Humidity:" PRINT_STR
-    ROW3 CMD 10# 19 SET_CURSOR S" %" PRINT_STR ;
+    ROW3 CMD >LCD
+    S" Humidity:      .   %" PRINT_STR ;
+    \ ROW3 CMD 10# 19 SET_CURSOR S" %" PRINT_STR ;
+
+: TEMP_HUM_MSG
+    CLEAR_DISPLAY CMD >LCD
+    TEMP
+    HUM ;
 
 ( -- )
 : INIT_LCD 
