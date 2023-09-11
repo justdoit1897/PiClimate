@@ -29,7 +29,17 @@ GPIO18 FSEL          CONSTANT GPIO18_FSEL
 GPIO18 OUT MODE      CONSTANT GPIO18_OUT
 GPIO18 INP MODE      CONSTANT GPIO18_INP
 GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
+\\ 
+\\ INT_MSG ( r q x -- )
+\\ Parola usata per stampare su schermo la parte intera di un valore (temperatura/umidità)
+\\ 
+: INT_MSG 13 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
 \\
+\\ DEC_MSG ( n x -- )
+\\ Parola usata per stampare su schermo la parte decimale di un valore (temperatura/umidità)
+\\ 
+: DEC_MSG 16 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
+\\ 
 \\ WAIT_PULLDOWN ( n_gpio --  )
 \\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 1 a 0 nel
 \\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
@@ -144,11 +154,25 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ Parola usata per stampare su riga di comando il valore di umidità ricavato
 \\ 
 : HUMIDITY>CMD S" Humidity: " PRINT_STR HUMIDITY_IP ? S" . " PRINT_STR HUMIDITY_DP ? S" %" PRINT_STR ;
+\\
+\\ HUMIDITY>LCD ( -- )
+\\ Parola usata per stampare su display LCD il valore di umidità ricavato
 \\ 
+: HUMIDITY>LCD 
+    HUMIDITY_IP 10 /MOD ROW3 INT_MSG
+    HUMIDITY_DP ROW3 DEC_MSG ;
+\\  
 \\ TEMPERATURE>CMD ( -- )
 \\ Parola usata per stampare su riga di comando il valore di temperatura ricavato
 \\ 
 : TEMPERATURE>CMD S" Temperature: " PRINT_STR TEMPERATURE_IP ? S" . " PRINT_STR TEMPERATURE_DP ? S" *C" PRINT_STR ;
+\\ 
+\\ TEMPERATURE>LCD ( -- )
+\\ Parola usata per stampare su display LCD il valore di temperatura ricavato
+\\ 
+: TEMPERATURE>LCD 
+    TEMPERATURE_IP 10 /MOD ROW2 INT_MSG
+    TEMPERATURE_DP ROW2 DEC_MSG ;
 \\ 
 \\ DHT>CMD ( -- )
 \\ Parola comprensiva per stampare su riga di comando i valori di temperatura e di umidità ricavati
@@ -159,6 +183,13 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ Parola comprensiva per l'esecuzione dell'intero processo per una singola misurazione del sensore
 \\ 
 : MEASURE 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD DROP ;
+\\
+\\ Parole usate per stampare su display LCD messaggi di avvertimento in presenza di condizioni non ottimali
+\\  
+: LOW_TEMP_MSG CLEAR_DISPLAY CMD >LCD S" La temperatura è inferiore a 20 gradi Celsius."  PRINT_STR ;
+: HIGH_TEMP_MSG CLEAR_DISPLAY CMD >LCD S" La temperatura è superiore a 24 gradi Celsius."  PRINT_STR ;
+: LOW_HUM_MSG CLEAR_DISPLAY S" L'umidità è inferiore al 40%." PRINT_STR;
+: HIGH_HUM_MSG CLEAR_DISPLAY S" L'umidità è superiore al 60%." PRINT_STR;
 \\ 
 
 : DHT_OK 
