@@ -4,17 +4,17 @@
 
 I software embedded rappresentano il cuore invisibile di molte delle tecnologie che utilizziamo quotidianamente. Sono software specializzati, incorporati in dispositivi elettronici e macchinari industriali, progettati per eseguire specifiche funzioni senza l'interfaccia di un utente. Questi sistemi sono onnipresenti, dall'elettronica domestica agli impianti industriali, e forniscono l'automazione e il controllo necessari per semplificare le nostre vite e migliorare l'efficienza in molti settori.
 
-**Progetto Embedded per la Gestione della Temperatura e dell'Umidità in una Sala Server:**
+Immaginiamo una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. Valori come **temperatura** ed **umidità** devono essere attentamente monitorati e regolati per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa. 
 
-Immaginiamo una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. La temperatura e l'umidità in questa sala devono essere attentamente monitorate e regolate per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa. Qui entra in gioco un progetto embedded dedicato alla gestione di questi parametri ambientali cruciali.
+In particolar modo, la **temperatura** ambientale dovrebbe essere mantenuta entro i **20-24 °C**, dato che un'elevata temperatura può causare surriscaldamento e danneggiare gli apparati, mentre una temperatura troppo bassa potrebbe causare condensa o problemi di umidità.
 
-Questo sistema embedded è progettato per:
+L'intervallo di **umidità** consigliato per una sala server è generalmente tra il **40%** e il **60%**. Un'umidità troppo elevata può causare corrosione e danneggiare i componenti elettronici, mentre un'umidità troppo bassa può causare scariche elettrostatiche.
+
+Qui entra in gioco un progetto embedded dedicato alla gestione di questi parametri ambientali. Il nostro sistema embedded è progettato per:
 
 1. **Monitoraggio Costante** : Utilizza sensori di temperatura e umidità per monitorare costantemente le condizioni all'interno della sala server.
 2. **Controllo Automatico** : In base ai dati raccolti dai sensori, il sistema può attivare o disattivare sistemi di raffreddamento o umidificatori per mantenere le condizioni ottimali.
 3. **Allarmi e Notifiche** : Se il sistema rileva condizioni fuori norma, può generare allarmi visivi per il personale responsabile, consentendo di reagire rapidamente a eventuali problemi.
-4. ~~**Interfaccia Utente** : Fornisce un'interfaccia utente per la supervisione e il controllo manuale, consentendo agli amministratori di intervenire quando necessario.~~
-5. ~~**Archiviazione Dati** : Registra e archivia i dati ambientali nel tempo, consentendo l'analisi delle tendenze e la conformità alle normative.~~
 
 Questo progetto embedded rappresenta un esempio concreto di come i sistemi embedded siano essenziali per garantire l'affidabilità delle infrastrutture tecnologiche moderne. La sua capacità di monitorare e gestire in modo autonomo le condizioni ambientali contribuisce in modo significativo alla continuità operativa delle aziende e alla protezione delle risorse informatiche critiche.
 
@@ -252,9 +252,19 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono p
 
 <img src='https://learningscratch519975251.files.wordpress.com/2021/04/button-fig-1.png?w=536' width="320" style='float:left; margin-right: 10px; border: 1px solid; margin-right: 15px'>
 
-Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli. Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pull-Prima di immergerci nel codice sorgente e nelle specifiche implementazioni tecniche, è essenziale stabilire una base solida di comprensione del flusso degli eventi del progetto. Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in prospettiva le diverse parti del progetto e a chiarire l'ordine sequenziale in cui avvengono gli eventi.up (il cui schema esemplificativo è presentato in figura), per cui, in fase di riposo (pulsante non premuto), la corrente può circolare, permettendo al sistema di funzionare, mentre, a seguito di una pressione, viene effettuata un'azione bloccante rispetto alla corrente, che impedisce al sistema di funzionare, mandandolo in reset.
+Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli. 
+
+Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pull-up (il cui schema esemplificativo è presentato in figura), per cui, in fase di riposo (pulsante non premuto), la corrente può circolare, permettendo al sistema di funzionare, mentre, a seguito di una pressione, viene effettuata un'azione bloccante rispetto alla corrente, che impedisce al sistema di funzionare, mandandolo in reset.
 
 <img src='https://global.discourse-cdn.com/nvidia/original/3X/b/8/b886440071a627ea9efbae5b2638a8625214d9ca.png' width="320" style='float:right; margin-right: 10px; border: 1px solid; margin-right: 15px'>
+
+
+
+
+
+
+
+
 
 Nella tabella sottostante sono riportati i pin GPIO attraverso i quali viene pilotato il pulsante:
 
@@ -273,6 +283,10 @@ Si tratta di una ventola di dimensioni 60x60x10 mm, utilizzata per dissipare il 
 1. **GND (Ground)** : Questo pin è collegato alla terra e serve come riferimento elettrico per il circuito della ventola.
 2. **VCC (Voltage Common Collector)** : Questo pin fornisce l'alimentazione elettrica alla ventola e deve essere collegato a una sorgente di alimentazione a 5V per far funzionare correttamente la ventola.
 3. **GPIO (General-Purpose Input/Output)** : Questo pin è utilizzato per controllare la ventola. Può essere collegato a una porta GPIO di un microcontrollore o di un computer, come il Raspberry Pi, per regolare la velocità della ventola o attivarla/disattivarla in base alle necessità di raffreddamento.
+
+
+
+
 
 La ventola è connessa al Pi secondo la seguente configurazione:
 
@@ -420,25 +434,21 @@ Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in
 
 1. **Inizializzazione** : All'avvio, il sistema esegue un'operazione di **inizializzazione**, configurando il sensore di temperatura e umidità, gli attuatori (ventola e LED), e imposta le soglie di temperatura e umidità desiderate (**20-24 °C** e **40-60%** di umidità). Il sistema entra quindi in uno stato di attesa.
 2. **Monitoraggio Continuo** : Il sistema monitora costantemente i dati proveniente dal sensore di temperatura e umidità per rilevare eventuali variazioni. Questo monitoraggio avviene in un ciclo continuo.
-3. **Controllo della Temperatura e dell'Umidità** : Quando il sistema rileva che la temperatura o l'umidità escono dai range desiderati, attiva un LED rosso lampeggiante per indicare un problema. La ventola di raffreddamento può essere attivata per abbassare la temperatura.
-4. **Raffreddamento** : Nel caso la temperatura sia troppo alta, il sistema attiva una ventola di raffreddamento per abbassare la temperatura all'interno della sala server. La ventola rimane accesa fino a quando la temperatura non rientra nei limiti accettabili.
-5. **Controllo della Temperatura e dell'Umidità Ridotto** : Una volta che la temperatura e l'umidità rientrano nei range desiderati, il sistema spegne la ventola di raffreddamento e disattiva il LED rosso lampeggiante.
-6. **Indicazione di Normale Funzionamento** : Quando la temperatura e l'umidità sono nuovamente sotto controllo, il sistema attiva un LED verde per indicare che tutto funziona normalmente.
-7. **Controllo del Pulsante di Reset** : Il sistema monitora costantemente il pulsante di reset. Se il pulsante viene premuto, il sistema esce dal ciclo di monitoraggio e rientra in uno stato di attesa.
+3. **Controllo della Temperatura e dell'Umidità** : Quando il sistema rileva che la temperatura o l'umidità escono dai range desiderati, mostra nel display LCD un messaggio per indicare il problema e, successivamente, attiva un LED rosso lampeggiante un numero $n$ di volte. In base al valore di $n$ si può riconoscere visivamente il tipo di problema, nel caso in cui il display LCD dovesse essere malfunzionante.
+4. **Raffreddamento** : Nel caso la temperatura sia troppo alta, il sistema attiva, in concomitanza ad un LED verde, una ventola di raffreddamento per abbassare la temperatura all'interno della sala server. La ventola e il LED rimangono accesi fino a quando la temperatura non rientra nei limiti accettabili.
+5. **Controllo della Temperatura e dell'Umidità Ridotto** : Una volta che la temperatura e l'umidità rientrano nei range desiderati, il sistema spegne la ventola di raffreddamento e disattiva il LED verde.
+6. **Indicazione di Normale Funzionamento** : Quando la temperatura e l'umidità sono nuovamente sotto controllo, il sistema attiva spegne tutti i LED e mostra sul display LCD i valori di temperatura ed umidità rilevati dal sensore DHT22.
+7. **Controllo del Pulsante di Reset** : Il sistema monitora costantemente il pulsante di reset. Se il pulsante viene premuto, il sistema esce dal ciclo di monitoraggio e rientra in uno stato di attesa, pensato per gestire un eventuale servizio di manutenzione.
 8. **Monitoraggio Continuo (Ripetizione)** : Il sistema embedded continua a monitorare costantemente i dati dai sensori e ripete il processo di controllo della temperatura e dell'umidità, verificando anche lo stato del pulsante di reset.
 
-**ESEMPIO:**
+Ecco una tabella riassuntiva dei tipi di malfunzionamento in funzione di quante volte lampeggia il LED rosso:
 
-1. All'accensione, il sistema avvia automaticamente l'interprete pijFORTHos, fornendo una shell interattiva all'utente
-2. L'utente **carica**, secondo le modalità descritte in precedenza, **il codice sorgente** completo dell'applicazione
-3. Il sistema entra **immediatamente in modalità di misurazione**, monitorando ogni 2 secondi le condizioni ambientali e controllando che il pulsante dedicato per il reset del sistema non sia stato premuto.
-   1. Se l'utente **preme il pulsante** di reset:
-      1. il sistema esce dalla fase di monitoraggio
-      2. il sistema ritorna al passo 1.
-   2. Altrimenti, il sistema controlla che i valori registrati di temperatura e umidità siano **entro le condizioni operative ottimali**:
-      1. Se i valori di una o dell'altra quantità sono fuori scala:
-         1. il sistema mostra feedback visivi (tramite i LED e il display) del problema
-         2. il sistema attiva la ventola di areazione finché non vengono rilevati valori normali
+| n |    Tipo malfunzionamento    |
+| :-: | :-------------------------: |
+| 3 | Temperatura sotto la soglia |
+| 5 |     Temperatura elevata     |
+| 4 |  Umidità sotto la soglia  |
+| 6 |      Umidità elevata      |
 
 ## Codice
 
@@ -673,6 +683,7 @@ Il file permette la gestione della coppia di LED usati nel sistema proposto, com
 ### i2c.f
 
 Il file permette di utilizzare il protocollo I2C in combinata con un display LCD grazie al backpack. Contiene parole e costanti utilizzate per implementare il suddetto protocollo, comprese quelle per impostare i registri del controller BSC su valori opportuni per abilitare il trasferimento di dati dal MCU al display in uno schema master-slave.
+
 
 ```
 

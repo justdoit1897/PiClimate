@@ -204,6 +204,7 @@ VARIABLE STR_LEN
     S" Humidity:      .   %" PRINT_STR ;
     \ ROW3 CMD 10# 19 SET_CURSOR S" %" PRINT_STR ;
 
+( -- )
 : TEMP_HUM_MSG
     CLEAR_DISPLAY CMD >LCD
     TEMP
@@ -211,23 +212,38 @@ VARIABLE STR_LEN
 
 \ *** Words per la segnalazione dei warning ***
 
-: WARNING
+( -- )
+: WARNING_MSG
+    CLEAR_DISPLAY CMD >LCD
     ROW1 3 SET_CURSOR S" ! ATTENZIONE !" PRINT_STR ;
 
+\ ** Temperatura **
+
+( -- )
 : LOW_TEMP_MSG
-    WARNING
-    ROW3 ;
+    WARNING_MSG
+    ROW3 1 SET_CURSOR S" Temperatura sotto" PRINT_STR
+    ROW4 CMD >LCD S" il livello ottimale" PRINT_STR ;
 
+( -- )
+: HIGH_TEMP_MSG
+    WARNING_MSG
+    ROW3 CMD >LCD S" Temperatura elevata" PRINT_STR
+    ROW4 1 SET_CURSOR S" Avvio ventilazione" PRINT_STR ;
+
+\ ** Umidità **
+
+( -- )
 : LOW_HUM_MSG
-    WARNING
-    ROW3 1 SET_CURSOR S" Movimento rilevato" PRINT_STR          3 SECONDS DELAY
-    CLEAR_DISPLAY CMD >LCD
-    OPEN ;
+    WARNING_MSG
+    ROW3 3 SET_CURSOR S" Umidita sotto" PRINT_STR
+    ROW4 CMD >LCD S" il livello ottimale" PRINT_STR ;
 
-: LOW_TEMP_MSG CLEAR_DISPLAY CMD >LCD S" La temperatura è inferiore a 20 gradi Celsius."  PRINT_STR ;
-: HIGH_TEMP_MSG CLEAR_DISPLAY CMD >LCD S" La temperatura è superiore a 24 gradi Celsius."  PRINT_STR ;
-: LOW_HUM_MSG CLEAR_DISPLAY S" L'umidità è inferiore al 40%." PRINT_STR;
-: HIGH_HUM_MSG CLEAR_DISPLAY S" L'umidità è superiore al 60%." PRINT_STR;
+( -- )
+: HIGH_HUM_MSG
+    WARNING_MSG
+    ROW3 3 SET_CURSOR S" Umidita sopra" PRINT_STR
+    ROW4 CMD >LCD S" il livello ottimale" PRINT_STR ;
 
 \ *** Word(s) di inizializzazione display LCD ***
 
@@ -236,6 +252,7 @@ VARIABLE STR_LEN
     SET_SLAVE 02 CMD >LCD
     WELCOME_MSG ;
 
+( -- )
 : LCD_OK 
     S" TEST-MODE" FIND NOT IF 
         CR ."           **********" CR

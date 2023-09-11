@@ -40,7 +40,7 @@ DECIMAL
     S" TEST-MODE" FIND NOT IF 
         CR ."           **********" CR
         ." main.f CARICATO CORRETTAMENTE" CR 
-        ." DIGITARE COMANDO START SUL TERMINALE PER AVVIARE IL SISTEMA" CR 
+        ." DIGITARE COMANDO 'MAIN' SUL TERMINALE PER AVVIARE IL SISTEMA" CR 
         ." OK " CR
         ."           **********" CR
     THEN ;
