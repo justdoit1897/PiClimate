@@ -606,22 +606,68 @@ Il file è necessario in quanto contiene alcune funzioni utilizzate in tutto il 
 
 ### gpio.f
 
-Il file è necessario in quanto contiene tutte le definizioni di parole e costanti necessarie ad operare con i pin GPIO del Raspberry&trade; Pi.
+Il file è necessario in quanto contiene tutte le definizioni di parole e costanti necessarie ad operare con i pin GPIO del Raspberry&trade; Pi. In esso sono state definite le costanti utili a identificare gli **indirizzi** dei principali registri su cui abbiamo operato (es. `GPFSEL0`, `GPSEL1`), oltre che gli indirizzi base per particolari set di registri, utilizzati all'interno di alcune parole per ricavare gli indirizzi esatti degli altri registri dello stesso set (es. la costante `GPLEV0` che, usata insieme alla parola `GPLEV` permette di ricavare anche l'indirizzo del registro `GPLEV1`).
+All'interno del file sono definite anche le costanti associate ai **pin GPIO**, nello specifico identificati da un bit posto a 1 shiftato del loro valore numerico (es. `GPIO18` identifica il pin GPIO 18, ed è definito da un 1 shiftato a sinistra di 18 bit), utilizzando una notazione molto comune all'interno dei registri GPIO che permette di ridurre il numero di calcoli effettuati *on-the-fly* (es. attivare un pin GPIO posto in output può essere espresso banalmente come `GPIO7 GPSET0 !`).
+Le ultime costanti che sono definite riguardano i possibili valori della FSEL per una specifica tripletta di bit, ricordando che nei registri `GPFSEL` la FSEL di ogni pin è gestita da una tripletta di bit opportunamente codificata (es. `INPUT` è associato alla tripletta `0b000`, dunque equivale al valore `0`).
+
+Successivamente, possiamo trovare le definizioni di parole utilizzate per la **manipolazione dei pin GPIO** al fine di ricavare informazioni extra, come `N_GPIO` per ottenere il numero del pin associato ad una costante `GPIOx` o `GPSET` per ricavare l'indirizzo del registro `GPSET0/1` cui fa riferimento una costante `GPIOx`, più altre propriamente utilizzate per calcolare i valori da usare come parametri per altre parole, come `GPIO_LSB` e `FSEL_MASK` usate, rispettivamente, per calcolare la posizione del bit meno significativo nella tripletta usata nella gestione della FSEL e la maschera da utilizzare nella scrittura di una FSEL all'interno di un registro `GPFSEL`.
+Interessanti sono, infine, le parole `ACTIVATE` e la sua controparte `DEACTIVATE`. Per quanto riguarda la prima, si tratta di una parola che opera a triplette di parametri, come evidenziato dalla sua definizione in stack notation `( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )`, che permette di rendere effettive le modifiche desiderate nei registri GPFSEL per un blocco di pin passato in input. Al contrario, `DEACTIVATE` permette di effettuare una *clear function* per una serie di pin passati in input, rendendoli disponibili a successive modifiche.
+
+```
+: ACTIVATE 
+    DEPTH 3 /
+    TIMES !
+    BEGIN
+        ENABLE_PIN
+        TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
+        TIMES @ 0=                          \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+: DEACTIVATE
+    DEPTH 3 /
+    TIMES !
+    BEGIN
+        DISABLE_PIN
+        TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
+        TIMES @ 0=                          \ CONDIZIONE DI USCITA
+    UNTIL ;
+```
+
+Le due parole fanno uso massiccio di altre due parole definite in questo file, ossia `ENABLE_PIN` e `DISABLE_PIN`, che effettuano rispettivamente un'operazione di **set function** e di **clear function** per apportare le modifiche relative ad un pin GPIO nel rispettivo registro `GPFSEL`.
+
+```
+: ENABLE_PIN
+    DUP                 ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 GPFSEL2 )
+    >R @                ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 @ )
+    -ROT                ( GPFSEL2 @ GPIOn_FSEL GPIOn_XMODE )
+    >R                  ( GPFSEL2 @ GPIOn_FSEL )
+    BIC                 
+    R>                  ( [ GPFSEL2 @ GPIOn_FSEL BIC ] GPIOn_XMODE )
+    OR 
+    R> ! ;
+
+: DISABLE_PIN
+    NIP
+    DUP >R
+    @ SWAP BIC
+    R> ! ;
+```
 
 ### time.f
 
 Il file è necessario in quanto abbiamo deciso che la gestione dei tempi meritasse un modulo a sé stante. In esso sono contenute parole e costanti necessarie alla temporarizzazione degli eventi nel sistema.
+All'interno del file sono presenti due modi distinti per la gestione dei tempi e, nello specifico, per la generazione di ritardi. Con la parola `DELAY` si è scelto un approccio più semplice, tra l'altro visto a lezione, secondo cui il sistema viene messo in uno stato di **busy-wait**, nel quale viene eseguito un numero di operazioni semplici (tipicamente una sottrazione) pari al valore passato in input.
+
+Per alcuni dispositivi, però, questo approccio non ha sortito gli effetti desiderati, dunque si è reso necessario un approccio più preciso e che rendesse la temporizzazione degli eventi quanto più vincolato all'hardware del Raspberry&trade; Pi; dunque, abbiamo optato per usare il set di registri del **System Timer**. 
+Questa periferica interna è dotata di quattro registri a 32 bit, detti **canali**, e due registri, `CLO` e `CHI`, che fungono da contatori del tempo che scorre dall'accensione del sistema. Nello specifico, questi due registri permettono di definire una variante del fattore di ritardo, in cui si utilizza come fonte dei dati proprio uno di questi registri, ossia `CLO`, e che segue un approccio molto semplice: si avvia il timer a partire dal valore corrente del registro e, all'interno di ogni iterazione di un ciclo, si valuta che il valore attuale differisca da quello di partenza per un numero di microsecondi passato in input. Questo secondo approccio è riscontrabile nella parola `CLK_DELAY`, in cui si è scelto di semplificare la lettura del codice attraverso la definizione di un'altra parola, `CURRENT_TIME`.
+
+All'interno del file sono presenti anche funzioni basilari di utilità che permettono, per esempio, la conversione di un certo numero di secondi/millisecondi nello specifico numero di microsecondi da utilizzare in fase di timing (`MILLISECONDS` e `SECONDS`).
 
 ```
 HEX
  
-\ Per avere una gestione dei tempi quanto più real-time, usiamo il System Timer del RPi.
-\ È dotato di quattro registri a 32-bit (canali) per la gestione del tempo ed un contatore a 64-bit
-\ Ognuno dei canali è associato ad un registro di confronto dell'output, usato per un confronto con
-\ i 32 bit meno significativi del contatore. Quando i due valori coincidono, il System Timer genera un segnale
-\ che indica l'avvenuta coincidenza per un certo canale, passato in input al controller per gli interrupt
-\ L'indirizzo fisico (hardware) del System Timer per quest'implementazione è 0x20003000
- 
+\ Per avere una gestione dei tempi quanto più real-time, usiamo anche il System Timer del RPi.
+\ Definizione costanti System Timer
 RPI1_BASE 3000 +    CONSTANT TIMER_BASE
 TIMER_BASE 4 +      CONSTANT TIMER_COUNT
  
@@ -694,108 +740,138 @@ Il file permette la gestione del modulo display utilizzato nel sistema proposto,
 
 Il file permette la gestione di un sensore DHT22/AM2302 secondo le modalità descritte precedentemente. Contiene la definizione di parole e costanti atte ad impostare le condizioni operative del sensore e a presentare i risultati del rilevamento in formato *human-readable*.
 
+Innanzitutto, possiamo trovare le definizioni di alcune costanti strettamente legate al sensore DHT22/AM2302 in uso, come le temperature massima e minima registrabili, più le dichiarazioni di alcune variabili usate per la raccolta e il processing dei dati (es. `DATA` e `TEMPERATURE_IP`).
+Sono, quindi, specificate le costanti di interfaccia tra il sensore e il Raspberry&trade; Pi, come il pin GPIO cui è connesso il DHT22/AM2302 (`GPIO18`) e le maschere usate per le operazioni sui registri (quest'ultima scelta resasi necessaria per non sovraccaricare il sistema di operazioni che sono molto frequenti).
+
+Successivamente, troviamo le definizioni di alcune parole utili ai fini del rilevamento e del processing dei dati (`WAIT_PULLDOWN` e `WAIT_PULLUP`), oltre che di parole necessarie a far riferimento al sensore DHT in formato *human-readable* e utili a semplificare certe operazioni (`DHT_PIN_OUT` e `DHT_OUT`). Nello specifico, troviamo le parole:
+
+* `DHT_PIN_OUT`, che permette di caricare sullo stack i valori necessari a impostare il pin GPIO cui è collegato il sensore in modalità output
+* `DHT_OUT`, che rende effettiva l'impostazione del pin collegato al sensore in output
+* `DHT_PIN_INP`, che permette di caricare sullo stack i valori necessari a impostare il pin GPIO cui è collegato il sensore in modalità input
+* `DHT_INPUT`, che rende effettiva l'impostazione del pin collegato al sensore in input
+
+Dopo di ché, sono presenti le parole necessarie al funzionamento vero e proprio del sensore:
+
+* `SETUP_SENSOR`, che permette al Raspberry&trade; Pi di inviare la **start condition** al sensore, per cui bisogna impostare il pin in modalità **output** (scrivendo `0b001` nella tripletta del registro `GPFSEL` associata al pin), **spegnere** il pin (andando a impostare nel registro `GPCLR` il bit associato al pin GPIO), attendere 1 ms, **attivare** il pin (andando a impostare il bit associato al pin GPIO nel registro `GPSET`), per poi impostare il pin in modalità **input** (in modo analogo all'impostazione della modalità di output) e cedere, quindi, il controllo al sensore.
+* `READ_DATA`, che permette al Raspberry&trade; Pi di **campionare** 40 valori inviati dal sensore DHT22/AM2302 e di salvarli nelle variabili `DATA` (primi 32 bit) e `CHECKSUM` (ultimi 8 bit), facendo uso della parola ausiliaria `READ_BIT`, con cui si effettua il campionamento di un bit **sulla base del tempo** in cui il sensore mantiene alta la data line: se ciò avviene per più di 50 µs, il sensore avrà trasmesso un bit pari a 1, altrimenti sarà un bit pari a 0.
+
+Abbiamo, quindi, le parole usate per estrarre dai dati i valori reali della temperatura e dell'umidità (`GET_TEMPERATURE` e `GET_HUMIDITY`), sfruttando semplici correlazioni tra la posizione dei bit e il loro significato (spiegati in precedenza) e il fatto che il valore dell'una o dell'altra grandezza sono ottenuti dividendo per 10 il valore complessivo.
+
+Infine, sono state definite semplici parole per la presentazione dei dati in formato *human-readable*, che permettono di stampare le misurazioni sia su riga di comando (`DHT>CMD`) che sul display LCD di cui è provvisto il sistema (`TEMPERATURE>LCD` e `HUMIDITY>LCD`).
+
+Segue il codice sorgente.
+ 
 ```
 DECIMAL
- 
-\ Definizione di costanti legate al sensore in uso, tra cui umidità minima, umidità massima,
-\ temperatura minima e temperatura massima registrabili
- 
+\\ 
+\\ Definizione di costanti legate al sensore in uso, tra cui umidità minima, umidità massima,
+\\ temperatura minima e temperatura massima registrabili
+\\ 
 -40                 CONSTANT MIN_TEMP
 80                  CONSTANT MAX_TEMP
 0                   CONSTANT MIN_HUM
 100                 CONSTANT MAX_HUM
- 
-\ Definizione di variabili usate per contenere i dati raccolti
- 
-\ Dati e checksum
+\\ 
+\\ Definizione di variabili usate per contenere i dati raccolti
+\\ 
+\\ Dati e checksum
 VARIABLE DATA
 VARIABLE CHECKSUM
- 
-\ Parti intere e parti decimali di umidità e temperatura
- 
+\\ 
+\\ Parti intere e parti decimali di umidità e temperatura
+\\ 
 VARIABLE HUMIDITY_IP
 VARIABLE HUMIDITY_DP
 VARIABLE TEMPERATURE_IP
 VARIABLE TEMPERATURE_DP
- 
-\ Definizione di costanti legate alla connessione sensore-microcontrollore, nello specifico
-\ maschera di FSEL per il pin in uso, valore da scrivere in GPFSEL per il pin in uso e per le 
-\ modalità input e output e registro GPFSEL associato al pin in uso.
- 
+\\ 
+\\ Definizione di costanti legate alla connessione sensore-microcontrollore, nello specifico
+\\ maschera di FSEL per il pin in uso, valore da scrivere in GPFSEL per il pin in uso e per le 
+\\ modalità input e output e registro GPFSEL associato al pin in uso.
+\\ 
 GPIO18 FSEL          CONSTANT GPIO18_FSEL
 GPIO18 OUT MODE      CONSTANT GPIO18_OUT
 GPIO18 INP MODE      CONSTANT GPIO18_INP
 GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
- 
-\ WAIT_PULLDOWN ( n_gpio --  )
-\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 1 a 0 nel
-\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
- 
+\\ 
+\\ INT_MSG ( r q x -- )
+\\ Parola usata per stampare su schermo la parte intera di un valore (temperatura/umidità)
+\\ 
+: INT_MSG 13 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
+\\
+\\ DEC_MSG ( n x -- )
+\\ Parola usata per stampare su schermo la parte decimale di un valore (temperatura/umidità)
+\\ 
+: DEC_MSG 16 SET_CURSOR NUMBER >LCD ;
+\\ 
+\\ WAIT_PULLDOWN ( n_gpio --  )
+\\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 1 a 0 nel
+\\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
+\\ 
 : WAIT_PULLDOWN 
     BEGIN 
         DUP PIN_LEVEL 
         0 = WHILE 
     REPEAT 
     DROP ;
- 
-\ WAIT_PULLUP ( n_gpio --  )
-\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 0 a 1 nel
-\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
- 
+\\
+\\ WAIT_PULLUP ( n_gpio --  )
+\\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 0 a 1 nel
+\\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
+\\ 
 : WAIT_PULLUP 
     BEGIN 
         DUP PIN_LEVEL 
         1 = WHILE 
     REPEAT 
     DROP ;
-  
-\ DHT_PIN_OUT ( -- )
-\ Scorciatoia per settare i parametri utili ad impostare la FSEL per il pin utilizzato in modalità output
- 
+\\  
+\\ DHT_PIN_OUT ( -- )
+\\ Scorciatoia per settare i parametri utili ad impostare la FSEL per il pin utilizzato in modalità output
+\\ 
 : DHT_PIN_OUT GPIO18_FSEL GPIO18_OUT GPIO18_GPFSEL ;
- 
-\ DHT_OUT ( -- )
-\ Imposta il pin in modalità output
- 
+\\ 
+\\ DHT_OUT ( -- )
+\\ Imposta il pin in modalità output
+\\ 
 : DHT_OUT DHT_PIN_OUT ENABLE_PIN ;
-  
-\ DHT_PIN_INP ( -- )
-\ Scorciatoia per settare i parametri utili ad impostare la FSEL per il pin utilizzato in modalità input
- 
+\\  
+\\ DHT_PIN_INP ( -- )
+\\ Scorciatoia per settare i parametri utili ad impostare la FSEL per il pin utilizzato in modalità input
+\\ 
 : DHT_PIN_INP GPIO18_FSEL GPIO18_INP GPIO18_GPFSEL ;
- 
-\ DHT_INPUT ( -- )
-\ Imposta il pin in modalità input
- 
+\\ 
+\\ DHT_INPUT ( -- )
+\\ Imposta il pin in modalità input
+\\ 
 : DHT_INPUT DHT_PIN_INP ENABLE_PIN ;
-
-\ SETUP_SENSOR (  --  )
-\ Esegue le istruzioni necessarie a mandare lo start signal al sensore, necessario al rilevamento da parte di
-\ quest'ultimo. Nello specifico:
-\ - imposta il pin in output mode
-\ - attiva il bit associato al pin nel GPCLR opportuno e attende 1 ms
-\ - attiva il bit associato al pin nel GPSET opportuno
-\ - imposta il pin in input mode
- 
+\\ SETUP_SENSOR (  --  )
+\\ Esegue le istruzioni necessarie a mandare lo start signal al sensore, necessario al rilevamento da parte di
+\\ quest'ultimo. Nello specifico:
+\\ - imposta il pin in output mode
+\\ - attiva il bit associato al pin nel GPCLR opportuno e attende 1 ms
+\\ - attiva il bit associato al pin nel GPSET opportuno
+\\ - imposta il pin in input mode
+\\ 
 : SETUP_SENSOR 
     DHT_OUT
     GPIO18 DUP GPCLR !
     1 MILLISECONDS CLK_DELAY
     GPIO18 DUP GPSET !
     DHT_INPUT ;
- 
-\ READ_BIT ( -- )
-\ Viene usata per determinare se il sensore ha inviato al MCU uno 0 o un 1.
-\ Calcoliamo la differenza tra il momento in cui avviene un pullup (fine dell'inizio trasmissione)
-\ e quello, precedente, in cui è avvenuto un pulldown, che dev'essere almeno di 50 us, 
-\ la soglia che permette di affermare se è stato trasmesso uno 0 o un 1.
- 
+\\ 
+\\ READ_BIT ( -- )
+\\ Viene usata per determinare se il sensore ha inviato al MCU uno 0 o un 1.
+\\ Calcoliamo la differenza tra il momento in cui avviene un pullup (fine dell'inizio trasmissione)
+\\ e quello, precedente, in cui è avvenuto un pulldown, che dev'essere almeno di 50 us, 
+\\ la soglia che permette di affermare se è stato trasmesso uno 0 o un 1.
+\\ 
 : READ_BIT DUP WAIT_PULLDOWN TIMER_COUNT @ SWAP WAIT_PULLUP TIMER_COUNT @ SWAP - 50 > IF 1 ELSE 0 THEN ;
- 
-\ READ_DATA ( -- )
-\ Viene usata per effettuare la lettura di 40 bit per volta, conservando i primi 32 come dati effettivi nella
-\ variabile DATA, mentre gli altri 8 saranno usati come checksum nella variabile omonima.
- 
+\\
+\\ READ_DATA ( -- )
+\\ Viene usata per effettuare la lettura di 40 bit per volta, conservando i primi 32 come dati effettivi nella
+\\ variabile DATA, mentre gli altri 8 saranno usati come checksum nella variabile omonima.
+\\ 
 : READ_DATA 
     GPIO18 N_GPIO DUP DUP DUP WAIT_PULLDOWN WAIT_PULLUP
     39 BEGIN
@@ -808,10 +884,10 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
         OR SWAP !
         1 - DUP 0 >
     WHILE REPEAT 2DROP ;
- 
-\ GET_HUMIDITY ( -- )
-\ Viene usata per ricavare la parte intera e la parte frazionaria dell'umidità dalla variabile DATA
- 
+\\ 
+\\ GET_HUMIDITY ( -- )
+\\ Viene usata per ricavare la parte intera e la parte frazionaria dell'umidità dalla variabile DATA
+\\ 
 : GET_HUMIDITY 
     DATA @ 16 RSHIFT 10 /MOD DUP DUP MIN_HUM >= SWAP MAX_HUM <= AND
     IF
@@ -820,10 +896,10 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
     ELSE
         2DROP
     THEN ;
- 
-\ GET_TEMPERATURE ( -- )
-\ Viene usata per ricavare la parte intera e la parte frazionaria della temperatura dalla variabile DATA
- 
+\\ 
+\\ GET_TEMPERATURE ( -- )
+\\ Viene usata per ricavare la parte intera e la parte frazionaria della temperatura dalla variabile DATA
+\\ 
 : GET_TEMPERATURE 
     DATA @ 65535 AND 10 /MOD DUP DUP MIN_TEMP >= SWAP MAX_TEMP <= AND
     IF
@@ -832,37 +908,64 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
     ELSE
         2DROP
     THEN ;
- 
-\ GET_READING ( -- )
-\ Parola comprensiva per ricavare i valori interi e decimali di temperatura e umidità
- 
+\\ 
+\\ GET_READING ( -- )
+\\ Parola comprensiva per ricavare i valori interi e decimali di temperatura e umidità
+\\ 
 : GET_READING GET_HUMIDITY GET_TEMPERATURE ;
- 
-\ HUMIDITY>CMD ( -- )
-\ Parola usata per stampare su riga di comando il valore di umidità ricavato
- 
-: HUMIDITY>CMD S" Humidity: " PRINT_STR HUMIDITY_IP ? S" . " PRINT_STR HUMIDITY_DP ? S" %" PRINT_STR ;
- 
-\ TEMPERATURE>CMD ( -- )
-\ Parola usata per stampare su riga di comando il valore di temperatura ricavato
- 
-: TEMPERATURE>CMD S" Temperature: " PRINT_STR TEMPERATURE_IP ? S" . " PRINT_STR TEMPERATURE_DP ? S" *C" PRINT_STR ;
- 
-\ DHT>CMD ( -- )
-\ Parola comprensiva per stampare su riga di comando i valori di temperatura e di umidità ricavati
- 
-: DHT>CMD TEMPERATURE>CMD S"  - " PRINT_STR HUMIDITY>CMD CR ;
- 
-\ MEASURE ( -- )
-\ Parola comprensiva per l'esecuzione dell'intero processo per una singola misurazione del sensore
- 
+\\ 
+\\ HUMIDITY>CMD ( -- )
+\\ Parola usata per stampare su riga di comando il valore di umidità ricavato
+\\ 
+: HUMIDITY>CMD ." Humidity: " HUMIDITY_IP ? ." . " HUMIDITY_DP ? ." %" ;
+\\
+\\ HUMIDITY>LCD ( -- )
+\\ Parola usata per stampare su display LCD il valore di umidità ricavato
+\\ 
+: HUMIDITY>LCD 
+    HUMIDITY_IP 10 /MOD ROW3 INT_MSG
+    HUMIDITY_DP ROW3 DEC_MSG ;
+\\  
+\\ TEMPERATURE>CMD ( -- )
+\\ Parola usata per stampare su riga di comando il valore di temperatura ricavato
+\\ 
+: TEMPERATURE>CMD ." Temperature: " TEMPERATURE_IP ? ." . " TEMPERATURE_DP ? ." *C" ;
+\\ 
+\\ TEMPERATURE>LCD ( -- )
+\\ Parola usata per stampare su display LCD il valore di temperatura ricavato
+\\ 
+: TEMPERATURE>LCD 
+    TEMPERATURE_IP 10 /MOD ROW2 INT_MSG
+    TEMPERATURE_DP ROW2 DEC_MSG ;
+\\ 
+\\ DHT>CMD ( -- )
+\\ Parola comprensiva per stampare su riga di comando i valori di temperatura e di umidità ricavati
+\\ 
+: DHT>CMD TEMPERATURE>CMD ."  - " HUMIDITY>CMD CR ;
+\\ 
+\\ MEASURE ( -- )
+\\ Parola comprensiva per l'esecuzione dell'intero processo per una singola misurazione del sensore
+\\ 
 : MEASURE 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD DROP ;
+
+: DHT_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." dht.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE button.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+DHT_OK
  
 ```
 
 ### button.f
 
 Il file permette di utilizzare il pulsante di reset previsto dal sistema. Contiene la definizione di parole e costanti utilizzate per impostare opportunamente i registri necessari e per determinare se il pulsante è stato premuto.
+
+Segue il codice sorgente, in cui sono chiariti passi operativi e le ratio dietro le scelte implementative.
 
 ```
 HEX
