@@ -4,7 +4,7 @@
 
 I software embedded rappresentano il cuore invisibile di molte delle tecnologie che utilizziamo quotidianamente. Sono software specializzati, incorporati in dispositivi elettronici e macchinari industriali, progettati per eseguire specifiche funzioni senza l'interfaccia di un utente. Questi sistemi sono onnipresenti, dall'elettronica domestica agli impianti industriali, e forniscono l'automazione e il controllo necessari per semplificare le nostre vite e migliorare l'efficienza in molti settori.
 
-Immaginiamo una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. Valori come **temperatura** ed **umidità** devono essere attentamente monitorati e regolati per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa. 
+Immaginiamo una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. Valori come **temperatura** ed **umidità** devono essere attentamente monitorati e regolati per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa.
 
 In particolar modo, la **temperatura** ambientale dovrebbe essere mantenuta entro i **20-24 °C**, dato che un'elevata temperatura può causare surriscaldamento e danneggiare gli apparati, mentre una temperatura troppo bassa potrebbe causare condensa o problemi di umidità.
 
@@ -252,19 +252,11 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono p
 
 <img src='https://learningscratch519975251.files.wordpress.com/2021/04/button-fig-1.png?w=536' width="320" style='float:left; margin-right: 10px; border: 1px solid; margin-right: 15px'>
 
-Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli. 
+Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli.
 
 Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pull-up (il cui schema esemplificativo è presentato in figura), per cui, in fase di riposo (pulsante non premuto), la corrente può circolare, permettendo al sistema di funzionare, mentre, a seguito di una pressione, viene effettuata un'azione bloccante rispetto alla corrente, che impedisce al sistema di funzionare, mandandolo in reset.
 
 <img src='https://global.discourse-cdn.com/nvidia/original/3X/b/8/b886440071a627ea9efbae5b2638a8625214d9ca.png' width="320" style='float:right; margin-right: 10px; border: 1px solid; margin-right: 15px'>
-
-
-
-
-
-
-
-
 
 Nella tabella sottostante sono riportati i pin GPIO attraverso i quali viene pilotato il pulsante:
 
@@ -283,10 +275,6 @@ Si tratta di una ventola di dimensioni 60x60x10 mm, utilizzata per dissipare il 
 1. **GND (Ground)** : Questo pin è collegato alla terra e serve come riferimento elettrico per il circuito della ventola.
 2. **VCC (Voltage Common Collector)** : Questo pin fornisce l'alimentazione elettrica alla ventola e deve essere collegato a una sorgente di alimentazione a 5V per far funzionare correttamente la ventola.
 3. **GPIO (General-Purpose Input/Output)** : Questo pin è utilizzato per controllare la ventola. Può essere collegato a una porta GPIO di un microcontrollore o di un computer, come il Raspberry Pi, per regolare la velocità della ventola o attivarla/disattivarla in base alle necessità di raffreddamento.
-
-
-
-
 
 La ventola è connessa al Pi secondo la seguente configurazione:
 
@@ -620,7 +608,7 @@ Il file è necessario in quanto contiene alcune funzioni utilizzate in tutto il 
 
 Il file è necessario in quanto contiene tutte le definizioni di parole e costanti necessarie ad operare con i pin GPIO del Raspberry&trade; Pi.
 
-### timer.f
+### time.f
 
 Il file è necessario in quanto abbiamo deciso che la gestione dei tempi meritasse un modulo a sé stante. In esso sono contenute parole e costanti necessarie alla temporarizzazione degli eventi nel sistema.
 
@@ -676,6 +664,12 @@ DECIMAL
 
 Il file permette la gestione della coppia di LED usati nel sistema proposto, comprendendo parole e costanti per l'accensione o per il lampeggiamento dei LED.
 
+I LED rappresentano uno dei dispositivi di output più semplici e costituiscono una base fondamentale per implementare la selezione delle funzioni di un GPIO (General Purpose Input/Output). 
+
+
+Nel contesto dell'attivazione di un GPIO in modalità di output, due registri cruciali sono coinvolti: **GPSETn** e **GPCLRn**.
+
+
 ```
 
 ```
@@ -683,7 +677,6 @@ Il file permette la gestione della coppia di LED usati nel sistema proposto, com
 ### i2c.f
 
 Il file permette di utilizzare il protocollo I2C in combinata con un display LCD grazie al backpack. Contiene parole e costanti utilizzate per implementare il suddetto protocollo, comprese quelle per impostare i registri del controller BSC su valori opportuni per abilitare il trasferimento di dati dal MCU al display in uno schema master-slave.
-
 
 ```
 
