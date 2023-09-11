@@ -1,14 +1,5 @@
 
-: MAIN_OK 
-    S" TEST-MODE" FIND NOT IF 
-        CR ."           **********" CR
-        ." main.f CARICATO CORRETTAMENTE" CR 
-        ." DIGITARE COMANDO START SUL TERMINALE PER AVVIARE IL SISTEMA" CR 
-        ." OK " CR
-        ."           **********" CR
-    THEN ;
-
-MAIN_OK
+DECIMAL
 
 : MAIN
     INIT_I2C
@@ -44,3 +35,14 @@ MAIN_OK
         2 SECONDS DELAY
         RESET_BTN
     UNTIL IS_PRESSED ;
+
+: MAIN_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." main.f CARICATO CORRETTAMENTE" CR 
+        ." DIGITARE COMANDO START SUL TERMINALE PER AVVIARE IL SISTEMA" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+MAIN_OK

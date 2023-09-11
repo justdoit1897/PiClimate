@@ -38,7 +38,7 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ DEC_MSG ( n x -- )
 \\ Parola usata per stampare su schermo la parte decimale di un valore (temperatura/umidità)
 \\ 
-: DEC_MSG 16 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
+: DEC_MSG 16 SET_CURSOR NUMBER >LCD ;
 \\ 
 \\ WAIT_PULLDOWN ( n_gpio --  )
 \\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 1 a 0 nel
@@ -183,14 +183,6 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ Parola comprensiva per l'esecuzione dell'intero processo per una singola misurazione del sensore
 \\ 
 : MEASURE 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD DROP ;
-\\
-\\ Parole usate per stampare su display LCD messaggi di avvertimento in presenza di condizioni non ottimali
-\\  
-: LOW_TEMP_MSG CLEAR_DISPLAY CMD >LCD S" La temperatura è inferiore a 20 gradi Celsius."  PRINT_STR ;
-: HIGH_TEMP_MSG CLEAR_DISPLAY CMD >LCD S" La temperatura è superiore a 24 gradi Celsius."  PRINT_STR ;
-: LOW_HUM_MSG CLEAR_DISPLAY S" L'umidità è inferiore al 40%." PRINT_STR;
-: HIGH_HUM_MSG CLEAR_DISPLAY S" L'umidità è superiore al 60%." PRINT_STR;
-\\ 
 
 : DHT_OK 
     S" TEST-MODE" FIND NOT IF 

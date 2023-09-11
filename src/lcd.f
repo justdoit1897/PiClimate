@@ -84,6 +84,8 @@ ROW2 14 +           CONSTANT ROW4
 0F                  CONSTANT CURSOR_ON
 0E                  CONSTANT CURSOR_BLINK_OFF
 
+: NUMBER 30 OR ;
+
 VARIABLE COL
 
 \ Word creata con lo scopo di posizionare il cursore in un punto specifico del display, che viene visto come una matrice 4x20. 
@@ -141,6 +143,8 @@ VARIABLE STR_LEN
     UNTIL
     DROP ;
 
+\ *** Words utilizzate per il boot del sistema ***
+
 ( -- )
 : SUBJECT
     CLEAR_DISPLAY CMD >LCD
@@ -182,9 +186,12 @@ VARIABLE STR_LEN
     ROW2 2 SET_CURSOR S" Inizializzazione " PRINT_STR
     ROW3 6 SET_CURSOR S" in corso" PRINT_STR ;
 
+\ *** Words utilizzate per l'output del sensore DHT22 ***
+
 ( -- )
 : CELSIUS 
     ROW2 CMD 10# 18 SET_CURSOR 43 DF PRINT ;
+
 ( -- )
 : TEMP 
     ROW2 CMD >LCD
@@ -201,6 +208,28 @@ VARIABLE STR_LEN
     CLEAR_DISPLAY CMD >LCD
     TEMP
     HUM ;
+
+\ *** Words per la segnalazione dei warning ***
+
+: WARNING
+    ROW1 3 SET_CURSOR S" ! ATTENZIONE !" PRINT_STR ;
+
+: LOW_TEMP_MSG
+    WARNING
+    ROW3 ;
+
+: LOW_HUM_MSG
+    WARNING
+    ROW3 1 SET_CURSOR S" Movimento rilevato" PRINT_STR          3 SECONDS DELAY
+    CLEAR_DISPLAY CMD >LCD
+    OPEN ;
+
+: LOW_TEMP_MSG CLEAR_DISPLAY CMD >LCD S" La temperatura è inferiore a 20 gradi Celsius."  PRINT_STR ;
+: HIGH_TEMP_MSG CLEAR_DISPLAY CMD >LCD S" La temperatura è superiore a 24 gradi Celsius."  PRINT_STR ;
+: LOW_HUM_MSG CLEAR_DISPLAY S" L'umidità è inferiore al 40%." PRINT_STR;
+: HIGH_HUM_MSG CLEAR_DISPLAY S" L'umidità è superiore al 60%." PRINT_STR;
+
+\ *** Word(s) di inizializzazione display LCD ***
 
 ( -- )
 : INIT_LCD 
