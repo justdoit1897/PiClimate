@@ -153,7 +153,7 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ HUMIDITY>CMD ( -- )
 \\ Parola usata per stampare su riga di comando il valore di umidità ricavato
 \\ 
-: HUMIDITY>CMD S" Humidity: " PRINT_STR HUMIDITY_IP ? S" . " PRINT_STR HUMIDITY_DP ? S" %" PRINT_STR ;
+: HUMIDITY>CMD ." Humidity: " HUMIDITY_IP ? ." . " HUMIDITY_DP ? ." %" ;
 \\
 \\ HUMIDITY>LCD ( -- )
 \\ Parola usata per stampare su display LCD il valore di umidità ricavato
@@ -165,7 +165,7 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ TEMPERATURE>CMD ( -- )
 \\ Parola usata per stampare su riga di comando il valore di temperatura ricavato
 \\ 
-: TEMPERATURE>CMD S" Temperature: " PRINT_STR TEMPERATURE_IP ? S" . " PRINT_STR TEMPERATURE_DP ? S" *C" PRINT_STR ;
+: TEMPERATURE>CMD ." Temperature: " TEMPERATURE_IP ? ." . " TEMPERATURE_DP ? ." *C" ;
 \\ 
 \\ TEMPERATURE>LCD ( -- )
 \\ Parola usata per stampare su display LCD il valore di temperatura ricavato
@@ -177,7 +177,7 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ DHT>CMD ( -- )
 \\ Parola comprensiva per stampare su riga di comando i valori di temperatura e di umidità ricavati
 \\ 
-: DHT>CMD TEMPERATURE>CMD S"  - " PRINT_STR HUMIDITY>CMD CR ;
+: DHT>CMD TEMPERATURE>CMD ."  - " HUMIDITY>CMD CR ;
 \\ 
 \\ MEASURE ( -- )
 \\ Parola comprensiva per l'esecuzione dell'intero processo per una singola misurazione del sensore
