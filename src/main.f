@@ -7,11 +7,11 @@ DECIMAL
     INIT_FAN
     INIT_LEDS
     INIT_BTN
-    TEMP_HUM_MSG
     BEGIN
         MEASURE
         TEMPERATURE_IP 20 24 WITHIN HUMIDITY_IP 40 60 WITHIN AND 
         TRUE =  IF
+            TEMP_HUM_MSG
             TEMPERATURE>LCD HUMIDITY>LCD
             GREEN LED OFF
         ELSE 
@@ -30,7 +30,6 @@ DECIMAL
                 HIGH_HUM_MSG
                 6 BLINK
             THEN
-            TEMP_HUM_MSG
         THEN
         2 SECONDS DELAY
         RESET_BTN
