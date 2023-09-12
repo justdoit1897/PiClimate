@@ -276,10 +276,6 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali viene pil
 
 <img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='float:left; margin-top:50px; border: 1px solid; margin-right: 30px'>
 
-
-
-
-
 Si tratta di una ventola di dimensioni 60x60x10 mm, utilizzata per dissipare il calore e mantenere una temperatura ottimale all'interno di dispositivi elettronici. È composta da 3 pin:
 
 1. **GND (Ground)** : Questo pin è collegato alla terra e serve come riferimento elettrico per il circuito della ventola.
@@ -466,131 +462,25 @@ clean:
 	rm -f final.f
 
 code.f:
-	cat ./src/useful_jf.f >> code.f
-	cat ./src/utils.f >> code.f
-	cat ./src/gpio_FT.f >> code.f
-	cat ./src/timer.f >> code.f
-	cat ./src/dht_sensor.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/jonesforth.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/utils.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/gpio.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/time.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/i2c.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/lcd.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/led.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/button.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/dht.f >> code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/main.f >> code.f
 	grep -v '^ *\\' code.f > final.f
-```
 
-**DEFINIRE LISTA E NOMI FILE IN SEGUITO**
+```
 
 ### jonesforth.f
 
-Questo file contiene parole normalmente definite in FORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel [repository](`https://github.com/organix/pijFORTHos`) Github.
+Questo file contiene parole normalmente definite in JonesFORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel [repository](`https://github.com/organix/pijFORTHos`) Github.
 
-```
-: '\n' 10 ;
-: BL 32 ;
-: ':' [ CHAR : ] LITERAL ;
-: ';' [ CHAR ; ] LITERAL ;
-: '(' [ CHAR ( ] LITERAL ;
-: ')' [ CHAR ) ] LITERAL ;
-: '"' [ CHAR " ] LITERAL ;
-: 'A' [ CHAR A ] LITERAL ;
-: '0' [ CHAR 0 ] LITERAL ;
-: '-' [ CHAR - ] LITERAL ;
-: '.' [ CHAR . ] LITERAL ;
-: ( IMMEDIATE 1 BEGIN KEY DUP '(' = IF DROP 1+ ELSE ')' = IF 1- THEN THEN DUP 0= UNTIL DROP ;
-: SPACES ( n -- ) BEGIN DUP 0> WHILE SPACE 1- REPEAT DROP ;
-: WITHIN -ROT OVER <= IF > IF TRUE ELSE FALSE THEN ELSE 2DROP FALSE THEN ;
-: ALIGNED ( c-addr -- a-addr ) 3 + 3 INVERT AND ;
-: ALIGN HERE @ ALIGNED HERE ! ;
-: C, HERE @ C! 1 HERE +! ;
-: S" IMMEDIATE ( -- addr len )
-	STATE @ IF
-		' LITS , HERE @ 0 ,
-		BEGIN KEY DUP '"'
-                <> WHILE C, REPEAT
-		DROP DUP HERE @ SWAP - 4- SWAP ! ALIGN
-	ELSE
-		HERE @
-		BEGIN KEY DUP '"'
-                <> WHILE OVER C! 1+ REPEAT
-		DROP HERE @ - HERE @ SWAP
-	THEN
-;
-: ." IMMEDIATE ( -- )
-	STATE @ IF
-		[COMPILE] S" ' TELL ,
-	ELSE
-		BEGIN KEY DUP '"' = IF DROP EXIT THEN EMIT AGAIN
-	THEN
-;
-: DICT WORD FIND ;
-: VALUE ( n -- ) WORD CREATE DOCOL , ' LIT , , ' EXIT , ;
-: TO IMMEDIATE ( n -- )
-        DICT >DFA 4+
-	STATE @ IF ' LIT , , ' ! , ELSE ! THEN
-;
-: +TO IMMEDIATE
-        DICT >DFA 4+
-	STATE @ IF ' LIT , , ' +! , ELSE +! THEN
-;
-: ID. 4+ COUNT F_LENMASK AND BEGIN DUP 0> WHILE SWAP COUNT EMIT SWAP 1- REPEAT 2DROP ;
-: ?HIDDEN 4+ C@ F_HIDDEN AND ;
-: ?IMMEDIATE 4+ C@ F_IMMED AND ;
-: WORDS LATEST @ BEGIN ?DUP WHILE DUP ?HIDDEN NOT IF DUP ID. SPACE THEN @ REPEAT CR ;
-: FORGET DICT DUP @ LATEST ! HERE ! ;
-: CFA> LATEST @ BEGIN ?DUP WHILE 2DUP SWAP < IF NIP EXIT THEN @ REPEAT DROP 0 ;
-: SEE
-	DICT HERE @ LATEST @
-	BEGIN 2 PICK OVER <> WHILE NIP DUP @ REPEAT
-	DROP SWAP ':' EMIT SPACE DUP ID. SPACE
-	DUP ?IMMEDIATE IF ." IMMEDIATE " THEN
-	>DFA BEGIN 2DUP
-        > WHILE DUP @ CASE
-		' LIT OF 4 + DUP @ . ENDOF
-		' LITS OF [ CHAR S ] LITERAL EMIT '"' EMIT SPACE
-			4 + DUP @ SWAP 4 + SWAP 2DUP TELL '"' EMIT SPACE + ALIGNED 4 -
-		ENDOF
-		' 0BRANCH OF ." 0BRANCH ( " 4 + DUP @ . ." ) " ENDOF
-		' BRANCH OF ." BRANCH ( " 4 + DUP @ . ." ) " ENDOF
-		' ' OF [ CHAR ' ] LITERAL EMIT SPACE 4 + DUP @ CFA> ID. SPACE ENDOF
-		' EXIT OF 2DUP 4 + <> IF ." EXIT " THEN ENDOF
-		DUP CFA> ID. SPACE
-	ENDCASE 4 + REPEAT
-	';' EMIT CR 2DROP
-;
-: :NONAME 0 0 CREATE HERE @ DOCOL , ] ;
-: ['] IMMEDIATE ' LIT , ;
-: EXCEPTION-MARKER RDROP 0 ;
-: CATCH ( xt -- exn? ) DSP@ 4+ >R ' EXCEPTION-MARKER 4+ >R EXECUTE ;
-: THROW ( n -- ) ?DUP IF
-	RSP@ BEGIN DUP R0 4-
-        < WHILE DUP @ ' EXCEPTION-MARKER 4+
-		= IF 4+ RSP! DUP DUP DUP R> 4- SWAP OVER ! DSP! EXIT THEN
-	4+ REPEAT DROP
-	CASE
-		0 1- OF ." ABORTED" CR ENDOF
-		." UNCAUGHT THROW " DUP . CR
-	ENDCASE QUIT THEN
-;
-: ABORT ( -- ) 0 1- THROW ;
-: PRINT-STACK-TRACE
-	RSP@ BEGIN DUP R0 4-
-        < WHILE DUP @ CASE
-		' EXCEPTION-MARKER 4+ OF ." CATCH ( DSP=" 4+ DUP @ U. ." ) " ENDOF
-		DUP CFA> ?DUP IF 2DUP ID. [ CHAR + ] LITERAL EMIT SWAP >DFA 4+ - . THEN
-	ENDCASE 4+ REPEAT DROP CR
-;
-: BINARY ( -- ) 2 BASE ! ;
-: OCTAL ( -- ) 8 BASE ! ;
-: 2# BASE @ 2 BASE ! WORD NUMBER DROP SWAP BASE ! ;
-: 8# BASE @ 8 BASE ! WORD NUMBER DROP SWAP BASE ! ;
-: # ( b -- n ) BASE @ SWAP BASE ! WORD NUMBER DROP SWAP BASE ! ;
-: UNUSED ( -- n ) PAD HERE @ - 4/ ;
-: WELCOME
-	S" TEST-MODE" FIND NOT IF
-		." JONESFORTH VERSION " VERSION . CR
-		UNUSED . ." CELLS REMAINING" CR
-		." OK "
-	THEN
-;
-WELCOME
-HIDE WELCOME
-```
+Contenuto interessante per il progetto all'interno del file è sicuramente l'insieme di parole utilizzate per la **gestione delle stringhe**, sia per la loro invocazione come immediate (`."`) che per la loro invocazione sullo stack (`.S"`).
 
 ### utils.f
 
@@ -605,14 +495,44 @@ Questo file contiene alcune word di utilità, che vengono utilizzate nel resto d
 ### gpio.f
 
 Questo file contiene tutte le definizioni di parole e costanti necessarie ad operare con i pin GPIO del Raspberry&trade; Pi. In esso sono state definite le costanti utili a identificare gli **indirizzi** dei principali registri su cui abbiamo operato (es. `GPFSEL0`, `GPSEL1`), oltre che gli indirizzi base per particolari set di registri, utilizzati all'interno di alcune parole per ricavare gli indirizzi esatti degli altri registri dello stesso set (es. la costante `GPLEV0` che, usata insieme alla parola `GPLEV` permette di ricavare anche l'indirizzo del registro `GPLEV1`).
-All'interno del file sono definite anche le costanti associate ai **pin GPIO**, nello specifico identificati da un bit posto a 1 shiftato del loro valore numerico (es. `GPIO18` identifica il pin GPIO 18, ed è definito da un 1 shiftato a sinistra di 18 bit), utilizzando una notazione molto comune all'interno dei registri GPIO che permette di ridurre il numero di calcoli effettuati *on-the-fly* (es. attivare un pin GPIO posto in output può essere espresso banalmente come `GPIO7 GPSET0 !`).
-Le ultime costanti che sono definite riguardano i possibili valori della FSEL per una specifica tripletta di bit, ricordando che nei registri `GPFSEL` la FSEL di ogni pin è gestita da una tripletta di bit opportunamente codificata (es. `INPUT` è associato alla tripletta `0b000`, dunque equivale al valore `0`).
+All'interno del file sono definite anche le costanti associate ai **pin GPIO**, nello specifico identificati da un bit posto a 1 shiftato del loro valore numerico (es. `18 BILS CONSTANT GPIO18` identifica il pin GPIO 18), utilizzando una notazione molto comune all'interno dei registri GPIO che permette di ridurre il numero di calcoli effettuati *on-the-fly* (es. attivare un pin GPIO posto in output può essere espresso banalmente come `GPIO7 GPSET0 !`).
+Le ultime costanti che sono definite riguardano i possibili valori della FSEL per una specifica tripletta di bit, ricordando che nei registri `GPFSEL` la FSEL di ogni pin è gestita da una tripletta di bit opportunamente codificata (es. `0 CONSTANT INPUT` è associata alla tripletta `0b000`, dunque equivale al valore `0`, `4 CONSTANT ALT0` alla tripletta `0b100`, dunque al valore `4`, ecc.).
 
-Successivamente, possiamo trovare le definizioni di parole utilizzate per la **manipolazione dei pin GPIO** al fine di ricavare informazioni extra, come `N_GPIO` per ottenere il numero del pin associato ad una costante `GPIOx` o `GPSET` per ricavare l'indirizzo del registro `GPSET0/1` cui fa riferimento una costante `GPIOx`, più altre propriamente utilizzate per calcolare i valori da usare come parametri per altre parole, come `GPIO_LSB` e `FSEL_MASK` usate, rispettivamente, per calcolare la posizione del bit meno significativo nella tripletta usata nella gestione della FSEL e la maschera da utilizzare nella scrittura di una FSEL all'interno di un registro `GPFSEL`.
-Interessanti sono, infine, le parole `ACTIVATE` e la sua controparte `DEACTIVATE`. Per quanto riguarda la prima, si tratta di una parola che opera a triplette di parametri, come evidenziato dalla sua definizione in stack notation `( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )`, che permette di rendere effettive le modifiche desiderate nei registri GPFSEL per un blocco di pin passato in input. Al contrario, `DEACTIVATE` permette di effettuare una *clear function* per una serie di pin passati in input, rendendoli disponibili a successive modifiche.
+Successivamente, possiamo trovare le definizioni di parole utilizzate per la **manipolazione dei pin GPIO** al fine di ricavare informazioni extra, come `N_GPIO` per ottenere il numero del pin associato ad una costante `GPIOx`, come si vede nel seguente listato
 
 ```
-: ACTIVATE 
+: N_GPIO 
+    0 SWAP 
+    BEGIN 
+        DUP 2 MOD 
+        0 = IF 
+            1 RSHIFT SWAP 1+ SWAP 
+        ELSE 
+        THEN 
+        DUP 2 = 
+    UNTIL 
+    DROP 1+ ;
+```
+o `GPSET` per ricavare l'indirizzo del registro `GPSET0/1` cui fa riferimento una costante `GPIOx`, visibile nel seguente listato
+
+```
+: GPSET ( gpion -- gpset0/1 ) N_GPIO 32 / 4 * GPSET0 + ;
+```
+
+Sono presenti altre parole propriamente utilizzate per calcolare i valori da usare come parametri per altre parole, come `GPIO_LSB` e `FSEL_MASK`, riportate nel seguente listato 
+
+```
+: GPIO_LSB ( gpion -- fsel_lsb ) N_GPIO 10 MOD 3 * ;
+
+: FSEL_MASK ( gpion -- fsel_mask ) DUP DUP 2 + >R 1 + >R BILS R> BILS OR R> BILS OR ;
+
+```
+
+Queste ultime parole servono, rispettivamente, per calcolare la posizione del bit meno significativo nella tripletta usata nella gestione della FSEL e la maschera da utilizzare nella scrittura di una FSEL all'interno di un registro `GPFSELx`.
+Interessanti sono, infine, le parole `ACTIVATE` e la sua controparte `DEACTIVATE`. Per quanto riguarda la prima, si tratta di una parola che opera a triplette di parametri, come evidenziato dalla sua definizione in stack notation `( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )`, che permette di rendere effettive le modifiche desiderate nei registri GPFSEL per un blocco di pin passato in input. Al contrario, `DEACTIVATE` permette di effettuare una *clear function* per una serie di pin passati in input (secondo lo stesso ordine nello stack di `ACTIVATE`), rendendoli disponibili a successive modifiche.
+
+```
+: ACTIVATE ( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )
     DEPTH 3 /
     TIMES !
     BEGIN
@@ -621,7 +541,7 @@ Interessanti sono, infine, le parole `ACTIVATE` e la sua controparte `DEACTIVATE
         TIMES @ 0=                          \ CONDIZIONE DI USCITA
     UNTIL ;
 
-: DEACTIVATE
+: DEACTIVATE ( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )
     DEPTH 3 /
     TIMES !
     BEGIN
@@ -634,73 +554,43 @@ Interessanti sono, infine, le parole `ACTIVATE` e la sua controparte `DEACTIVATE
 Le due parole fanno uso massiccio di altre due parole definite in questo file, ossia `ENABLE_PIN` e `DISABLE_PIN`, che effettuano rispettivamente un'operazione di **set function** e di **clear function** per apportare le modifiche relative ad un pin GPIO nel rispettivo registro `GPFSEL`.
 
 ```
-: ENABLE_PIN
-    DUP                 ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 GPFSEL2 )
-    >R @                ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 @ )
-    -ROT                ( GPFSEL2 @ GPIOn_FSEL GPIOn_XMODE )
-    >R                  ( GPFSEL2 @ GPIOn_FSEL )
-    BIC               
-    R>                  ( [ GPFSEL2 @ GPIOn_FSEL BIC ] GPIOn_XMODE )
-    OR 
-    R> ! ;
+: ENABLE_PIN ( gpion_fsel gpion_mode gpfselm -- ) DUP >R @ -ROT >R BIC R> OR R> ! ;
 
-: DISABLE_PIN
-    NIP
-    DUP >R
-    @ SWAP BIC
-    R> ! ;
+: DISABLE_PIN ( gpion_fsel gpion_mode gpfselm -- ) NIP DUP >R @ SWAP BIC R> ! ;
 ```
 
 ### time.f
 
 Il file è necessario in quanto abbiamo deciso che la gestione dei tempi meritasse un modulo a sé stante. In esso sono contenute parole e costanti necessarie alla temporarizzazione degli eventi nel sistema.
-All'interno del file sono presenti due modi distinti per la gestione dei tempi e, nello specifico, per la generazione di ritardi. Con la parola `DELAY` si è scelto un approccio più semplice, tra l'altro visto a lezione, secondo cui il sistema viene messo in uno stato di **busy-wait**, nel quale viene eseguito un numero di operazioni semplici (tipicamente una sottrazione) pari al valore passato in input.
+All'interno del file sono presenti due modi distinti per la gestione dei tempi e, nello specifico, per la generazione di ritardi. Con la parola `DELAY` si è scelto un **approccio più semplice**, tra l'altro visto a lezione, secondo cui il sistema viene messo in uno stato di **busy-wait**, nel quale viene eseguito un numero di operazioni semplici (tipicamente una sottrazione) pari al valore passato in input.
 
-Per alcuni dispositivi, però, questo approccio non ha sortito gli effetti desiderati, dunque si è reso necessario un approccio più preciso e che rendesse la temporizzazione degli eventi quanto più vincolato all'hardware del Raspberry&trade; Pi; dunque, abbiamo optato per usare il set di registri del **System Timer**.
+```
+: DELAY ( nops -- ) BEGIN 1 - DUP 0 = UNTIL DROP ;
+```
+
+Per alcune periferiche, però, questo approccio non ha sortito gli effetti desiderati, dunque si è reso necessario un approccio più preciso e che rendesse la temporizzazione degli eventi quanto più vincolato all'hardware del Raspberry&trade; Pi; dunque, abbiamo optato per usare il set di registri del **System Timer**.
 Questa periferica interna è dotata di quattro registri a 32 bit, detti **canali**, e due registri, `CLO` e `CHI`, che fungono da contatori del tempo che scorre dall'accensione del sistema. Nello specifico, questi due registri permettono di definire una variante del fattore di ritardo, in cui si utilizza come fonte dei dati proprio uno di questi registri, ossia `CLO`, e che segue un approccio molto semplice: si avvia il timer a partire dal valore corrente del registro e, all'interno di ogni iterazione di un ciclo, si valuta che il valore attuale differisca da quello di partenza per un numero di microsecondi passato in input. Questo secondo approccio è riscontrabile nella parola `CLK_DELAY`, in cui si è scelto di semplificare la lettura del codice attraverso la definizione di un'altra parola, `CURRENT_TIME`.
-
-All'interno del file sono presenti anche funzioni basilari di utilità che permettono, per esempio, la conversione di un certo numero di secondi/millisecondi nello specifico numero di microsecondi da utilizzare in fase di timing (`MILLISECONDS` e `SECONDS`).
 
 ```
 HEX
  
-\ Per avere una gestione dei tempi quanto più real-time, usiamo anche il System Timer del RPi.
-\ Definizione costanti System Timer
 RPI1_BASE 3000 +    CONSTANT TIMER_BASE
 TIMER_BASE 4 +      CONSTANT TIMER_COUNT
- 
-DECIMAL
- 
-\ MILLISECONDS ( ms -- us )
-\ Permette di convertire in microsecondi un numero di millisecondi passato in input
- 
-: MILLISECONDS 1000 * ;
- 
-\ SECONDS ( s -- us )
-\ Permette di convertire in microsecondi un numero di secondi passato in input
- 
-: SECONDS 1000 * MILLISECONDS ;
- 
-\ DELAY ( nops -- )
-\ Manda il sistema in uno stato di busy-wait per un numero di operazioni passato in input
-\ simulando un cronometro
- 
-: DELAY 
-    BEGIN 
-        1 - DUP
-        0 =   
-    UNTIL 
-    DROP ;
 
-\ CURRENT_TIME ( -- time )
-\ Permette di prelevare il valore di clock attuale del CLO_REGISTER 
- 
 : CURRENT_TIME ( -- time ) TIMER_COUNT @ ;
  
-\ CLK_DELAY ( us -- )
-\ Pone il sistema in busy-wait per un certo numero di microsecondi passato in input
+: CLK_DELAY ( us -- ) CURRENT_TIME BEGIN 2DUP CURRENT_TIME - ABS SWAP > UNTIL 2DROP ;
+
+```
+
+All'interno del file sono presenti anche funzioni basilari di **utilità** che permettono, per esempio, la conversione di un certo numero di secondi/millisecondi nello specifico numero di microsecondi da utilizzare in fase di timing (`MILLISECONDS` e `SECONDS`).
+
+```
+DECIMAL
+
+: MILLISECONDS ( ms -- us ) 1000 * ;
  
-: CLK_DELAY CURRENT_TIME BEGIN 2DUP CURRENT_TIME - ABS SWAP > UNTIL 2DROP ;
+: SECONDS ( s -- us ) 1000 * MILLISECONDS ;
  
 ```
 
@@ -1165,8 +1055,33 @@ Successivamente siamo andati a definire delle word che, fondamentalmente, stampa
 
 Il file permette la gestione di un sensore DHT22/AM2302 secondo le modalità descritte precedentemente. Contiene la definizione di parole e costanti atte ad impostare le condizioni operative del sensore e a presentare i risultati del rilevamento in formato *human-readable*.
 
-Innanzitutto, possiamo trovare le definizioni di alcune costanti strettamente legate al sensore DHT22/AM2302 in uso, come le temperature massima e minima registrabili, più le dichiarazioni di alcune variabili usate per la raccolta e il processing dei dati (es. `DATA` e `TEMPERATURE_IP`).
+Innanzitutto, possiamo trovare le definizioni di alcune costanti strettamente legate al sensore DHT22/AM2302 in uso, come le temperature massima e minima registrabili, più le dichiarazioni di alcune variabili usate per la raccolta e il processing dei dati.
+
+```
+DECIMAL
+
+-40                 CONSTANT MIN_TEMP
+80                  CONSTANT MAX_TEMP
+0                   CONSTANT MIN_HUM
+100                 CONSTANT MAX_HUM
+
+VARIABLE DATA
+VARIABLE CHECKSUM
+
+VARIABLE HUMIDITY_IP
+VARIABLE HUMIDITY_DP
+VARIABLE TEMPERATURE_IP
+VARIABLE TEMPERATURE_DP
+```
+
 Sono, quindi, specificate le costanti di interfaccia tra il sensore e il Raspberry&trade; Pi, come il pin GPIO cui è connesso il DHT22/AM2302 (`GPIO18`) e le maschere usate per le operazioni sui registri (quest'ultima scelta resasi necessaria per non sovraccaricare il sistema di operazioni che sono molto frequenti).
+
+```
+GPIO18 FSEL          CONSTANT GPIO18_FSEL
+GPIO18 OUT MODE      CONSTANT GPIO18_OUT
+GPIO18 INP MODE      CONSTANT GPIO18_INP
+GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
+```
 
 Successivamente, troviamo le definizioni di alcune parole utili ai fini del rilevamento e del processing dei dati (`WAIT_PULLDOWN` e `WAIT_PULLUP`), oltre che di parole necessarie a far riferimento al sensore DHT in formato *human-readable* e utili a semplificare certe operazioni (`DHT_PIN_OUT` e `DHT_OUT`). Nello specifico, troviamo le parole:
 
@@ -1175,129 +1090,40 @@ Successivamente, troviamo le definizioni di alcune parole utili ai fini del rile
 * `DHT_PIN_INP`, che permette di caricare sullo stack i valori necessari a impostare il pin GPIO cui è collegato il sensore in modalità input
 * `DHT_INPUT`, che rende effettiva l'impostazione del pin collegato al sensore in input
 
+I listati delle parole citate finora sono i seguenti:
+
+```
+: WAIT_PULLDOWN ( ngpio -- ) BEGIN DUP PIN_LEVEL 0 = WHILE REPEAT DROP ;
+
+: WAIT_PULLUP ( ngpio -- ) BEGIN DUP PIN_LEVEL 1 = WHILE REPEAT DROP ;
+
+: DHT_PIN_OUT ( -- ) GPIO18_FSEL GPIO18_OUT GPIO18_GPFSEL ;
+
+: DHT_OUT ( -- ) DHT_PIN_OUT ENABLE_PIN ;
+
+: DHT_PIN_INP ( -- ) GPIO18_FSEL GPIO18_INP GPIO18_GPFSEL ;
+
+: DHT_INPUT ( -- ) DHT_PIN_INP ENABLE_PIN ;
+```
+
 Dopo di ché, sono presenti le parole necessarie al funzionamento vero e proprio del sensore:
 
 * `SETUP_SENSOR`, che permette al Raspberry&trade; Pi di inviare la **start condition** al sensore, per cui bisogna impostare il pin in modalità **output** (scrivendo `0b001` nella tripletta del registro `GPFSEL` associata al pin), **spegnere** il pin (andando a impostare nel registro `GPCLR` il bit associato al pin GPIO), attendere 1 ms, **attivare** il pin (andando a impostare il bit associato al pin GPIO nel registro `GPSET`), per poi impostare il pin in modalità **input** (in modo analogo all'impostazione della modalità di output) e cedere, quindi, il controllo al sensore.
 * `READ_DATA`, che permette al Raspberry&trade; Pi di **campionare** 40 valori inviati dal sensore DHT22/AM2302 e di salvarli nelle variabili `DATA` (primi 32 bit) e `CHECKSUM` (ultimi 8 bit), facendo uso della parola ausiliaria `READ_BIT`, con cui si effettua il campionamento di un bit **sulla base del tempo** in cui il sensore mantiene alta la data line: se ciò avviene per più di 50 µs, il sensore avrà trasmesso un bit pari a 1, altrimenti sarà un bit pari a 0.
 
-Abbiamo, quindi, le parole usate per estrarre dai dati i valori reali della temperatura e dell'umidità (`GET_TEMPERATURE` e `GET_HUMIDITY`), sfruttando semplici correlazioni tra la posizione dei bit e il loro significato (spiegati in precedenza) e il fatto che il valore dell'una o dell'altra grandezza sono ottenuti dividendo per 10 il valore complessivo.
-
-Infine, sono state definite semplici parole per la presentazione dei dati in formato *human-readable*, che permettono di stampare le misurazioni sia su riga di comando (`DHT>CMD`) che sul display LCD di cui è provvisto il sistema (`TEMPERATURE>LCD` e `HUMIDITY>LCD`).
-
-Segue il codice sorgente.
+Riportiamo, quindi, i listati di suddette parole:
 
 ```
-DECIMAL
-\\ 
-\\ Definizione di costanti legate al sensore in uso, tra cui umidità minima, umidità massima,
-\\ temperatura minima e temperatura massima registrabili
-\\ 
--40                 CONSTANT MIN_TEMP
-80                  CONSTANT MAX_TEMP
-0                   CONSTANT MIN_HUM
-100                 CONSTANT MAX_HUM
-\\ 
-\\ Definizione di variabili usate per contenere i dati raccolti
-\\ 
-\\ Dati e checksum
-VARIABLE DATA
-VARIABLE CHECKSUM
-\\ 
-\\ Parti intere e parti decimali di umidità e temperatura
-\\ 
-VARIABLE HUMIDITY_IP
-VARIABLE HUMIDITY_DP
-VARIABLE TEMPERATURE_IP
-VARIABLE TEMPERATURE_DP
-\\ 
-\\ Definizione di costanti legate alla connessione sensore-microcontrollore, nello specifico
-\\ maschera di FSEL per il pin in uso, valore da scrivere in GPFSEL per il pin in uso e per le 
-\\ modalità input e output e registro GPFSEL associato al pin in uso.
-\\ 
-GPIO18 FSEL          CONSTANT GPIO18_FSEL
-GPIO18 OUT MODE      CONSTANT GPIO18_OUT
-GPIO18 INP MODE      CONSTANT GPIO18_INP
-GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
-\\ 
-\\ INT_MSG ( r q x -- )
-\\ Parola usata per stampare su schermo la parte intera di un valore (temperatura/umidità)
-\\ 
-: INT_MSG 13 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
-\\
-\\ DEC_MSG ( n x -- )
-\\ Parola usata per stampare su schermo la parte decimale di un valore (temperatura/umidità)
-\\ 
-: DEC_MSG 16 SET_CURSOR NUMBER >LCD ;
-\\ 
-\\ WAIT_PULLDOWN ( n_gpio --  )
-\\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 1 a 0 nel
-\\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
-\\ 
-: WAIT_PULLDOWN 
-    BEGIN 
-        DUP PIN_LEVEL 
-        0 = WHILE 
-    REPEAT 
-    DROP ;
-\\
-\\ WAIT_PULLUP ( n_gpio --  )
-\\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 0 a 1 nel
-\\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
-\\ 
-: WAIT_PULLUP 
-    BEGIN 
-        DUP PIN_LEVEL 
-        1 = WHILE 
-    REPEAT 
-    DROP ;
-\\  
-\\ DHT_PIN_OUT ( -- )
-\\ Scorciatoia per settare i parametri utili ad impostare la FSEL per il pin utilizzato in modalità output
-\\ 
-: DHT_PIN_OUT GPIO18_FSEL GPIO18_OUT GPIO18_GPFSEL ;
-\\ 
-\\ DHT_OUT ( -- )
-\\ Imposta il pin in modalità output
-\\ 
-: DHT_OUT DHT_PIN_OUT ENABLE_PIN ;
-\\  
-\\ DHT_PIN_INP ( -- )
-\\ Scorciatoia per settare i parametri utili ad impostare la FSEL per il pin utilizzato in modalità input
-\\ 
-: DHT_PIN_INP GPIO18_FSEL GPIO18_INP GPIO18_GPFSEL ;
-\\ 
-\\ DHT_INPUT ( -- )
-\\ Imposta il pin in modalità input
-\\ 
-: DHT_INPUT DHT_PIN_INP ENABLE_PIN ;
-\\ SETUP_SENSOR (  --  )
-\\ Esegue le istruzioni necessarie a mandare lo start signal al sensore, necessario al rilevamento da parte di
-\\ quest'ultimo. Nello specifico:
-\\ - imposta il pin in output mode
-\\ - attiva il bit associato al pin nel GPCLR opportuno e attende 1 ms
-\\ - attiva il bit associato al pin nel GPSET opportuno
-\\ - imposta il pin in input mode
-\\ 
-: SETUP_SENSOR 
+: SETUP_SENSOR ( -- )
     DHT_OUT
     GPIO18 DUP GPCLR !
     1 MILLISECONDS CLK_DELAY
     GPIO18 DUP GPSET !
     DHT_INPUT ;
-\\ 
-\\ READ_BIT ( -- )
-\\ Viene usata per determinare se il sensore ha inviato al MCU uno 0 o un 1.
-\\ Calcoliamo la differenza tra il momento in cui avviene un pullup (fine dell'inizio trasmissione)
-\\ e quello, precedente, in cui è avvenuto un pulldown, che dev'essere almeno di 50 us, 
-\\ la soglia che permette di affermare se è stato trasmesso uno 0 o un 1.
-\\ 
-: READ_BIT DUP WAIT_PULLDOWN TIMER_COUNT @ SWAP WAIT_PULLUP TIMER_COUNT @ SWAP - 50 > IF 1 ELSE 0 THEN ;
-\\
-\\ READ_DATA ( -- )
-\\ Viene usata per effettuare la lettura di 40 bit per volta, conservando i primi 32 come dati effettivi nella
-\\ variabile DATA, mentre gli altri 8 saranno usati come checksum nella variabile omonima.
-\\ 
-: READ_DATA 
+
+: READ_BIT ( gpion -- 0/1 ) DUP WAIT_PULLDOWN TIMER_COUNT @ SWAP WAIT_PULLUP TIMER_COUNT @ SWAP - 50 > IF 1 ELSE 0 THEN ;
+
+: READ_DATA ( -- )
     GPIO18 N_GPIO DUP DUP DUP WAIT_PULLDOWN WAIT_PULLUP
     39 BEGIN
         DUP 7 > IF
@@ -1309,11 +1135,12 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
         OR SWAP !
         1 - DUP 0 >
     WHILE REPEAT 2DROP ;
-\\ 
-\\ GET_HUMIDITY ( -- )
-\\ Viene usata per ricavare la parte intera e la parte frazionaria dell'umidità dalla variabile DATA
-\\ 
-: GET_HUMIDITY 
+```
+
+Abbiamo, quindi, le parole usate per estrarre dai dati i valori reali della temperatura e dell'umidità (`GET_TEMPERATURE` e `GET_HUMIDITY`), sfruttando semplici correlazioni tra la posizione dei bit e il loro significato (spiegati in precedenza) e il fatto che il valore dell'una o dell'altra grandezza sono ottenuti dividendo per 10 il valore complessivo.
+
+```
+: GET_HUMIDITY ( -- )
     DATA @ 16 RSHIFT 10 /MOD DUP DUP MIN_HUM >= SWAP MAX_HUM <= AND
     IF
         HUMIDITY_IP ! 
@@ -1321,11 +1148,8 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
     ELSE
         2DROP
     THEN ;
-\\ 
-\\ GET_TEMPERATURE ( -- )
-\\ Viene usata per ricavare la parte intera e la parte frazionaria della temperatura dalla variabile DATA
-\\ 
-: GET_TEMPERATURE 
+
+: GET_TEMPERATURE ( -- )
     DATA @ 65535 AND 10 /MOD DUP DUP MIN_TEMP >= SWAP MAX_TEMP <= AND
     IF
         TEMPERATURE_IP !
@@ -1333,64 +1157,46 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
     ELSE
         2DROP
     THEN ;
-\\ 
-\\ GET_READING ( -- )
-\\ Parola comprensiva per ricavare i valori interi e decimali di temperatura e umidità
-\\ 
+
 : GET_READING GET_HUMIDITY GET_TEMPERATURE ;
-\\ 
-\\ HUMIDITY>CMD ( -- )
-\\ Parola usata per stampare su riga di comando il valore di umidità ricavato
-\\ 
-: HUMIDITY>CMD ." Humidity: " HUMIDITY_IP ? ." . " HUMIDITY_DP ? ." %" ;
-\\
-\\ HUMIDITY>LCD ( -- )
-\\ Parola usata per stampare su display LCD il valore di umidità ricavato
-\\ 
-: HUMIDITY>LCD 
+```
+
+Infine, sono state definite semplici parole per la presentazione dei dati in formato *human-readable*, che permettono di stampare le misurazioni sia su riga di comando (`DHT>CMD`) che sul display LCD di cui è provvisto il sistema (`TEMPERATURE>LCD` e `HUMIDITY>LCD`). A queste si aggiungono anche le parole ausiliarie per la conversione delle cifre decimali in messaggi per il display codificati ASCII.
+
+```
+: HUMIDITY>CMD ( -- ) ." Humidity: " HUMIDITY_IP ? ." . " HUMIDITY_DP ? ." %" ;
+
+: TEMPERATURE>CMD ( -- ) ." Temperature: " TEMPERATURE_IP ? ." . " TEMPERATURE_DP ? ." *C" ;
+
+: DHT>CMD TEMPERATURE>CMD ."  - " HUMIDITY>CMD CR ;
+
+\ Parola usata per stampare su schermo la parte intera di un valore (temperatura/umidità)
+: INT_MSG ( r q x -- ) 13 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
+
+\ Parola usata per stampare su schermo la parte decimale di un valore (temperatura/umidità)
+: DEC_MSG ( n x -- ) 16 SET_CURSOR NUMBER >LCD ;
+
+: HUMIDITY>LCD ( -- )
     HUMIDITY_IP 10 /MOD ROW3 INT_MSG
     HUMIDITY_DP ROW3 DEC_MSG ;
-\\  
-\\ TEMPERATURE>CMD ( -- )
-\\ Parola usata per stampare su riga di comando il valore di temperatura ricavato
-\\ 
-: TEMPERATURE>CMD ." Temperature: " TEMPERATURE_IP ? ." . " TEMPERATURE_DP ? ." *C" ;
-\\ 
-\\ TEMPERATURE>LCD ( -- )
-\\ Parola usata per stampare su display LCD il valore di temperatura ricavato
-\\ 
-: TEMPERATURE>LCD 
+
+: TEMPERATURE>LCD ( -- )
     TEMPERATURE_IP 10 /MOD ROW2 INT_MSG
     TEMPERATURE_DP ROW2 DEC_MSG ;
-\\ 
-\\ DHT>CMD ( -- )
-\\ Parola comprensiva per stampare su riga di comando i valori di temperatura e di umidità ricavati
-\\ 
-: DHT>CMD TEMPERATURE>CMD ."  - " HUMIDITY>CMD CR ;
-\\ 
-\\ MEASURE ( -- )
-\\ Parola comprensiva per l'esecuzione dell'intero processo per una singola misurazione del sensore
-\\ 
-: MEASURE 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD DROP ;
 
-: DHT_OK 
-    S" TEST-MODE" FIND NOT IF 
-        CR ."           **********" CR
-        ." dht.f CARICATO CORRETTAMENTE" CR 
-        ." SUCCESSIVAMENTE CARICARE button.f" CR 
-        ." OK " CR
-        ."           **********" CR
-    THEN ;
+```
 
-DHT_OK
- 
+A riassumere tutte le operazioni descritte in precedenza abbiamo la parola `MEASURE`, che reimposta le variabili.
+
+```
+: MEASURE ( -- ) 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD DROP ;
 ```
 
 ### button.f
 
 Il file permette di utilizzare il pulsante di reset previsto dal sistema. Contiene la definizione di parole e costanti utilizzate per impostare opportunamente i registri necessari e per determinare se il pulsante è stato premuto.
 
-Segue il codice sorgente, in cui sono chiariti passi operativi e le ratio dietro le scelte implementative.
+Innanzitutto si dichiarano alcune **costanti** utili per le operazioni seguenti, comprese quelle associate al pin `GPIO8`, cui è collegata la linea dati del pulsante.
 
 ```
 HEX
@@ -1406,27 +1212,39 @@ GPIO8               CONSTANT RESET_BTN
 GPIO8 FSEL          CONSTANT GPIO8_FSEL
 GPIO8 INP MODE      CONSTANT GPIO8_INPUT
 GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
- 
-\ RESET_PIN ( -- fsel input_mode gpfsel )
-\ Permette di caricare sullo stack le informazioni per impostare il pin associato
-\ al bottone di reset in modalità input
- 
-: RESET_PIN GPIO8_FSEL GPIO8_INPUT GPIO8_GPFSEL ;
- 
-\ SET_PULL ( gpio pud --  )
-\ Permette di eseguire le operazioni necessarie all'impostazione di un pin passato in input
-\ in pull-up/pull-down (modalità passata in input). Avendo utilizzato un modello precedente al 4
-\ bisogna seguire un protocollo più articolato, che prevede di:
-\ 1. scrivere nel registro GPPUD il valore di pud per abilitare il controllo pull-up/pull-down
-\ 2. attendere 150 cicli di clock
-\ 3. impostare a 1 il bit nel registro GPPUDCLK0/1 corrispondente al numero del pin di cui abilitare
-\  il controllo, per abilitare il segnale di clock ad esso associato
-\ 4. attendere ulteriori 150 cicli di clock
-\ Dal momento che il pulsante dev'essere in pullup perpetuo, vengono omesse le ultime due fasi:
-\ 5. scrivere nel registro GPPUD per rimuovere il segnale di controllo
-\ 6. scrivere nel registro GPPUDCLK0/1 per rimuovere il clock
- 
-: SET_PULL
+```
+
+Si procede, quindi, con la definizione della parola `RESET_PIN`, che carica sullo stack dei valori utili (in modo similare alle altre periferiche)
+
+```
+: RESET_PIN ( -- ) GPIO8_FSEL GPIO8_INPUT GPIO8_GPFSEL ;
+```
+
+Dopo di ché, viene definita la parola `SET_PULL`, che riceve in input un pin `GPIOx` e una modalità di pull (up/down) e permette di asserire il controllo corrispondente per il pin `GPIOx`. Perché ciò avvenga, serve scrivere su una coppia di registri (definiti nel file `gpio.f`): 
+
+| Registro | Descrizione |
+|---|---|
+| GPPUD | Registro a 32 bit, di cui solo i primi due utilizzati, per controllare l'attuazione delle linee di controllo PU/PD per tutti i pin GPIO. <br> Da usare INSIEME ai registri GPPUDCLK0/1 |
+| GPPUDCLK0/1 | Registro a 32 bit, in cui il bit i-esimo asserisce la linea di clock per il controllo dell'attivazione del PU/PD interno per il pin i-esimo  |
+
+Nello specifico, le operazioni che vengono svolte per asserire l'attuazione di una linea di controllo per il pull-up sul pin GPIO8 occorre:
+
+1. scrivere nel registro `GPPUD` il valore `0b10` (`2`) per abilitare il controllo pull-up/pull-down
+2. attendere 150 cicli di clock con `DELAY`
+3. impostare a 1 il bit 8 nel registro `GPPUDCLK0`
+4. attendere ulteriori 150 cicli di clock
+
+Dal momento che vogliamo che il pulsante sia sempre in pull-up, non serve che vengano effettuate le ultime due operazioni di questa sequenza, che servirebbero a restaurare la situazione di partenza, ossia:
+
+1. scrivere `0` nel registro `GPPUD` per rimuovere il segnale di controllo
+2. annullare il bit 8 nel registro `GPPUDCLK0` per rimuovere il clock
+
+**N.B.** Questa sequenza si rende necessaria a causa del dispositivo target, dato che le versioni del Raspberry&trade; Pi dalla 4 in poi sfruttano un meccanismo diverso.
+
+Segue il listato della parola `SET_PULL`
+
+```
+: SET_PULL ( gpiox pud -- )
     GPPUD !
     150 MILLISECONDS DELAY
     GPPUDCLK0 DUP @
@@ -1435,33 +1253,98 @@ GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
     OR OVER !
     150 MILLISECONDS DELAY
     R> SWAP ! ;
- 
-\ INIT_BTN ( -- )
-\ Permette di inizializzare il pulsante di reset, abilitando la modalità di input sul pin associato,
-\ impostando per esso la modalità pull-up e attivando due registri per l'individuazione di eventi:
-\ GPREN0 (per il rilevamento di innalzamenti di tensione, ossia transizioni del tipo '011') e GPFEN0
-\ (per il rilevamento di abbassamenti di tensione, ossia transizioni del tipo '100').
- 
+```
+
+La parola `SET_PULL` viene usata all'interno della parola `INIT_BTN` in quanto parte del processo di inizializzazione del componente. Bisogna, però, effettuare altre operazioni per fissare il funzionamento del pulsante, dato che, con la sola impostazione del controllo pull-up ciò non avviene.
+In questo senso, bisogna operare su due altri registri (anch'essi definiti nel file `gpio.f`):
+
+| Registro | Descrizione |
+|---|---|
+| GPREN0 | Registro a 32 bit, usato per individuare transizioni logiche da 0 a 1, del tipo "011...1" sui pin 0...31. <br>Ad ogni transizione, viene settato un bit nel registro GPEDS0 |
+| GPFEN0 | Registro a 32 bit, usato per individuare transizioni logiche da 1 a 0, del tipo "100...0" sui pin 0...31. <br>Ad ogni transizione, viene settato un bit nel registro GPEDS0 |
+
+Nello specifico, quello che viene fatto è impostare a 1 i bit dei due registri corrispondenti al pin `GPIO8`, ossia il bit 8, cosicché vengano rilevati eventi quando si verificano transizioni del tipo `01...10` e che tali eventi vengano scritti impostando a 1 il bit 8 (per il pin `GPIO8`) del registro `GPEDS0`.
+
+Detto ciò, è quindi possibile presentare il listato della parola `INIT_BTN`, in cui viene impostato il pin `GPIO8` in modalità input, viene impostato il controllo in pull-up del pulsante e vengono abilitati i detector per transizioni alto-basso e basso-alto.
+
+```
 : INIT_BTN ( -- )
     RESET_PIN ENABLE
     RESET_BTN UP SET_PULL
     RESET_BTN GPREN0 !
     RESET_BTN GPFEN0 ! ;
- 
-\ IS_CLICKED ( gpio --  )
-\ Parola che permette di controllare se un evento è stato registrato per il pin associato. L'evento,
-\ se esiste, viene scritto nel registro GPEDS0 al bit corrispondente dopo che viene rilevata una transizione
-\ '010', motivo per cui devono essere stati abilitati i bit corrispondenti nei registri GPREN0 e GPFEN0.
- 
-: IS_CLICKED DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF 0 ELSE 1 THEN ;
+```
+
+Utile al funzionamento del bottone è poi la parola `IS_CLICKED`, che permette di determinare se è stato registrato un evento nel registro `GPEDS0` e di restituire un valore di verità.
+
+```
+: IS_CLICKED ( gpio -- 0/1 ) DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF 0 ELSE 1 THEN ;
  
 ```
 
 ### main.f
 
-Il file contiene il flusso sequenziale/logico di funzionamento del sistema. In esso sono definite le parole e le costanti necessarie al funzionamento del software secondo le modalità previste.
+Il file contiene il flusso sequenziale/logico di funzionamento del sistema. In esso sono definite le parole necessarie al funzionamento del software secondo le modalità previste.
+
+Nello specifico, è definita la parola `MAIN`, in cui sono previste, in un ordine che garantisca il funzionamento di tutti i componenti, le **fasi di inizializzazione** dei registri (attraverso le parole `INIT_x`) per il protocollo I2C, per il funzionamento del display LCD2004 (con la presentazione delle schermate di avvio del sistema), per la ventola, per i LED e per il pulsante. Successivamente alla fase di inizializzazione, il software entra in un loop con test posticipato della condizione che il bottone **non sia stato premuto**, nel cui caso avviene il termine dell'esecuzione.
+
+Ad ogni iterazione del ciclo, viene prima fatta una **misurazione** dal sensore DHT22/AM2302 (tramite la parola `MEASURE` definita in `dht.f`), poi si procede al **controllo della correttezza** dei dati rispetto alle condizioni ambientali necessarie al corretto funzionamento di una sala server:
+
+* se queste sono rispettate, viene visualizzata su display la struttura tipo dell'output per mostrare temperatura e umidità (attraverso la parola `TEMP_HUM_MSG`) e, con essa, i valori rilevati di temperatura e umidità; se attivi, vengono disattivati il LED verde e la ventola;
+* se i valori sono anomali, il sistema prevede una gestione separata per le diverse situazioni, in genere mostrando messaggi distinti (attraverso le parole `LOW/HIGH_TEMP/HUM_MSG`) e facendo lampeggiare il LED rosso per un numero fissato di volte (codificato in base all'anomalia); nel caso particolare di alta temperatura, il sistema attiva anche il LED verde e la ventola di aerazione.
+
+Il file comprende, come tutti gli altri, anche la parola `MAIN_OK`, da usare in fase di debug/test, che notifica il corretto caricamento del file sul Raspberry&trade; Pi.
+
+Di seguito è riportato il codice sorgente del file.
 
 ```
+
+DECIMAL
+
+: MAIN
+    INIT_I2C
+    INIT_LCD
+    INIT_FAN
+    INIT_LEDS
+    INIT_BTN
+    BEGIN
+        MEASURE
+        TEMPERATURE_IP 20 24 WITHIN HUMIDITY_IP 40 60 WITHIN AND 
+        TRUE =  IF
+            TEMP_HUM_MSG
+            TEMPERATURE>LCD HUMIDITY>LCD
+            GREEN LED OFF
+        ELSE 
+            TEMPERATURE_IP 20 < IF 
+                LOW_TEMP_MSG
+                3 BLINK
+            ELSE TEMPERATURE_IP 24 > IF
+                HIGH_TEMP_MSG
+                5 BLINK
+                GREEN LED ON
+            THEN 
+            HUMIDITY_IP 40 < IF
+                LOW_HUM_MSG
+                4 BLINK
+            ELSE HUMIDITY_IP 60 > IF
+                HIGH_HUM_MSG
+                6 BLINK
+            THEN
+        THEN
+        2 SECONDS DELAY
+        RESET_BTN
+    UNTIL IS_PRESSED ;
+
+: MAIN_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." main.f CARICATO CORRETTAMENTE" CR 
+        ." DIGITARE COMANDO 'MAIN' SUL TERMINALE PER AVVIARE IL SISTEMA" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+MAIN_OK
 
 ```
 
@@ -1483,11 +1366,11 @@ Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al
 
 [4] *"Digital relative humidity & temperature sensor AM2302/DHT22"*, Liu T.
 
-## Flusso degli Eventi
+~~ ## Flusso degli Eventi~~
 
 Dopo aver collegato il dispositivo target all'alimentazione, aver permesso a pijFORTHos di avviarsi e aver inviato il codice da eseguire (secondo le modalità spiegate in seguito), il sistema accoglie l'utente con una scritta di benvenuto, dopo la quale effettua il primo rilevamento e stampa sul display il risultato. Successivamente, ogni *X* secondi e finché il dispositivo è alimentato, il sensore effettua rilevamenti e li mostra a schermo, in sostituzione del valore precedente.
 
-## Codice
+~~ ## Codice~~
 
 Nella scrittura del codice sorgente, si è provato a seguire un approccio modulare, inteso come suddiviso per aree di interesse, ma il file che deve essere trasmesso al dispositivo target dev'essere preferibilmente unico e ripulito da commenti utili solo in fase di debug, per cui abbiamo fatto ricorso ad un makefile per la generazione del file *TBD*
 
@@ -1499,8 +1382,8 @@ L'invio del file avviene attraverso minicom:
 4. Nel menù contestuale digitare il percorso `path/to/file/TBD` del file sulla macchina sorgente (il PC Linux)
 5. Attendere il caricamento del file sul Raspberry&trade; Pi e premere 'Invio'
 
-## Descrizione dei Moduli
+~~## Descrizione dei Moduli~~
 
-## Considerazioni Finali
+~~## Considerazioni Finali~~
 
-# Bibliografia
+~~# Bibliografia~~
