@@ -106,7 +106,7 @@ VARIABLE COL
 
 VARIABLE LEN
 
-\ Questa word nasce con lo scopo di  stampare una serie di caratteri o comandi presente sullo stack.
+\ Questa word nasce con lo scopo di stampare una serie di caratteri o comandi presente sullo stack.
 \ Viene calcolata la profondità dello stack e memorizzata in una variabile LEN, per conoscere il numero di iterazioni
 \ per stampare tutti gli elementi dello stack.
 \ Il ciclo BEGIN...UNTIL viene utilizzato per iterare attraverso gli elementi nello stack e stamparli sul display LCD. 
@@ -123,7 +123,7 @@ VARIABLE LEN
 
 VARIABLE STR_LEN
 
-\ Questa word nasce con lo scopo di  stampare una stringa di caratteri presente in memoria, 
+\ Questa word nasce con lo scopo di stampare una stringa di caratteri presente in memoria, 
 \ specificata da "s_addr" (l'indirizzo di inizio della stringa) e "s_len" (la lunghezza della stringa).
 \ Il ciclo BEGIN...UNTIL viene utilizzato per scorrere la stringa carattere per carattere fino a quando 
 \ non viene raggiunta la fine della stringa (quando "STR_LEN" diventa 0).

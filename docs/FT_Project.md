@@ -258,6 +258,12 @@ Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pu
 
 <img src='https://global.discourse-cdn.com/nvidia/original/3X/b/8/b886440071a627ea9efbae5b2638a8625214d9ca.png' width="320" style='float:right; margin-right: 10px; border: 1px solid; margin-right: 15px'>
 
+
+
+
+
+
+
 Nella tabella sottostante sono riportati i pin GPIO attraverso i quali viene pilotato il pulsante:
 
 | Button Pin | Raspberry Pi Pin |
@@ -270,11 +276,17 @@ Nella tabella sottostante sono riportati i pin GPIO attraverso i quali viene pil
 
 <img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='float:left; margin-top:50px; border: 1px solid; margin-right: 30px'>
 
+
+
+
+
 Si tratta di una ventola di dimensioni 60x60x10 mm, utilizzata per dissipare il calore e mantenere una temperatura ottimale all'interno di dispositivi elettronici. È composta da 3 pin:
 
 1. **GND (Ground)** : Questo pin è collegato alla terra e serve come riferimento elettrico per il circuito della ventola.
 2. **VCC (Voltage Common Collector)** : Questo pin fornisce l'alimentazione elettrica alla ventola e deve essere collegato a una sorgente di alimentazione a 5V per far funzionare correttamente la ventola.
 3. **GPIO (General-Purpose Input/Output)** : Questo pin è utilizzato per controllare la ventola. Può essere collegato a una porta GPIO di un microcontrollore o di un computer, come il Raspberry Pi, per regolare la velocità della ventola o attivarla/disattivarla in base alle necessità di raffreddamento.
+
+
 
 La ventola è connessa al Pi secondo la seguente configurazione:
 
@@ -466,7 +478,7 @@ code.f:
 
 ### jonesforth.f
 
-Il file è necessario in quanto contiene parole normalmente definite in FORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel `<a href='https://github.com/organix/pijFORTHos'>`repository `</a>` su github.com.
+Questo file contiene parole normalmente definite in FORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel [repository](`https://github.com/organix/pijFORTHos`) Github.
 
 ```
 : '\n' 10 ;
@@ -582,31 +594,17 @@ HIDE WELCOME
 
 ### utils.f
 
-Il file è necessario in quanto contiene alcune funzioni utilizzate in tutto il resto dell'applicazione, evitando di scrivere codice superfluo.
+Questo file contiene alcune word di utilità, che vengono utilizzate nel resto dell'applicazione.
 
-```
- 
-\ ABS ( n -- |n| )
-\ Parola usata per sostituire un numero passato in input con il suo valore assoluto
-
-: ABS DUP 0< IF -1 * THEN ;
- 
-\ BILS ( disp -- 1<<disp )
-\ Parola usata per generare un bit shiftato di un numero di posizioni passato in input
- 
-: BILS 1 SWAP LSHIFT ;
- 
-\ BIC ( a1 a2 -- a1&!a2 )
-\ Parola usata per eseguire un'operazione di bit-clear. Dati due valori in input, viene
-\ restituito il primo valore, in cui sono stati azzerati i bit posti a 1 del secondo valore.
- 
-: BIC INVERT AND ;
- 
-```
+| Word |      Stack      | Description                                                                                                                        |
+| :--: | :-------------: | ---------------------------------------------------------------------------------------------------------------------------------- |
+| ABS | ( a --$|a| $) | sostituisce il TOS con il suo valore assoluto                                                                                      |
+| BILS | ( a -- 1<<a ) | effettua un logical shift left di 1 bit per un numero a di posizioni                                                               |
+| BIC | ( a b -- a&~b ) | esegue una operazione di BIt-Clear. Esegue un bitwise NOT del TOS e mette questo valore in bitwise AND con il valore sotto al TOS. |
 
 ### gpio.f
 
-Il file è necessario in quanto contiene tutte le definizioni di parole e costanti necessarie ad operare con i pin GPIO del Raspberry&trade; Pi. In esso sono state definite le costanti utili a identificare gli **indirizzi** dei principali registri su cui abbiamo operato (es. `GPFSEL0`, `GPSEL1`), oltre che gli indirizzi base per particolari set di registri, utilizzati all'interno di alcune parole per ricavare gli indirizzi esatti degli altri registri dello stesso set (es. la costante `GPLEV0` che, usata insieme alla parola `GPLEV` permette di ricavare anche l'indirizzo del registro `GPLEV1`).
+Questo file contiene tutte le definizioni di parole e costanti necessarie ad operare con i pin GPIO del Raspberry&trade; Pi. In esso sono state definite le costanti utili a identificare gli **indirizzi** dei principali registri su cui abbiamo operato (es. `GPFSEL0`, `GPSEL1`), oltre che gli indirizzi base per particolari set di registri, utilizzati all'interno di alcune parole per ricavare gli indirizzi esatti degli altri registri dello stesso set (es. la costante `GPLEV0` che, usata insieme alla parola `GPLEV` permette di ricavare anche l'indirizzo del registro `GPLEV1`).
 All'interno del file sono definite anche le costanti associate ai **pin GPIO**, nello specifico identificati da un bit posto a 1 shiftato del loro valore numerico (es. `GPIO18` identifica il pin GPIO 18, ed è definito da un 1 shiftato a sinistra di 18 bit), utilizzando una notazione molto comune all'interno dei registri GPIO che permette di ridurre il numero di calcoli effettuati *on-the-fly* (es. attivare un pin GPIO posto in output può essere espresso banalmente come `GPIO7 GPSET0 !`).
 Le ultime costanti che sono definite riguardano i possibili valori della FSEL per una specifica tripletta di bit, ricordando che nei registri `GPFSEL` la FSEL di ogni pin è gestita da una tripletta di bit opportunamente codificata (es. `INPUT` è associato alla tripletta `0b000`, dunque equivale al valore `0`).
 
@@ -641,7 +639,7 @@ Le due parole fanno uso massiccio di altre due parole definite in questo file, o
     >R @                ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 @ )
     -ROT                ( GPFSEL2 @ GPIOn_FSEL GPIOn_XMODE )
     >R                  ( GPFSEL2 @ GPIOn_FSEL )
-    BIC                 
+    BIC               
     R>                  ( [ GPFSEL2 @ GPIOn_FSEL BIC ] GPIOn_XMODE )
     OR 
     R> ! ;
@@ -658,7 +656,7 @@ Le due parole fanno uso massiccio di altre due parole definite in questo file, o
 Il file è necessario in quanto abbiamo deciso che la gestione dei tempi meritasse un modulo a sé stante. In esso sono contenute parole e costanti necessarie alla temporarizzazione degli eventi nel sistema.
 All'interno del file sono presenti due modi distinti per la gestione dei tempi e, nello specifico, per la generazione di ritardi. Con la parola `DELAY` si è scelto un approccio più semplice, tra l'altro visto a lezione, secondo cui il sistema viene messo in uno stato di **busy-wait**, nel quale viene eseguito un numero di operazioni semplici (tipicamente una sottrazione) pari al valore passato in input.
 
-Per alcuni dispositivi, però, questo approccio non ha sortito gli effetti desiderati, dunque si è reso necessario un approccio più preciso e che rendesse la temporizzazione degli eventi quanto più vincolato all'hardware del Raspberry&trade; Pi; dunque, abbiamo optato per usare il set di registri del **System Timer**. 
+Per alcuni dispositivi, però, questo approccio non ha sortito gli effetti desiderati, dunque si è reso necessario un approccio più preciso e che rendesse la temporizzazione degli eventi quanto più vincolato all'hardware del Raspberry&trade; Pi; dunque, abbiamo optato per usare il set di registri del **System Timer**.
 Questa periferica interna è dotata di quattro registri a 32 bit, detti **canali**, e due registri, `CLO` e `CHI`, che fungono da contatori del tempo che scorre dall'accensione del sistema. Nello specifico, questi due registri permettono di definire una variante del fattore di ritardo, in cui si utilizza come fonte dei dati proprio uno di questi registri, ossia `CLO`, e che segue un approccio molto semplice: si avvia il timer a partire dal valore corrente del registro e, all'interno di ogni iterazione di un ciclo, si valuta che il valore attuale differisca da quello di partenza per un numero di microsecondi passato in input. Questo secondo approccio è riscontrabile nella parola `CLK_DELAY`, in cui si è scelto di semplificare la lettura del codice attraverso la definizione di un'altra parola, `CURRENT_TIME`.
 
 All'interno del file sono presenti anche funzioni basilari di utilità che permettono, per esempio, la conversione di un certo numero di secondi/millisecondi nello specifico numero di microsecondi da utilizzare in fase di timing (`MILLISECONDS` e `SECONDS`).
@@ -708,32 +706,459 @@ DECIMAL
 
 ### led.f
 
-Il file permette la gestione della coppia di LED usati nel sistema proposto, comprendendo parole e costanti per l'accensione o per il lampeggiamento dei LED.
+Il file permette la gestione della coppia di LED usati nel sistema proposto, comprendendo parole e costanti per l'accensione, lo spegnimento ed il lampeggiamento dei LED.
 
-I LED rappresentano uno dei dispositivi di output più semplici e costituiscono una base fondamentale per implementare la selezione delle funzioni di un GPIO (General Purpose Input/Output). 
+I LED rappresentano uno dei dispositivi di output più semplici e costituiscono una base fondamentale per implementare la selezione delle funzioni di un GPIO (General Purpose Input/Output).
 
-
-Nel contesto dell'attivazione di un GPIO in modalità di output, due registri cruciali sono coinvolti: **GPSETn** e **GPCLRn**.
-
+I LED rosso e verde sul RPi sono connessi, rispettivamente, ai pin GPIO 23 e 24.  Per una migliore leggibilità del codice, si sono definite le costanti:
 
 ```
+GPIO23 CONSTANT RED
+GPIO24 CONSTANT GREEN
+```
+
+D'ora in poi, per semplicità, parleremo solo del LED rosso, dato che le istruzioni per il pilotaggio del LED verde sono analoghe.
+
+I bit di selezione della funzione relativa ai pin GPIO 20-29 (**GPFSEL2**) si trovano all'indirizzo 0x20200008. 
+
+Utilizzando la word `GPFSEL` precedentemente definita, andiamo in automatico a memorizzare questo indirizzo nella costante **RED_GPFSEL**
 
 ```
+RED GPFSEL CONSTANT RED_GPFSEL
+```
+
+Per ogni pin ci sono 3 bit di selezione della funzione. Nel nostro caso, i bit relativi al pin GPIO 23 vanno dal bit 11 al bit 9. Utilizzando la word `FSEL`, andiamo a creare una maschera in cui i bit 11-9 sono posti a 1 e tutti gli altri saranno posti a 0. Memorizziamo il tutto nella costante **RED_FSEL**
+
+```
+RED FSEL CONSTANT RED_FSEL
+```
+
+Abbiamo detto che i LED devono essere definiti in modalità **output** (0x001). Pertanto, vogliamo che nei bit 11-9 si presenti tale pattern, in modo da selezionare la output function relativa al pin GPIO 23. Utilizziamo la word `MODE` per tale scopo e memorizziamo il tutto in una costante, chiamata **RED_OUT**
+
+```
+RED OUT MODE CONSTANT RED_OUT
+```
+
+Adesso, per abilitare il pin GPIO 23, dovremmo:
+
+1. Leggere la GPIO function selection  									RED_GPFSEL @
+2. Effettuare una clear function per il pin 23  							RED_FSEL BIC
+3. Effettuare una set function per settare il pin 23 in output  				RED_OUT OR
+4. Scrivere la function selection GPIO									RED_GPFSEL !
+
+Per prima cosa, andiamo a definire la word `RED_PIN`
+
+```
+: RED_PIN RED_FSEL RED_OUT RED_GPFSEL ;
+```
+
+Successivamente, per abilitare il pin GPIO 23 ci basterà digitare
+
+```
+RED_PIN ENABLE
+```
+
+I pin GPIO vengono impostati e cancellati scrivendo negli indirizzi GPSET0 e GPCLR0, rispettivamente. Andando a scrivere 1 nel bit 23 del registro GPSET0 andremo ad accendere il LED. Analogamente, scrivendo 1 nel bit 23 del registro GPCLR0 andremo a spegnerlo.
+
+Necessitiamo quindi una maschera che abbia 1 nel bit 23 e tutti 0 altrove. Nel nostro caso, la maschera corrisponde alla costante GPIO23 che abbiamo rinominato precedentemente RED.
+
+Quindi scrivere:
+
+```
+RED GPSET0 !
+```
+
+andrà ad accendere il LED, mentre scrivere:
+
+```
+RED GPCLR0 !
+```
+
+lo andrà a spegnere. Per migliorare la leggibilità del codice, abbiamo definito le seguenti word:
+
+```
+: LED GPSET0 GPCLR0 ;
+: ON DROP ! ;
+: OFF NIP ! ; 
+```
+
+Per accendere il LED rosso basterà quindi digitare:
+
+```
+RED LED ON
+```
+
+e per spegnerlo
+
+```
+RED LED OFF
+```
+
+Inoltre, abbiamo creato una word `BLINK` che fa lampeggiare il LED rosso per un numero $n$ di volte pari all'elemento presente nel TOS:
+
+```
+VARIABLE FLAG 
+
+: BLINK 
+    FLAG !
+    BEGIN 
+        RED LED ON
+        300 MILLISECONDS DELAY 
+        RED LED OFF
+        300 MILLISECONDS DELAY
+        FLAG @ 1 - FLAG !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        FLAG @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+```
+
+Il valore $n$ viene memorizzato nella variabile FLAG e, successivamente, viene utilizzato un ciclo BEGIN...UNTIL per accendere e spegnere il LED con una cadenza di 300 ms. Successivamente, il valore della variabile FLAG viene decrementato di 1 e, successivamente, si va a verificare se il valore di FLAG è pari a 0, ovvero se la condizione di uscita è stata soddisfatta.
 
 ### i2c.f
 
-Il file permette di utilizzare il protocollo I2C in combinata con un display LCD grazie al backpack. Contiene parole e costanti utilizzate per implementare il suddetto protocollo, comprese quelle per impostare i registri del controller BSC su valori opportuni per abilitare il trasferimento di dati dal MCU al display in uno schema master-slave.
+Il file permette di utilizzare il protocollo I2C in combinata con un display LCD grazie al backpack. 
+
+Contiene parole e costanti utilizzate per implementare il suddetto protocollo, comprese quelle per impostare i registri del controller BSC su valori opportuni per abilitare il trasferimento di dati dal MCU al display in uno schema master-slave.
+
+La comunicazione viene SEMPRE iniziata e terminata dal Master, che invia una START e una STOP condition:
+
+| CONDITION |     SDA     | SCL |
+| :-------: | :---------: | :--: |
+|   START   | high-to-low | high |
+|   STOP   | low-to-high | high |
+
+Tra la START e la STOP CONDITION si può trasferire un qualsiasi numero di byte.
+
+SDA ed SCL del modulo I2C, sono connessi sul RPi ai pin GPIO 2 e 3.  È necessario che entrambi i pin siano abilitati in modalità ALT0 (Alternative Function 0). 
+
+Per una migliore leggibilità del codice, si sono definite le costanti:
+
+```
+GPIO2 FSEL          CONSTANT GPIO2_FSEL
+GPIO2 ALT0 MODE     CONSTANT GPIO2_ALT0
+GPIO2 GPFSEL        CONSTANT GPIO2_GPFSEL
+
+GPIO3 FSEL          CONSTANT GPIO3_FSEL
+GPIO3 ALT0 MODE     CONSTANT GPIO3_ALT0
+GPIO3 GPFSEL        CONSTANT GPIO3_GPFSEL 
+```
+
+e le relative word:
+
+```
+: SDA1_PIN GPIO2_FSEL GPIO2_ALT0 GPIO2_GPFSEL ;
+: SCL1_PIN GPIO3_FSEL GPIO3_ALT0 GPIO3_GPFSEL ;
+
+: I2C_PINS SDA1_PIN SCL1_PIN ;
+```
+
+Pertanto, definiamo la word `INIT_I2C` per abilitare i pin SDA1 ed SCL1.
+
+```
+: INIT_I2C I2C_PINS ACTIVATE ;
+```
+
+Per abilitare i pin I2C ci basterà digitare
+
+```
+INIT_I2C
+```
+
+Per quanto riguarda il trasferimento dei dati, dovremo abilitare il Master in modalità di trasmissione e lo Slave in modalità di ricezione.
+
+<img src=./images/i2c_backpack/7.png style="margin-bottom:30px" width=60%>
+
+I passi di scrittura sono i seguenti:
+
+1. Il Master invia una START CONDITION seguita dallo SLAVE ADDR e dal bit R/W settato a 0 (WRITE).
+1. Lo Slave invia il bit di ACK
+1. Il Master invia il l'indirizzo del registro su cui vuole effettuare l'operazione di scrittura
+1. Lo Slave invia di nuovo il bit di ACK, se è pronto
+1. Il Master inizia ad inviare i dati da scrivere sul registro (uno o più byte) dello Slave
+1. Ad ogni byte inviato il Master deve aspettare che lo Slave invii il bit di ACK
+1. Il Master termina la trasmissione inviando una STOP CONDITION
+
+Il controller Broadcom Serial Controller (**BSC**) è un controller BSC master, fast-mode (400Kb/s). Il bus Broadcom Serial Control è un bus proprietario conforme al bus/interfaccia I2C di Philips®.
+
+Abbiamo a disposizione tre BSC master. Nel nostro caso abbiamo scelto il BSC1, che si trova all'indirizzo 0x20804000
+
+Nella tabella sottostante sono mostrati gli indirizzi relativi all'interfaccia I2C, dove ogni indirizzo è un offset dell'indirizzo BSC1.
+
+| Address Offset | Register Name | Description           | Size |
+| :------------: | ------------- | --------------------- | :--: |
+|      0x0      | C             | Control               |  32  |
+|      0x4      | S             | Status                |  32  |
+|      0x8      | DLEN          | Data Length           |  32  |
+|      0xC      | A             | Slave Address         |  32  |
+|      0x10      | FIFO          | Data FIFO             |  32  |
+|      0x14      | DIV           | Clock Divider         |  32  |
+|      0x18      | DEL           | Data Delay            |  32  |
+|      0x1C      | CLKT          | Clock Stretch Timeout |  32  |
+
+Passiamo quindi a definire una serie di costanti per ottenere tali indirizzi:
+
+```
+RPI1_BASE 804000 +  CONSTANT BSC1
+
+BSC1                CONSTANT C_REGISTER
+BSC1 4 +            CONSTANT S_REGISTER
+BSC1 8 +            CONSTANT DLEN_REGISTER
+BSC1 C +            CONSTANT A_REGISTER
+BSC1 10 +           CONSTANT FIFO_REGISTER
+```
+
+Definiamo, inoltre, la word `SET`, che ha lo scopo di eseguire un "store" controllato.
+
+```
+: SET DUP >R @ OR R> ! ;
+```
+
+Inizialmente, viene eseguito un "fetch" per recuperare il valore memorizzato in un registro. Successivamente, questo valore viene combinato tramite un operatore OR con il valore presente nello stack. Questa operazione è progettata per preservare i bit che erano precedentemente impostati su 1.
+
+Alla fine, il nuovo valore risultante viene memorizzato nuovamente nel registro.
+
+Il **C_REGISTER** (Control Register) viene utilizzato per abilitare gli interrupt, cancellare la FIFO, definire un'operazione di lettura o scrittura e avviare un trasferimento.
+
+Tramite la definizione delle costanti sottostanti, andiamo a creare delle maschere che hanno impostato ad 1 il bit che serve per attivare un campo predefinito e tutti gli altri bit sono posti a 0.
+
+```
+0                   CONSTANT READ
+10# 4 BILS          CONSTANT CLEAR
+10# 7 BILS          CONSTANT ST
+10# 15 BILS         CONSTANT I2CEN
+```
+
+In particolar modo, vogliamo settare il bit 0 (READ) in modalità **Write Packet Transfer**, il bit 5-4 (CLEAR) in modalità **Clear FIFO**, il bit 7 (ST) in **Start a new transfer** ed il bit 15 (I2CEN) per abilitare il controller BSC.
+
+Definiamo le word per fare quanto scritto sopra:
+
+```
+: SET_WRITE         READ        C_REGISTER SET ;
+: CLEAR_FIFO        CLEAR       C_REGISTER SET ;
+: START_TRANSFER    ST          C_REGISTER SET ;
+: I2C_ENABLE        I2CEN       C_REGISTER SET ;
+```
+
+Il **DLEN_REGISTER** (Data Length Register) definisce il numero di byte di dati da trasmettere o ricevere nel trasferimento I2C. La lettura del registro fornisce il numero di byte rimanenti nel trasferimento corrente. 
+
+Il campo DLEN specifica il numero di byte da trasmettere/ricevere. Nel nostro caso ci interessa trasmettere 1 Byte (8 bit) alla volta.
+
+```
+1 CONSTANT DLEN
+: SET_DLEN DLEN DLEN_REGISTER SET ;
 
 ```
 
+**A_REGISTER** (Slave Address Register) specifica l'indirizzo dello slave. Ogni Slave ha un idirizzo specifico. Nel nostro caso, esso corrisponde a 0x27.
+
+```
+27 CONSTANT ADDR
+```
+
+Definiamo la word `SET_SLAVE` per andare ad impostare l'indirizzo dello slave address nell'A_REGISTER
+
+```
+: SET_SLAVE ADDR A_REGISTER SET ;
+```
+
+Il **FIFO_REGISTER** viene utilizzato per accedere alla FIFO. Definiamo una word adatta a scrivere un byte di dati sulla FIFO:
+
+```
+: >FIFO FIFO_REGISTER ! ;
+```
+
+Andiamo adesso a definire la word `I2C_SEND`, che la funzionalità di:
+
+* impostare il tipo di trasferimento in modalità di scrittura
+* abilitare un nuovo trasferimento BSC
+* abilitare le operazioni BSC, dato che se ciò non accade, i trasferimenti non possono essere effettuati
+
+```
+: I2C_SEND
+    SET_WRITE
+    START_TRANSFER
+    I2C_ENABLE ;
+```
+
+Successivamente, definiamo la word `>I2C` che, ricevuto un Byte di dati, consente di:
+
+* scrivere i dati nel FIFO REGISTER
+* impostare il numero di bit da trasmettere/ricevere
+* richiamare la subroutine I2C_SEND per attivare il controllore BSC ed iniziare un nuovo trasferimento.
+
+```
+: >I2C
+    >FIFO
+    SET_DLEN
+    I2C_SEND ;
 ```
 
 ### lcd.f
 
-Il file permette la gestione del modulo display utilizzato nel sistema proposto, successivamente all'impostazione del controller BSC del Raspberry&trade; Pi. Nel file sono incluse parole per la stampa di parole sul display e per la discriminazione tra l'invio di caratteri e quello di comandi, sfruttando la modalità di invio a 4 bit offerta dal display LCD2004.
+Il file permette la gestione del modulo display utilizzato nel sistema proposto, successivamente all'impostazione del controller BSC del RPi. 
+
+Nel file sono incluse parole per la stampa di parole sul display e per la discriminazione tra l'invio di caratteri e quello di comandi, sfruttando la modalità di invio a 4 bit offerta dal display LCD2004.
+
+Lo Slave, in base al byte di dati che riceve, si comporta diversamente se questo corrisponde ad un semplice dato o ad un comando.
+
+Siamo andati a definire la word `?CMD` con lo scopo di determinare se una sequenza di bit è un comando o un carattere restituendo, rispettivamente, TRUE o FALSE. La differenza è rappresentata dal fatto che i comandi presentano il bit 8 posto a 1, che è invece 0 nel caso dei caratteri.
 
 ```
+: ?CMD DUP 8 RSHIFT 1 = ;
+```
 
+Pertanto, abbiamo definito la word `CMD` per fare in modo che il bit 8 venisse posto a 1:
+
+```
+: CMD 100 OR ;
+```
+
+Per determinare la costante di apertura della comunicazione da sommare al valore presente nel TOS, ricorriamo alla word `?CMD_OR_CHAR`. Se dobbiamo inviare un comando, dovremmo sommare al TOS il valore 0xC. Altrimenti andremo a sommare 0xD.
+
+```
+: ?CMD_OR_CHAR 
+    TRUE = IF
+        C
+    ELSE
+        D
+    THEN
+    OR ;
+```
+
+Come precedentemente specificato, il modulo LCD2004 sfrutta la modalità di invio a 4 bit. Pertanto, per inviare 1 Byte di dati, dovremo spezzettarlo in due parti da 4 bit ciascuna, ovvero 2 nibble. Definiamo la word `NIBBLE` con lo scopo di inserire sullo stack metà del byte effettivo:
+
+```
+: NIBBLE
+    DUP ROT
+    ?CMD_OR_CHAR SWAP
+    8 OR SWAP ;
+```
+
+Ricevuta in input una condizione di verità p (0/T, 1/F) viene determinata, tramite la word ?CMD_OR_CHAR quale costante di apertura della comunicazione sommare al valore v per inviare un carattere (D) o un comando (C).
+
+Successivamente una copia del valore v viene sommata alla costante di chiusura della comunicazione dello stesso nibble (0x8). 
+
+es. processare 5 come parte di un carattere produce i byte 5D e 58
+
+es. processare 5 come parte di un comando produce i byte 5C e 58
+
+La comunicazione, andrà ad inviare prima i MSB del Byte di dati e, successivamente i LSB.
+
+Abbiamo definito due word ad hoc `MSB` ed `LSB` che, rispettivamente, pongono a 0 tutti i bit tranne i primi 4 per inviare i bit più significativi e viceversa.
+
+```
+: MSB F0 AND ;
+: LSB F AND 4 LSHIFT ;
+```
+
+Compattiamo ora il tutto nella word `BYTE` che, se richiamata, prende il valore b nel TOS, lo processa e ritorna sullo stack un totale di 4 valori (due per ciascun nibble), che compongono il Byte b che si desidera inviare.
+
+```
+: BYTE
+    ?CMD SWAP 2DUP
+    MSB NIBBLE 
+    2SWAP
+    LSB NIBBLE
+    2SWAP ;
+```
+
+Per inviare il Byte, basterà utilizzare la word `SEND`
+
+```
+: SEND
+    >I2C 1 MILLISECONDS DELAY
+    >I2C 2 MILLISECONDS DELAY
+    >I2C 1 MILLISECONDS DELAY
+    >I2C 2 MILLISECONDS DELAY ;
+```
+
+Per astrarre ancora di più il codice, abbiamo definito la word `>LCD` per inviare un Byte di dati allo Slave tramite I2C.
+
+```
+: >LCD BYTE SEND ;
+```
+
+Successivamente siamo andati a definire alcune costanti di utilità per lavorare al meglio con il display 2004
+
+```
+01                  CONSTANT CLEAR_DISPLAY
+02                  CONSTANT RETURN_HOME
+
+80                  CONSTANT ROW1
+C0                  CONSTANT ROW2
+ROW1 14 +           CONSTANT ROW3
+ROW2 14 +           CONSTANT ROW4
+
+14                  CONSTANT CURSOR_RSHIFT
+10                  CONSTANT CURSOR_LSHIFT
+
+0C                  CONSTANT CURSOR_OFF
+0F                  CONSTANT CURSOR_ON
+0E                  CONSTANT CURSOR_BLINK_OFF
+```
+
+Il display, può essere visto come una matrice 4x20. Siamo andati a creare la word `SET_CURSOR` con lo scopo di posizionare il cursore in un punto specifico del display, sfruttando i valori di riga e colonna inseriti nello stack.
+
+```
+VARIABLE COL
+
+: SET_CURSOR
+    COL !
+    CMD >LCD
+    BEGIN 
+        CURSOR_RSHIFT CMD >LCD
+        COL @ 1 - COL !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        COL @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+```
+
+Se vogliamo scrivere dei caratteri sul display, anziché andare ogni volta a scrivere l'equivalente ascii sullo stack e poi >LCD, abbiamo creato la word `PRINT` che stampa una serie di caratteri o comandi presenti sullo stack. 
+
+```
+VARIABLE LEN
+
+: PRINT 
+    DEPTH LEN !
+    BEGIN 
+        >LCD
+        LEN @ 1 - LEN !                     \ DECREMENTO LEN AD OGNI ITERAZIONE
+        LEN @ 0=                            \ CONDIZIONE DI USCITA
+    UNTIL ;
+```
+
+Viene calcolata la profondità dello stack e memorizzata in una variabile LEN, per conoscere il numero di iterazioni per stampare tutti gli elementi dello stack. 
+
+Il ciclo BEGIN...UNTIL viene utilizzato per iterare attraverso gli elementi nello stack e stamparli sul display LCD.
+
+Dopo che il carattere/comando viene inviato, la variabile LEN viene decrementata di 1 e, successivamente, si verifica se il valore di LEN è pari a 0, ovvero se la condizione di uscita è stata soddisfatta.
+
+Sfruttando una logica molto simile, siamo passati alla definizione della word `PRINT_STR`. Essa nasce con lo scopo di stampare una stringa di caratteri presente in memoria, specificata da "s_addr" (l'indirizzo di inizio della stringa) e "s_len" (la lunghezza della stringa).
+
+```
+: PRINT_STR
+    STR_LEN !
+    BEGIN
+        DUP C@ >LCD
+        STR_LEN @ 1- STR_LEN !
+        1+
+        STR_LEN @ 0=
+    UNTIL
+    DROP ;
+```
+
+Il ciclo BEGIN...UNTIL viene utilizzato per scorrere la stringa carattere per carattere fino a quando non viene raggiunta la fine della stringa (quando "STR_LEN" diventa 0). 
+
+All'interno del ciclo, "DUP C@" estrae il carattere corrente dalla stringa e lo invia alla destinazione di output (un display LCD nel nostro caso).
+
+Dopo che il carattere viene inviato, la lunghezza della stringa viene ridotta di 1 ed il puntatore viene incrementato di 1 in modo da puntare alla cella di memoria successiva.
+
+Successivamente siamo andati a definire delle word che, fondamentalmente, stampano su LCD opportuni messaggi.
+
+È inoltre presente una word di inizializzazione del display LCD, `INIT_LCD`
+
+```
+: INIT_LCD 
+    SET_SLAVE 02 CMD >LCD
+    WELCOME_MSG ;
 ```
 
 ### dht.f
@@ -760,7 +1185,7 @@ Abbiamo, quindi, le parole usate per estrarre dai dati i valori reali della temp
 Infine, sono state definite semplici parole per la presentazione dei dati in formato *human-readable*, che permettono di stampare le misurazioni sia su riga di comando (`DHT>CMD`) che sul display LCD di cui è provvisto il sistema (`TEMPERATURE>LCD` e `HUMIDITY>LCD`).
 
 Segue il codice sorgente.
- 
+
 ```
 DECIMAL
 \\ 
@@ -1059,8 +1484,6 @@ Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al
 [4] *"Digital relative humidity & temperature sensor AM2302/DHT22"*, Liu T.
 
 ## Flusso degli Eventi
-
-![Flusso degli Eventi](images/EventFlow.png)
 
 Dopo aver collegato il dispositivo target all'alimentazione, aver permesso a pijFORTHos di avviarsi e aver inviato il codice da eseguire (secondo le modalità spiegate in seguito), il sistema accoglie l'utente con una scritta di benvenuto, dopo la quale effettua il primo rilevamento e stampa sul display il risultato. Successivamente, ogni *X* secondi e finché il dispositivo è alimentato, il sensore effettua rilevamenti e li mostra a schermo, in sostituzione del valore precedente.
 
