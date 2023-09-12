@@ -30,16 +30,6 @@ GPIO18 OUT MODE      CONSTANT GPIO18_OUT
 GPIO18 INP MODE      CONSTANT GPIO18_INP
 GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ 
-\\ INT_MSG ( r q x -- )
-\\ Parola usata per stampare su schermo la parte intera di un valore (temperatura/umidità)
-\\ 
-: INT_MSG 13 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
-\\
-\\ DEC_MSG ( n x -- )
-\\ Parola usata per stampare su schermo la parte decimale di un valore (temperatura/umidità)
-\\ 
-: DEC_MSG 16 SET_CURSOR NUMBER >LCD ;
-\\ 
 \\ WAIT_PULLDOWN ( n_gpio --  )
 \\ Mantiene il sistema in busy-wait finché non viene rilevata una transizione da 1 a 0 nel
 \\ registro GPLEV e sul bit associati al pin cui è collegato il sensore
@@ -155,6 +145,16 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ 
 : HUMIDITY>CMD ." Humidity: " HUMIDITY_IP ? ." . " HUMIDITY_DP ? ." %" ;
 \\
+\\ INT_MSG ( r q x -- )
+\\ Parola usata per stampare su schermo la parte intera di un valore (temperatura/umidità)
+\\ 
+: INT_MSG 13 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
+\\
+\\ DEC_MSG ( n x -- )
+\\ Parola usata per stampare su schermo la parte decimale di un valore (temperatura/umidità)
+\\ 
+: DEC_MSG 16 SET_CURSOR NUMBER >LCD ;
+\\ 
 \\ HUMIDITY>LCD ( -- )
 \\ Parola usata per stampare su display LCD il valore di umidità ricavato
 \\ 
