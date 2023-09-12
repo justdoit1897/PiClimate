@@ -1365,25 +1365,3 @@ Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al
 [3] *"PCF8574; PCF8574A Remote 8-bit I/O expander for I2C-bus with interrupt Rev. 5"*, NXP Microelectronics
 
 [4] *"Digital relative humidity & temperature sensor AM2302/DHT22"*, Liu T.
-
-~~ ## Flusso degli Eventi~~
-
-Dopo aver collegato il dispositivo target all'alimentazione, aver permesso a pijFORTHos di avviarsi e aver inviato il codice da eseguire (secondo le modalità spiegate in seguito), il sistema accoglie l'utente con una scritta di benvenuto, dopo la quale effettua il primo rilevamento e stampa sul display il risultato. Successivamente, ogni *X* secondi e finché il dispositivo è alimentato, il sensore effettua rilevamenti e li mostra a schermo, in sostituzione del valore precedente.
-
-~~ ## Codice~~
-
-Nella scrittura del codice sorgente, si è provato a seguire un approccio modulare, inteso come suddiviso per aree di interesse, ma il file che deve essere trasmesso al dispositivo target dev'essere preferibilmente unico e ripulito da commenti utili solo in fase di debug, per cui abbiamo fatto ricorso ad un makefile per la generazione del file *TBD*
-
-L'invio del file avviene attraverso minicom:
-
-1. Avviare minicom digitando `$ sudo minicom [nome_configurazione]` da terminale
-2. Premere la combinazione Ctrl+A S per aprire il prompt di invio file
-3. Usando le istruzioni a schermo selezionare il protocollo di invio ASCII (per trattare il flusso di dati come un flusso di caratteri ASCII)
-4. Nel menù contestuale digitare il percorso `path/to/file/TBD` del file sulla macchina sorgente (il PC Linux)
-5. Attendere il caricamento del file sul Raspberry&trade; Pi e premere 'Invio'
-
-~~## Descrizione dei Moduli~~
-
-~~## Considerazioni Finali~~
-
-~~# Bibliografia~~
