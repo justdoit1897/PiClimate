@@ -1,2 +1,7 @@
 #!/bin/bash
-sudo picocom -b 115200 -r -l /dev/ttyUSB0 --imap delbs -s "ascii-xfr -sv -l100 -c10"
+
+DEVICE=/dev/ttyUSB0 
+BAUD=115200            
+
+sudo picocom -b $BAUD -r -l $DEVICE --imap delbs -s "ascii-xfr -sv -l100 -c10"
+

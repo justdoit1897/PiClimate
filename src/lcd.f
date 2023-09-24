@@ -161,7 +161,7 @@ VARIABLE STR_LEN
 : VINCENZO
     CLEAR_DISPLAY CMD >LCD
     ROW2 2 SET_CURSOR S" Vincenzo Fardella" PRINT_STR
-    ROW3 2 SET_CURSOR S" Matr.     07XXXXX" PRINT_STR ;
+    ROW3 2 SET_CURSOR S" Matr.     0738045" PRINT_STR ;
 
 ( -- )
 : STUDENTS
@@ -190,12 +190,12 @@ VARIABLE STR_LEN
 
 ( -- )
 : CELSIUS 
-    ROW2 CMD 10# 18 SET_CURSOR 43 DF PRINT ;
+    ROW2 12 SET_CURSOR DF >LCD ;
 
 ( -- )
 : TEMP 
     ROW2 CMD >LCD
-    S" Temperature:   .  " PRINT_STR
+    S" Temperature:   .   C" PRINT_STR
     CELSIUS ;
 
 ( -- )
@@ -257,7 +257,7 @@ VARIABLE STR_LEN
     S" TEST-MODE" FIND NOT IF 
         CR ."           **********" CR
         ." lcd.f CARICATO CORRETTAMENTE" CR 
-        ." SUCCESSIVAMENTE CARICARE dht.f" CR 
+        ." SUCCESSIVAMENTE CARICARE led.f" CR 
         ." OK " CR
         ."           **********" CR
     THEN ;

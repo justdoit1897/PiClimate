@@ -48,7 +48,7 @@ GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
 \\ (per il rilevamento di abbassamenti di tensione, ossia transizioni del tipo '100').
 \\  
 : INIT_BTN ( -- )
-    RESET_PIN ENABLE
+    RESET_PIN ENABLE_PIN
     RESET_BTN UP SET_PULL
     RESET_BTN GPREN0 !
     RESET_BTN GPFEN0 ! ;
@@ -58,14 +58,14 @@ GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
 \\ se esiste, viene scritto nel registro GPEDS0 al bit corrispondente dopo che viene rilevata una transizione
 \\ '010', motivo per cui devono essere stati abilitati i bit corrispondenti nei registri GPREN0 e GPFEN0.
 \\ 
-: IS_CLICKED DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF 0 ELSE 1 THEN ;
+: IS_CLICKED DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF TRUE ELSE FALSE THEN ;
 \\ 
 
 : BUTTON_OK 
     S" TEST-MODE" FIND NOT IF 
         CR ."           **********" CR
         ." button.f CARICATO CORRETTAMENTE" CR 
-        ." SUCCESSIVAMENTE CARICARE main.f" CR 
+        ." SUCCESSIVAMENTE CARICARE dht.f" CR 
         ." OK " CR
         ."           **********" CR
     THEN ;

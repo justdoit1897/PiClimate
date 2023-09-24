@@ -159,8 +159,8 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ Parola usata per stampare su display LCD il valore di umidità ricavato
 \\ 
 : HUMIDITY>LCD 
-    HUMIDITY_IP 10 /MOD ROW3 INT_MSG
-    HUMIDITY_DP ROW3 DEC_MSG ;
+    HUMIDITY_IP @ 10 /MOD ROW3 INT_MSG
+    HUMIDITY_DP @ ROW3 DEC_MSG ;
 \\  
 \\ TEMPERATURE>CMD ( -- )
 \\ Parola usata per stampare su riga di comando il valore di temperatura ricavato
@@ -171,8 +171,8 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
 \\ Parola usata per stampare su display LCD il valore di temperatura ricavato
 \\ 
 : TEMPERATURE>LCD 
-    TEMPERATURE_IP 10 /MOD ROW2 INT_MSG
-    TEMPERATURE_DP ROW2 DEC_MSG ;
+    TEMPERATURE_IP @ 10 /MOD ROW2 INT_MSG
+    TEMPERATURE_DP @ ROW2 DEC_MSG ;
 \\ 
 \\ DHT>CMD ( -- )
 \\ Parola comprensiva per stampare su riga di comando i valori di temperatura e di umidità ricavati
@@ -188,7 +188,7 @@ GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
     S" TEST-MODE" FIND NOT IF 
         CR ."           **********" CR
         ." dht.f CARICATO CORRETTAMENTE" CR 
-        ." SUCCESSIVAMENTE CARICARE button.f" CR 
+        ." SUCCESSIVAMENTE CARICARE main.f" CR 
         ." OK " CR
         ."           **********" CR
     THEN ;

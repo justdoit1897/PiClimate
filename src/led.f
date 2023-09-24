@@ -63,7 +63,7 @@ VARIABLE FLAG
     S" TEST-MODE" FIND NOT IF 
         CR ."           **********" CR
         ." led.f CARICATO CORRETTAMENTE" CR 
-        ." SUCCESSIVAMENTE CARICARE i2c.f" CR 
+        ." SUCCESSIVAMENTE CARICARE button.f" CR 
         ." OK " CR
         ."           **********" CR
     THEN ;
