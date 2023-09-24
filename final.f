@@ -1,0 +1,807 @@
+: '\n' 10 ;
+: BL 32 ;
+: ':' [ CHAR : ] LITERAL ;
+: ';' [ CHAR ; ] LITERAL ;
+: '(' [ CHAR ( ] LITERAL ;
+: ')' [ CHAR ) ] LITERAL ;
+: '"' [ CHAR " ] LITERAL ;
+: 'A' [ CHAR A ] LITERAL ;
+: '0' [ CHAR 0 ] LITERAL ;
+: '-' [ CHAR - ] LITERAL ;
+: '.' [ CHAR . ] LITERAL ;
+: ( IMMEDIATE 1 BEGIN KEY DUP '(' = IF DROP 1+ ELSE ')' = IF 1- THEN THEN DUP 0= UNTIL DROP ;
+: SPACES ( n -- ) BEGIN DUP 0> WHILE SPACE 1- REPEAT DROP ;
+: WITHIN -ROT OVER <= IF > IF TRUE ELSE FALSE THEN ELSE 2DROP FALSE THEN ;
+: ALIGNED 3 + 3 INVERT AND ;
+: ALIGN HERE @ ALIGNED HERE ! ;
+: C, HERE @ C! 1 HERE +! ;
+: S" IMMEDIATE STATE @ IF ' LITS , HERE @ 0 , BEGIN KEY DUP '"' <> WHILE C, REPEAT
+		DROP DUP HERE @ SWAP - 4- SWAP ! ALIGN
+	ELSE HERE @ BEGIN KEY DUP '"' <> WHILE OVER C! 1+ REPEAT DROP HERE @ - HERE @ SWAP
+	THEN ;
+: ." IMMEDIATE STATE @ IF
+	[COMPILE] S" ' TELL , ELSE
+	BEGIN KEY DUP '"' = IF DROP EXIT THEN EMIT AGAIN THEN ;
+: DICT WORD FIND ;
+: VALUE WORD CREATE DOCOL , ' LIT , , ' EXIT , ;
+: TO IMMEDIATE DICT >DFA 4+ STATE @ IF ' LIT , , ' ! , ELSE ! THEN ;
+: +TO IMMEDIATE DICT >DFA 4+ STATE @ IF ' LIT , , ' +! , ELSE +! THEN ;
+: ID. 4+ COUNT F_LENMASK AND BEGIN DUP 0> WHILE SWAP COUNT EMIT SWAP 1- REPEAT 2DROP ;
+: ?HIDDEN 4+ C@ F_HIDDEN AND ;
+: ?IMMEDIATE 4+ C@ F_IMMED AND ;
+: WORDS LATEST @ BEGIN ?DUP WHILE DUP ?HIDDEN NOT IF DUP ID. SPACE THEN @ REPEAT CR ;
+: FORGET DICT DUP @ LATEST ! HERE ! ;
+: CFA> LATEST @ BEGIN ?DUP WHILE 2DUP SWAP < IF NIP EXIT THEN @ REPEAT DROP 0 ;
+: SEE DICT HERE @ LATEST @ BEGIN 2 PICK OVER <> WHILE NIP DUP @ REPEAT DROP SWAP ':' EMIT SPACE DUP ID. SPACE
+	DUP ?IMMEDIATE IF ." IMMEDIATE " THEN >DFA BEGIN 2DUP > WHILE DUP @ CASE
+		' LIT OF 4 + DUP @ . ENDOF ' LITS OF [ CHAR S ] LITERAL EMIT '"' EMIT SPACE
+			4 + DUP @ SWAP 4 + SWAP 2DUP TELL '"' EMIT SPACE + ALIGNED 4 - ENDOF
+		' 0BRANCH OF ." 0BRANCH ( " 4 + DUP @ . ." ) " ENDOF
+		' BRANCH OF ." BRANCH ( " 4 + DUP @ . ." ) " ENDOF
+		' ' OF [ CHAR ' ] LITERAL EMIT SPACE 4 + DUP @ CFA> ID. SPACE ENDOF
+		' EXIT OF 2DUP 4 + <> IF ." EXIT " THEN ENDOF DUP CFA> ID. SPACE ENDCASE 4 + REPEAT ';' EMIT CR 2DROP ;
+: :NONAME 0 0 CREATE HERE @ DOCOL , ] ;
+: ['] IMMEDIATE ' LIT , ;
+: EXCEPTION-MARKER RDROP 0 ;
+: CATCH DSP@ 4+ >R ' EXCEPTION-MARKER 4+ >R EXECUTE ;
+: THROW ?DUP IF RSP@ BEGIN DUP R0 4- < WHILE DUP @ ' EXCEPTION-MARKER 4+ = IF 4+ RSP! DUP DUP DUP R> 4- SWAP OVER ! DSP! EXIT THEN
+	4+ REPEAT DROP
+	CASE 0 1- OF ." ABORTED" CR ENDOF ." UNCAUGHT THROW " DUP . CR ENDCASE QUIT THEN ;
+: ABORT ( -- ) 0 1- THROW ;
+: PRINT-STACK-TRACE RSP@ BEGIN DUP R0 4- < WHILE DUP @ CASE ' EXCEPTION-MARKER 4+ OF ." CATCH ( DSP=" 4+ DUP @ U. ." ) " ENDOF
+		DUP CFA> ?DUP IF 2DUP ID. [ CHAR + ] LITERAL EMIT SWAP >DFA 4+ - . THEN ENDCASE 4+ REPEAT DROP CR ;
+: BINARY ( -- ) 2 BASE ! ;
+: OCTAL ( -- ) 8 BASE ! ;
+: 2# BASE @ 2 BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: 8# BASE @ 8 BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: # ( b -- n ) BASE @ SWAP BASE ! WORD NUMBER DROP SWAP BASE ! ;
+: UNUSED ( -- n ) PAD HERE @ - 4/ ;
+: WELCOME S" TEST-MODE" FIND NOT IF CR ."           **********" CR ." jonesforth.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE gpio.f" CR  ." OK " CR ."           **********" CR THEN ;
+WELCOME
+: ABS DUP 0< IF -1 * THEN ;
+: BILS 1 SWAP LSHIFT ;
+: BIC INVERT AND ;
+
+HEX
+
+20000000            CONSTANT RPI1_BASE
+
+RPI1_BASE 200000 +  CONSTANT GPIO_BASE
+
+GPIO_BASE           CONSTANT GPFSEL0
+GPIO_BASE 04 +      CONSTANT GPFSEL1
+GPIO_BASE 08 +      CONSTANT GPFSEL2
+GPIO_BASE 1C +      CONSTANT GPSET0
+GPIO_BASE 28 +      CONSTANT GPCLR0
+GPIO_BASE 34 +      CONSTANT GPLEV0
+
+GPIO_BASE 40 +      CONSTANT GPEDS0
+
+GPIO_BASE 4C +      CONSTANT GPREN0
+GPIO_BASE 58 +      CONSTANT GPFEN0
+
+GPIO_BASE 94 +      CONSTANT GPPUD
+GPIO_BASE 98 +      CONSTANT GPPUDCLK0
+
+
+
+DECIMAL
+
+0   BILS            CONSTANT GPIO0
+1   BILS            CONSTANT GPIO1
+2   BILS            CONSTANT GPIO2
+3   BILS            CONSTANT GPIO3
+4   BILS            CONSTANT GPIO4
+5   BILS            CONSTANT GPIO5
+6   BILS            CONSTANT GPIO6
+7   BILS            CONSTANT GPIO7
+8   BILS            CONSTANT GPIO8
+9   BILS            CONSTANT GPIO9
+
+10  BILS            CONSTANT GPIO10
+11  BILS            CONSTANT GPIO11
+12  BILS            CONSTANT GPIO12
+13  BILS            CONSTANT GPIO13
+14  BILS            CONSTANT GPIO14
+15  BILS            CONSTANT GPIO15
+16  BILS            CONSTANT GPIO16
+17  BILS            CONSTANT GPIO17
+18  BILS            CONSTANT GPIO18
+19  BILS            CONSTANT GPIO19
+20  BILS            CONSTANT GPIO20
+
+21  BILS            CONSTANT GPIO21
+22  BILS            CONSTANT GPIO22
+23  BILS            CONSTANT GPIO23
+24  BILS            CONSTANT GPIO24
+25  BILS            CONSTANT GPIO25
+26  BILS            CONSTANT GPIO26
+27  BILS            CONSTANT GPIO27
+
+
+0                   CONSTANT INP
+1                   CONSTANT OUT
+2                   CONSTANT ALT5
+3                   CONSTANT ALT4
+4                   CONSTANT ALT0
+5                   CONSTANT ALT1
+6                   CONSTANT ALT2
+7                   CONSTANT ALT3
+
+
+
+( gpio_mask -- gpio_number )
+: N_GPIO 
+    0 SWAP 
+    BEGIN 
+        DUP 2 MOD 
+        0 = IF 
+            1 RSHIFT SWAP 1+ SWAP 
+        ELSE 
+        THEN 
+        DUP 2 = 
+    UNTIL 
+    DROP 1+ ;
+
+
+( gpio_mask -- gpio_lsb )
+: GPIO_LSB N_GPIO 10 MOD 3 * ;
+
+: FSEL_MASK 
+    DUP DUP
+    2 + >R
+    1 + >R
+    BILS
+    R> BILS OR
+    R> BILS OR ;
+: FSEL GPIO_LSB DUP FSEL_MASK ;
+: MODE SWAP GPIO_LSB LSHIFT ;
+: GPFSEL N_GPIO 10 / 4 * GPFSEL0 + ;
+
+: GPSET N_GPIO 32 / 4 * GPSET0 + ;
+: GPCLR N_GPIO 32 / 4 * GPCLR0 + ;
+
+: GPLEV 32 / 4 * GPLEV0 + ;
+: PIN_LEVEL 
+    DUP GPLEV @ 
+    SWAP 32 MOD 
+    BILS AND 
+    IF 
+        1 
+    ELSE 
+        0
+    THEN ;
+
+
+
+VARIABLE TIMES
+
+
+( GPIOn_FSEL GPIOn_XMODE GPFSELm -- )
+: ENABLE_PIN
+    DUP                 ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 GPFSEL2 )
+    >R @                ( GPIOn_FSEL GPIOn_XMODE GPFSEL2 @ )
+    -ROT                ( GPFSEL2 @ GPIOn_FSEL GPIOn_XMODE )
+    >R                  ( GPFSEL2 @ GPIOn_FSEL )
+    BIC                 
+    R>                  ( [ GPFSEL2 @ GPIOn_FSEL BIC ] GPIOn_XMODE )
+    OR 
+    R> ! ;          
+
+( fsel_n mode_n gpfsel_n -- )
+: DISABLE_PIN
+    NIP
+    DUP >R
+    @ SWAP BIC
+    R> ! ;
+
+( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )
+: ACTIVATE 
+    DEPTH 3 /
+    TIMES !
+    BEGIN
+        ENABLE_PIN
+        TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
+        TIMES @ 0=                          \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )
+: DEACTIVATE
+    DEPTH 3 /
+    TIMES !
+    BEGIN
+        DISABLE_PIN
+        TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
+        TIMES @ 0=                          \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+: GPIO_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." gpio.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE time.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+GPIO_OK
+
+
+HEX
+RPI1_BASE 3000 +    CONSTANT TIMER_BASE
+TIMER_BASE 4 +      CONSTANT TIMER_COUNT
+DECIMAL
+: MILLISECONDS 1000 * ;
+: SECONDS 1000 * MILLISECONDS ;
+: DELAY 
+    BEGIN 
+        1 - DUP
+        0 =   
+    UNTIL 
+    DROP ;
+: CURRENT_TIME ( -- time ) TIMER_COUNT @ ;
+: CLK_DELAY CURRENT_TIME BEGIN 2DUP CURRENT_TIME - ABS SWAP > UNTIL 2DROP ;
+
+: TIME_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." time.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE i2c.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+TIME_OK
+
+HEX
+
+GPIO2 FSEL          CONSTANT GPIO2_FSEL
+GPIO2 ALT0 MODE     CONSTANT GPIO2_ALT0
+GPIO2 GPFSEL        CONSTANT GPIO2_GPFSEL
+
+GPIO3 FSEL          CONSTANT GPIO3_FSEL
+GPIO3 ALT0 MODE     CONSTANT GPIO3_ALT0
+GPIO3 GPFSEL        CONSTANT GPIO3_GPFSEL 
+
+: SDA1_PIN GPIO2_FSEL GPIO2_ALT0 GPIO2_GPFSEL ;
+: SCL1_PIN GPIO3_FSEL GPIO3_ALT0 GPIO3_GPFSEL ;
+
+: I2C_PINS SDA1_PIN SCL1_PIN ;
+
+
+RPI1_BASE 804000 +  CONSTANT BSC1
+
+BSC1                CONSTANT C_REGISTER
+BSC1 4 +            CONSTANT S_REGISTER
+BSC1 8 +            CONSTANT DLEN_REGISTER
+BSC1 C +            CONSTANT A_REGISTER
+BSC1 10 +           CONSTANT FIFO_REGISTER
+
+
+( val reg -- )
+: SET DUP >R @ OR R> ! ;
+
+
+
+0                   CONSTANT READ
+10# 4 BILS          CONSTANT CLEAR
+10# 7 BILS          CONSTANT ST
+10# 15 BILS         CONSTANT I2CEN
+
+
+( -- )
+: SET_WRITE         READ        C_REGISTER SET ;
+
+( -- )
+: CLEAR_FIFO        CLEAR       C_REGISTER SET ;
+
+( -- )
+: START_TRANSFER    ST          C_REGISTER SET ;
+
+( -- )
+: I2C_ENABLE        I2CEN       C_REGISTER SET ;
+
+
+1                   CONSTANT DLEN
+
+
+( -- )
+: SET_DLEN DLEN DLEN_REGISTER SET ;
+
+
+
+27                  CONSTANT ADDR
+
+
+( addr -- )
+: SET_SLAVE ADDR A_REGISTER SET ;
+
+
+
+( data -- )
+: >FIFO FIFO_REGISTER ! ;
+
+( data -- )
+: FIFO> FIFO_REGISTER @ ;
+
+
+( -- )
+: I2C_SEND
+    SET_WRITE
+    START_TRANSFER
+    I2C_ENABLE ;
+
+
+( data -- )  
+: >I2C
+    >FIFO
+    SET_DLEN
+    I2C_SEND ;
+
+( -- )
+: INIT_I2C I2C_PINS ACTIVATE ;
+
+: I2C_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." i2c.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE lcd.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+I2C_OK
+
+
+HEX
+
+( b -- 0/-1 )
+: ?CMD DUP 8 RSHIFT 1 = ;
+ 
+
+( b -- b_cmd )
+: CMD 100 OR ;
+
+( v -- )
+: ?CMD_OR_CHAR 
+    TRUE = IF
+        C
+    ELSE
+        D
+    THEN
+    OR ;
+
+( p v -- n1 n2 )
+: NIBBLE
+    DUP ROT
+    ?CMD_OR_CHAR SWAP
+    8 OR SWAP ;
+
+( b -- msb_b )
+: MSB F0 AND ;
+
+( b -- lsb_b )
+: LSB F AND 4 LSHIFT ;
+
+( b -- v1 v2 v3 v4 )
+: BYTE
+    ?CMD SWAP 2DUP
+    MSB NIBBLE 
+    2SWAP
+    LSB NIBBLE
+    2SWAP ;
+
+( v1 v2 v3 v4 -- )
+: SEND
+    >I2C 1 MILLISECONDS DELAY
+    >I2C 2 MILLISECONDS DELAY
+    >I2C 1 MILLISECONDS DELAY
+    >I2C 2 MILLISECONDS DELAY ;
+
+( b -- )
+: >LCD BYTE SEND ;
+
+
+01                  CONSTANT CLEAR_DISPLAY
+02                  CONSTANT RETURN_HOME
+
+80                  CONSTANT ROW1
+C0                  CONSTANT ROW2
+ROW1 14 +           CONSTANT ROW3
+ROW2 14 +           CONSTANT ROW4
+
+14                  CONSTANT CURSOR_RSHIFT
+10                  CONSTANT CURSOR_LSHIFT
+
+0C                  CONSTANT CURSOR_OFF
+0F                  CONSTANT CURSOR_ON
+0E                  CONSTANT CURSOR_BLINK_OFF
+
+: NUMBER 30 OR ;
+
+VARIABLE COL
+
+( row col -- )
+: SET_CURSOR
+    COL !
+    CMD >LCD
+    BEGIN 
+        CURSOR_RSHIFT CMD >LCD
+        COL @ 1 - COL !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        COL @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+
+18                  CONSTANT DELETE
+20                  CONSTANT SPACE
+
+VARIABLE LEN
+
+( c1 c2 c3 ... cn -- )
+: PRINT 
+    DEPTH LEN !
+    BEGIN 
+        >LCD
+        LEN @ 1 - LEN !                     \ DECREMENTO LEN AD OGNI ITERAZIONE
+        LEN @ 0=                            \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+VARIABLE STR_LEN
+
+
+( s_addr s_len -- )
+: PRINT_STR
+    STR_LEN !
+    BEGIN
+        DUP C@ >LCD
+        STR_LEN @ 1- STR_LEN !
+        1+
+        STR_LEN @ 0=
+    UNTIL
+    DROP ;
+
+
+( -- )
+: SUBJECT
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 2 SET_CURSOR S" Embedded Systems" PRINT_STR
+    ROW3 2 SET_CURSOR S" A.A.   2022/2023" PRINT_STR ;
+
+( -- )
+: MARIO
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 2 SET_CURSOR S" Mario Tortorici" PRINT_STR
+    ROW3 2 SET_CURSOR S" Matr.   0737892" PRINT_STR ;
+
+( -- )
+: VINCENZO
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 2 SET_CURSOR S" Vincenzo Fardella" PRINT_STR
+    ROW3 2 SET_CURSOR S" Matr.     07XXXXX" PRINT_STR ;
+
+( -- )
+: STUDENTS
+    VINCENZO                                                        3 SECONDS DELAY
+    MARIO                                                           3 SECONDS DELAY ;
+
+( -- )
+: PROJECT
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 6 SET_CURSOR S" PiServer " PRINT_STR
+    ROW3 2 SET_CURSOR S" Climate Control" PRINT_STR ;
+
+( -- )
+: WELCOME_MSG
+    SUBJECT                                                         3 SECONDS DELAY
+    STUDENTS
+    PROJECT ;
+
+( -- )
+: LOAD_MSG
+    CLEAR_DISPLAY CMD >LCD
+    ROW2 2 SET_CURSOR S" Inizializzazione " PRINT_STR
+    ROW3 6 SET_CURSOR S" in corso" PRINT_STR ;
+
+
+( -- )
+: CELSIUS 
+    ROW2 12 SET_CURSOR DF >LCD ;
+
+( -- )
+: TEMP 
+    ROW2 CMD >LCD
+    S" Temperature:   .   C" PRINT_STR
+    CELSIUS ;
+
+( -- )
+: HUM 
+    ROW3 CMD >LCD
+    S" Humidity:      .   %" PRINT_STR ;
+
+( -- )
+: TEMP_HUM_MSG
+    CLEAR_DISPLAY CMD >LCD
+    TEMP
+    HUM ;
+
+
+( -- )
+: WARNING_MSG
+    CLEAR_DISPLAY CMD >LCD
+    ROW1 3 SET_CURSOR S" ! ATTENZIONE !" PRINT_STR ;
+
+
+( -- )
+: LOW_TEMP_MSG
+    WARNING_MSG
+    ROW3 1 SET_CURSOR S" Temperatura sotto" PRINT_STR
+    ROW4 CMD >LCD S" il livello ottimale" PRINT_STR ;
+
+( -- )
+: HIGH_TEMP_MSG
+    WARNING_MSG
+    ROW3 CMD >LCD S" Temperatura elevata" PRINT_STR
+    ROW4 1 SET_CURSOR S" Avvio ventilazione" PRINT_STR ;
+
+
+( -- )
+: LOW_HUM_MSG
+    WARNING_MSG
+    ROW3 3 SET_CURSOR S" Umidita sotto" PRINT_STR
+    ROW4 CMD >LCD S" il livello ottimale" PRINT_STR ;
+
+( -- )
+: HIGH_HUM_MSG
+    WARNING_MSG
+    ROW3 3 SET_CURSOR S" Umidita sopra" PRINT_STR
+    ROW4 CMD >LCD S" il livello ottimale" PRINT_STR ;
+
+
+( -- )
+: INIT_LCD 
+    SET_SLAVE 02 CMD >LCD
+    WELCOME_MSG ;
+
+( -- )
+: LCD_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." lcd.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE led.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+LCD_OK
+
+HEX
+
+
+GPIO23              CONSTANT RED
+GPIO24              CONSTANT GREEN
+
+
+RED FSEL            CONSTANT RED_FSEL
+RED OUT MODE        CONSTANT RED_OUT
+RED GPFSEL          CONSTANT RED_GPFSEL   
+
+GREEN FSEL          CONSTANT GREEN_FSEL
+GREEN OUT MODE      CONSTANT GREEN_OUT
+GREEN GPFSEL        CONSTANT GREEN_GPFSEL
+
+VARIABLE FLAG
+
+ 
+( -- fsel_n out_n gpfsel_n )
+: RED_PIN   RED_FSEL RED_OUT RED_GPFSEL ;
+: GREEN_PIN GREEN_FSEL GREEN_OUT GREEN_GPFSEL ;
+( -- fsel_r out_r gpfsel_r fsel_g out_g gpfsel_g )
+: LED_PINS RED_PIN GREEN_PIN ;
+: LED GPSET0 GPCLR0 ;
+: ON DROP ! ;
+: OFF NIP ! ;
+
+: BLINK 
+    FLAG !
+    BEGIN 
+        RED LED ON
+        300 MILLISECONDS DELAY 
+        RED LED OFF
+        300 MILLISECONDS DELAY
+        FLAG @ 1 - FLAG !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        FLAG @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+: INIT_LEDS
+    LED_PINS ACTIVATE ;
+    
+: LED_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." led.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE button.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+LED_OK
+
+HEX
+1                   CONSTANT DOWN
+2                   CONSTANT UP
+GPIO8               CONSTANT RESET_BTN
+GPIO8 FSEL          CONSTANT GPIO8_FSEL
+GPIO8 INP MODE      CONSTANT GPIO8_INPUT
+GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
+: RESET_PIN GPIO8_FSEL GPIO8_INPUT GPIO8_GPFSEL ;
+: SET_PULL
+    GPPUD !
+    150 MILLISECONDS DELAY
+    GPPUDCLK0 DUP @
+    ROT 2DUP
+    BIC >R
+    OR OVER !
+    150 MILLISECONDS DELAY
+    R> SWAP ! ;
+: INIT_BTN ( -- )
+    RESET_PIN ENABLE_PIN
+    RESET_BTN UP SET_PULL
+    RESET_BTN GPREN0 !
+    RESET_BTN GPFEN0 ! ;
+: IS_CLICKED DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF TRUE ELSE FALSE THEN ;
+
+: BUTTON_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." button.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE dht.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+BUTTON_OK
+DECIMAL
+-40                 CONSTANT MIN_TEMP
+80                  CONSTANT MAX_TEMP
+0                   CONSTANT MIN_HUM
+100                 CONSTANT MAX_HUM
+VARIABLE DATA
+VARIABLE CHECKSUM
+VARIABLE HUMIDITY_IP
+VARIABLE HUMIDITY_DP
+VARIABLE TEMPERATURE_IP
+VARIABLE TEMPERATURE_DP
+GPIO18 FSEL          CONSTANT GPIO18_FSEL
+GPIO18 OUT MODE      CONSTANT GPIO18_OUT
+GPIO18 INP MODE      CONSTANT GPIO18_INP
+GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
+: WAIT_PULLDOWN 
+    BEGIN 
+        DUP PIN_LEVEL 
+        0 = WHILE 
+    REPEAT 
+    DROP ;
+: WAIT_PULLUP 
+    BEGIN 
+        DUP PIN_LEVEL 
+        1 = WHILE 
+    REPEAT 
+    DROP ;
+: DHT_PIN_OUT GPIO18_FSEL GPIO18_OUT GPIO18_GPFSEL ;
+: DHT_OUT DHT_PIN_OUT ENABLE_PIN ;
+: DHT_PIN_INP GPIO18_FSEL GPIO18_INP GPIO18_GPFSEL ;
+: DHT_INPUT DHT_PIN_INP ENABLE_PIN ;
+: SETUP_SENSOR 
+    DHT_OUT
+    GPIO18 DUP GPCLR !
+    1 MILLISECONDS CLK_DELAY
+    GPIO18 DUP GPSET !
+    DHT_INPUT ;
+: READ_BIT DUP WAIT_PULLDOWN TIMER_COUNT @ SWAP WAIT_PULLUP TIMER_COUNT @ SWAP - 50 > IF 1 ELSE 0 THEN ;
+: READ_DATA 
+    GPIO18 N_GPIO DUP DUP DUP WAIT_PULLDOWN WAIT_PULLUP
+    39 BEGIN
+        DUP 7 > IF
+            DATA DUP @ 1 LSHIFT
+        ELSE 
+            CHECKSUM DUP @ 1 LSHIFT
+        THEN
+        3 PICK READ_BIT
+        OR SWAP !
+        1 - DUP 0 >
+    WHILE REPEAT 2DROP ;
+: GET_HUMIDITY 
+    DATA @ 16 RSHIFT 10 /MOD DUP DUP MIN_HUM >= SWAP MAX_HUM <= AND
+    IF
+        HUMIDITY_IP ! 
+        HUMIDITY_DP ! 
+    ELSE
+        2DROP
+    THEN ;
+: GET_TEMPERATURE 
+    DATA @ 65535 AND 10 /MOD DUP DUP MIN_TEMP >= SWAP MAX_TEMP <= AND
+    IF
+        TEMPERATURE_IP !
+        TEMPERATURE_DP !
+    ELSE
+        2DROP
+    THEN ;
+: GET_READING GET_HUMIDITY GET_TEMPERATURE ;
+: HUMIDITY>CMD ." Humidity: " HUMIDITY_IP ? ." . " HUMIDITY_DP ? ." %" ;
+: INT_MSG 13 SET_CURSOR NUMBER >LCD NUMBER >LCD ;
+: DEC_MSG 16 SET_CURSOR NUMBER >LCD ;
+: HUMIDITY>LCD 
+    HUMIDITY_IP @ 10 /MOD ROW3 INT_MSG
+    HUMIDITY_DP @ ROW3 DEC_MSG ;
+: TEMPERATURE>CMD ." Temperature: " TEMPERATURE_IP ? ." . " TEMPERATURE_DP ? ." *C" ;
+: TEMPERATURE>LCD 
+    TEMPERATURE_IP @ 10 /MOD ROW2 INT_MSG
+    TEMPERATURE_DP @ ROW2 DEC_MSG ;
+: DHT>CMD TEMPERATURE>CMD ."  - " HUMIDITY>CMD CR ;
+: MEASURE 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT>CMD DROP ;
+
+: DHT_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." dht.f CARICATO CORRETTAMENTE" CR 
+        ." SUCCESSIVAMENTE CARICARE  main.f" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+DHT_OK
+
+DECIMAL
+
+: SETUP 
+    INIT_I2C
+    INIT_LCD
+    INIT_LEDS
+    INIT_BTN ;
+
+: MAIN
+    BEGIN
+        MEASURE
+        TEMPERATURE_IP @ 20 32 WITHIN HUMIDITY_IP @ 40 90 WITHIN AND 
+        TRUE =  IF
+            TEMP_HUM_MSG
+            TEMPERATURE>LCD HUMIDITY>LCD
+            GREEN LED OFF
+        ELSE 
+            TEMPERATURE_IP @ 20 <= IF 
+                LOW_TEMP_MSG
+                3 BLINK
+            ELSE TEMPERATURE_IP @ 32 >= IF
+                HIGH_TEMP_MSG
+                5 BLINK
+                GREEN LED ON
+                THEN
+            THEN 
+            HUMIDITY_IP @ 40 <= IF
+                LOW_HUM_MSG
+                4 BLINK
+            ELSE HUMIDITY_IP @ 90 >= IF
+                HIGH_HUM_MSG
+                6 BLINK
+                THEN
+            THEN
+        THEN
+        2 SECONDS CLK_DELAY
+        RESET_BTN IS_CLICKED TRUE =
+    UNTIL ;
+
+: MAIN_OK 
+    S" TEST-MODE" FIND NOT IF 
+        CR ."           **********" CR
+        ." main.f CARICATO CORRETTAMENTE" CR 
+        ." DIGITARE COMANDO 'MAIN' SUL TERMINALE PER AVVIARE IL SISTEMA" CR 
+        ." OK " CR
+        ."           **********" CR
+    THEN ;
+
+MAIN_OK
+
+SETUP                                                               1 SECONDS DELAY
+MAIN
+
