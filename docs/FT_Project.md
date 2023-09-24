@@ -258,12 +258,6 @@ Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pu
 
 <img src='https://global.discourse-cdn.com/nvidia/original/3X/b/8/b886440071a627ea9efbae5b2638a8625214d9ca.png' width="320" style='float:right; margin-right: 10px; border: 1px solid; margin-right: 15px'>
 
-
-
-
-
-
-
 Nella tabella sottostante sono riportati i pin GPIO attraverso i quali viene pilotato il pulsante:
 
 | Button Pin | Raspberry Pi Pin |
@@ -281,8 +275,6 @@ Si tratta di una ventola di dimensioni 60x60x10 mm, utilizzata per dissipare il 
 1. **GND (Ground)** : Questo pin è collegato alla terra e serve come riferimento elettrico per il circuito della ventola.
 2. **VCC (Voltage Common Collector)** : Questo pin fornisce l'alimentazione elettrica alla ventola e deve essere collegato a una sorgente di alimentazione a 5V per far funzionare correttamente la ventola.
 3. **GPIO (General-Purpose Input/Output)** : Questo pin è utilizzato per controllare la ventola. Può essere collegato a una porta GPIO di un microcontrollore o di un computer, come il Raspberry Pi, per regolare la velocità della ventola o attivarla/disattivarla in base alle necessità di raffreddamento.
-
-
 
 La ventola è connessa al Pi secondo la seguente configurazione:
 
@@ -513,13 +505,14 @@ Successivamente, possiamo trovare le definizioni di parole utilizzate per la **m
     UNTIL 
     DROP 1+ ;
 ```
+
 o `GPSET` per ricavare l'indirizzo del registro `GPSET0/1` cui fa riferimento una costante `GPIOx`, visibile nel seguente listato
 
 ```
 : GPSET ( gpion -- gpset0/1 ) N_GPIO 32 / 4 * GPSET0 + ;
 ```
 
-Sono presenti altre parole propriamente utilizzate per calcolare i valori da usare come parametri per altre parole, come `GPIO_LSB` e `FSEL_MASK`, riportate nel seguente listato 
+Sono presenti altre parole propriamente utilizzate per calcolare i valori da usare come parametri per altre parole, come `GPIO_LSB` e `FSEL_MASK`, riportate nel seguente listato
 
 ```
 : GPIO_LSB ( gpion -- fsel_lsb ) N_GPIO 10 MOD 3 * ;
@@ -609,7 +602,7 @@ GPIO24 CONSTANT GREEN
 
 D'ora in poi, per semplicità, parleremo solo del LED rosso, dato che le istruzioni per il pilotaggio del LED verde sono analoghe.
 
-I bit di selezione della funzione relativa ai pin GPIO 20-29 (**GPFSEL2**) si trovano all'indirizzo 0x20200008. 
+I bit di selezione della funzione relativa ai pin GPIO 20-29 (**GPFSEL2**) si trovano all'indirizzo 0x20200008.
 
 Utilizzando la word `GPFSEL` precedentemente definita, andiamo in automatico a memorizzare questo indirizzo nella costante **RED_GPFSEL**
 
@@ -623,7 +616,7 @@ Per ogni pin ci sono 3 bit di selezione della funzione. Nel nostro caso, i bit r
 RED FSEL CONSTANT RED_FSEL
 ```
 
-Abbiamo detto che i LED devono essere definiti in modalità **output** (0x001). Pertanto, vogliamo che nei bit 11-9 si presenti tale pattern, in modo da selezionare la output function relativa al pin GPIO 23. Utilizziamo la word `MODE` per tale scopo e memorizziamo il tutto in una costante, chiamata **RED_OUT**
+Abbiamo detto che i LED devono essere definiti in modalità **output** (0b001). Pertanto, vogliamo che nei bit 11-9 si presenti tale pattern, in modo da selezionare la output function relativa al pin GPIO 23. Utilizziamo la word `MODE` per tale scopo e memorizziamo il tutto in una costante, chiamata **RED_OUT**
 
 ```
 RED OUT MODE CONSTANT RED_OUT
@@ -705,7 +698,7 @@ Il valore $n$ viene memorizzato nella variabile FLAG e, successivamente, viene u
 
 ### i2c.f
 
-Il file permette di utilizzare il protocollo I2C in combinata con un display LCD grazie al backpack. 
+Il file permette di utilizzare il protocollo I2C in combinata con un display LCD grazie al backpack.
 
 Contiene parole e costanti utilizzate per implementare il suddetto protocollo, comprese quelle per impostare i registri del controller BSC su valori opportuni per abilitare il trasferimento di dati dal MCU al display in uno schema master-slave.
 
@@ -718,7 +711,7 @@ La comunicazione viene SEMPRE iniziata e terminata dal Master, che invia una STA
 
 Tra la START e la STOP CONDITION si può trasferire un qualsiasi numero di byte.
 
-SDA ed SCL del modulo I2C, sono connessi sul RPi ai pin GPIO 2 e 3.  È necessario che entrambi i pin siano abilitati in modalità ALT0 (Alternative Function 0). 
+SDA ed SCL del modulo I2C, sono connessi sul RPi ai pin GPIO 2 e 3.  È necessario che entrambi i pin siano abilitati in modalità ALT0 (Alternative Function 0).
 
 Per una migliore leggibilità del codice, si sono definite le costanti:
 
@@ -760,12 +753,12 @@ Per quanto riguarda il trasferimento dei dati, dovremo abilitare il Master in mo
 I passi di scrittura sono i seguenti:
 
 1. Il Master invia una START CONDITION seguita dallo SLAVE ADDR e dal bit R/W settato a 0 (WRITE).
-1. Lo Slave invia il bit di ACK
-1. Il Master invia il l'indirizzo del registro su cui vuole effettuare l'operazione di scrittura
-1. Lo Slave invia di nuovo il bit di ACK, se è pronto
-1. Il Master inizia ad inviare i dati da scrivere sul registro (uno o più byte) dello Slave
-1. Ad ogni byte inviato il Master deve aspettare che lo Slave invii il bit di ACK
-1. Il Master termina la trasmissione inviando una STOP CONDITION
+2. Lo Slave invia il bit di ACK
+3. Il Master invia il l'indirizzo del registro su cui vuole effettuare l'operazione di scrittura
+4. Lo Slave invia di nuovo il bit di ACK, se è pronto
+5. Il Master inizia ad inviare i dati da scrivere sul registro (uno o più byte) dello Slave
+6. Ad ogni byte inviato il Master deve aspettare che lo Slave invii il bit di ACK
+7. Il Master termina la trasmissione inviando una STOP CONDITION
 
 Il controller Broadcom Serial Controller (**BSC**) è un controller BSC master, fast-mode (400Kb/s). Il bus Broadcom Serial Control è un bus proprietario conforme al bus/interfaccia I2C di Philips®.
 
@@ -828,7 +821,7 @@ Definiamo le word per fare quanto scritto sopra:
 : I2C_ENABLE        I2CEN       C_REGISTER SET ;
 ```
 
-Il **DLEN_REGISTER** (Data Length Register) definisce il numero di byte di dati da trasmettere o ricevere nel trasferimento I2C. La lettura del registro fornisce il numero di byte rimanenti nel trasferimento corrente. 
+Il **DLEN_REGISTER** (Data Length Register) definisce il numero di byte di dati da trasmettere o ricevere nel trasferimento I2C. La lettura del registro fornisce il numero di byte rimanenti nel trasferimento corrente.
 
 Il campo DLEN specifica il numero di byte da trasmettere/ricevere. Nel nostro caso ci interessa trasmettere 1 Byte (8 bit) alla volta.
 
@@ -884,7 +877,7 @@ Successivamente, definiamo la word `>I2C` che, ricevuto un Byte di dati, consent
 
 ### lcd.f
 
-Il file permette la gestione del modulo display utilizzato nel sistema proposto, successivamente all'impostazione del controller BSC del RPi. 
+Il file permette la gestione del modulo display utilizzato nel sistema proposto, successivamente all'impostazione del controller BSC del RPi.
 
 Nel file sono incluse parole per la stampa di parole sul display e per la discriminazione tra l'invio di caratteri e quello di comandi, sfruttando la modalità di invio a 4 bit offerta dal display LCD2004.
 
@@ -925,7 +918,7 @@ Come precedentemente specificato, il modulo LCD2004 sfrutta la modalità di invi
 
 Ricevuta in input una condizione di verità p (0/T, 1/F) viene determinata, tramite la word ?CMD_OR_CHAR quale costante di apertura della comunicazione sommare al valore v per inviare un carattere (D) o un comando (C).
 
-Successivamente una copia del valore v viene sommata alla costante di chiusura della comunicazione dello stesso nibble (0x8). 
+Successivamente una copia del valore v viene sommata alla costante di chiusura della comunicazione dello stesso nibble (0x8).
 
 es. processare 5 come parte di un carattere produce i byte 5D e 58
 
@@ -1001,7 +994,7 @@ VARIABLE COL
     UNTIL ;
 ```
 
-Se vogliamo scrivere dei caratteri sul display, anziché andare ogni volta a scrivere l'equivalente ascii sullo stack e poi >LCD, abbiamo creato la word `PRINT` che stampa una serie di caratteri o comandi presenti sullo stack. 
+Se vogliamo scrivere dei caratteri sul display, anziché andare ogni volta a scrivere l'equivalente ascii sullo stack e poi >LCD, abbiamo creato la word `PRINT` che stampa una serie di caratteri o comandi presenti sullo stack.
 
 ```
 VARIABLE LEN
@@ -1015,7 +1008,7 @@ VARIABLE LEN
     UNTIL ;
 ```
 
-Viene calcolata la profondità dello stack e memorizzata in una variabile LEN, per conoscere il numero di iterazioni per stampare tutti gli elementi dello stack. 
+Viene calcolata la profondità dello stack e memorizzata in una variabile LEN, per conoscere il numero di iterazioni per stampare tutti gli elementi dello stack.
 
 Il ciclo BEGIN...UNTIL viene utilizzato per iterare attraverso gli elementi nello stack e stamparli sul display LCD.
 
@@ -1035,7 +1028,7 @@ Sfruttando una logica molto simile, siamo passati alla definizione della word `P
     DROP ;
 ```
 
-Il ciclo BEGIN...UNTIL viene utilizzato per scorrere la stringa carattere per carattere fino a quando non viene raggiunta la fine della stringa (quando "STR_LEN" diventa 0). 
+Il ciclo BEGIN...UNTIL viene utilizzato per scorrere la stringa carattere per carattere fino a quando non viene raggiunta la fine della stringa (quando "STR_LEN" diventa 0).
 
 All'interno del ciclo, "DUP C@" estrae il carattere corrente dalla stringa e lo invia alla destinazione di output (un display LCD nel nostro caso).
 
@@ -1177,12 +1170,12 @@ Infine, sono state definite semplici parole per la presentazione dei dati in for
 : DEC_MSG ( n x -- ) 16 SET_CURSOR NUMBER >LCD ;
 
 : HUMIDITY>LCD ( -- )
-    HUMIDITY_IP 10 /MOD ROW3 INT_MSG
-    HUMIDITY_DP ROW3 DEC_MSG ;
+    HUMIDITY_IP @ 10 /MOD ROW3 INT_MSG
+    HUMIDITY_DP @ ROW3 DEC_MSG ;
 
 : TEMPERATURE>LCD ( -- )
-    TEMPERATURE_IP 10 /MOD ROW2 INT_MSG
-    TEMPERATURE_DP ROW2 DEC_MSG ;
+    TEMPERATURE_IP @ 10 /MOD ROW2 INT_MSG
+    TEMPERATURE_DP @ ROW2 DEC_MSG ;
 
 ```
 
@@ -1220,12 +1213,12 @@ Si procede, quindi, con la definizione della parola `RESET_PIN`, che carica sull
 : RESET_PIN ( -- ) GPIO8_FSEL GPIO8_INPUT GPIO8_GPFSEL ;
 ```
 
-Dopo di ché, viene definita la parola `SET_PULL`, che riceve in input un pin `GPIOx` e una modalità di pull (up/down) e permette di asserire il controllo corrispondente per il pin `GPIOx`. Perché ciò avvenga, serve scrivere su una coppia di registri (definiti nel file `gpio.f`): 
+Dopo di ché, viene definita la parola `SET_PULL`, che riceve in input un pin `GPIOx` e una modalità di pull (up/down) e permette di asserire il controllo corrispondente per il pin `GPIOx`. Perché ciò avvenga, serve scrivere su una coppia di registri (definiti nel file `gpio.f`):
 
-| Registro | Descrizione |
-|---|---|
-| GPPUD | Registro a 32 bit, di cui solo i primi due utilizzati, per controllare l'attuazione delle linee di controllo PU/PD per tutti i pin GPIO. <br> Da usare INSIEME ai registri GPPUDCLK0/1 |
-| GPPUDCLK0/1 | Registro a 32 bit, in cui il bit i-esimo asserisce la linea di clock per il controllo dell'attivazione del PU/PD interno per il pin i-esimo  |
+| Registro    | Descrizione                                                                                                                                                                               |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GPPUD       | Registro a 32 bit, di cui solo i primi due utilizzati, per controllare l'attuazione delle linee di controllo PU/PD per tutti i pin GPIO.`<br>` Da usare INSIEME ai registri GPPUDCLK0/1 |
+| GPPUDCLK0/1 | Registro a 32 bit, in cui il bit i-esimo asserisce la linea di clock per il controllo dell'attivazione del PU/PD interno per il pin i-esimo                                               |
 
 Nello specifico, le operazioni che vengono svolte per asserire l'attuazione di una linea di controllo per il pull-up sul pin GPIO8 occorre:
 
@@ -1258,10 +1251,10 @@ Segue il listato della parola `SET_PULL`
 La parola `SET_PULL` viene usata all'interno della parola `INIT_BTN` in quanto parte del processo di inizializzazione del componente. Bisogna, però, effettuare altre operazioni per fissare il funzionamento del pulsante, dato che, con la sola impostazione del controllo pull-up ciò non avviene.
 In questo senso, bisogna operare su due altri registri (anch'essi definiti nel file `gpio.f`):
 
-| Registro | Descrizione |
-|---|---|
-| GPREN0 | Registro a 32 bit, usato per individuare transizioni logiche da 0 a 1, del tipo "011...1" sui pin 0...31. <br>Ad ogni transizione, viene settato un bit nel registro GPEDS0 |
-| GPFEN0 | Registro a 32 bit, usato per individuare transizioni logiche da 1 a 0, del tipo "100...0" sui pin 0...31. <br>Ad ogni transizione, viene settato un bit nel registro GPEDS0 |
+| Registro | Descrizione                                                                                                                                                                  |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GPREN0   | Registro a 32 bit, usato per individuare transizioni logiche da 0 a 1, del tipo "011...1" sui pin 0...31.<br />Ad ogni transizione, viene settato un bit nel registro GPEDS0 |
+| GPFEN0   | Registro a 32 bit, usato per individuare transizioni logiche da 1 a 0, del tipo "100...0" sui pin 0...31.<br />Ad ogni transizione, viene settato un bit nel registro GPEDS0 |
 
 Nello specifico, quello che viene fatto è impostare a 1 i bit dei due registri corrispondenti al pin `GPIO8`, ossia il bit 8, cosicché vengano rilevati eventi quando si verificano transizioni del tipo `01...10` e che tali eventi vengano scritti impostando a 1 il bit 8 (per il pin `GPIO8`) del registro `GPEDS0`.
 
@@ -1278,7 +1271,7 @@ Detto ciò, è quindi possibile presentare il listato della parola `INIT_BTN`, i
 Utile al funzionamento del bottone è poi la parola `IS_CLICKED`, che permette di determinare se è stato registrato un evento nel registro `GPEDS0` e di restituire un valore di verità.
 
 ```
-: IS_CLICKED ( gpio -- 0/1 ) DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF 0 ELSE 1 THEN ;
+: IS_CLICKED ( gpio -- 0/1 ) DUP >R GPEDS0 @ AND R> N_GPIO RSHIFT 0 = IF TRUE ELSE FALSE THEN ;
  
 ```
 
@@ -1286,7 +1279,9 @@ Utile al funzionamento del bottone è poi la parola `IS_CLICKED`, che permette d
 
 Il file contiene il flusso sequenziale/logico di funzionamento del sistema. In esso sono definite le parole necessarie al funzionamento del software secondo le modalità previste.
 
-Nello specifico, è definita la parola `MAIN`, in cui sono previste, in un ordine che garantisca il funzionamento di tutti i componenti, le **fasi di inizializzazione** dei registri (attraverso le parole `INIT_x`) per il protocollo I2C, per il funzionamento del display LCD2004 (con la presentazione delle schermate di avvio del sistema), per la ventola, per i LED e per il pulsante. Successivamente alla fase di inizializzazione, il software entra in un loop con test posticipato della condizione che il bottone **non sia stato premuto**, nel cui caso avviene il termine dell'esecuzione.
+Nello specifico, è definita la parola `SETUP`, in cui sono previste, in un ordine che garantisca il funzionamento di tutti i componenti, le **fasi di inizializzazione** dei registri (attraverso le parole `INIT_x`) per il protocollo I2C, per il funzionamento del display LCD2004 (con la presentazione delle schermate di avvio del sistema), per i LED e per il pulsante.
+
+È poi definita la parola `MAIN`, in cui il software entra in un loop con test posticipato della condizione che il bottone **non sia stato premuto**, nel cui caso avviene il termine dell'esecuzione.
 
 Ad ogni iterazione del ciclo, viene prima fatta una **misurazione** dal sensore DHT22/AM2302 (tramite la parola `MEASURE` definita in `dht.f`), poi si procede al **controllo della correttezza** dei dati rispetto alle condizioni ambientali necessarie al corretto funzionamento di una sala server:
 
@@ -1301,39 +1296,42 @@ Di seguito è riportato il codice sorgente del file.
 
 DECIMAL
 
-: MAIN
+: SETUP 
     INIT_I2C
     INIT_LCD
-    INIT_FAN
     INIT_LEDS
-    INIT_BTN
+    INIT_BTN ;
+
+: MAIN
     BEGIN
         MEASURE
-        TEMPERATURE_IP 20 24 WITHIN HUMIDITY_IP 40 60 WITHIN AND 
+        TEMPERATURE_IP @ 20 24 WITHIN HUMIDITY_IP @ 40 60 WITHIN AND 
         TRUE =  IF
             TEMP_HUM_MSG
             TEMPERATURE>LCD HUMIDITY>LCD
             GREEN LED OFF
         ELSE 
-            TEMPERATURE_IP 20 < IF 
+            TEMPERATURE_IP @ 20 <= IF 
                 LOW_TEMP_MSG
                 3 BLINK
-            ELSE TEMPERATURE_IP 24 > IF
+            ELSE TEMPERATURE_IP @ 24 >= IF
                 HIGH_TEMP_MSG
                 5 BLINK
                 GREEN LED ON
+                THEN
             THEN 
-            HUMIDITY_IP 40 < IF
+            HUMIDITY_IP @ 40 <= IF
                 LOW_HUM_MSG
                 4 BLINK
-            ELSE HUMIDITY_IP 60 > IF
+            ELSE HUMIDITY_IP @ 60 >= IF
                 HIGH_HUM_MSG
                 6 BLINK
+                THEN
             THEN
         THEN
-        2 SECONDS DELAY
-        RESET_BTN
-    UNTIL IS_PRESSED ;
+        2 SECONDS CLK_DELAY
+        RESET_BTN IS_CLICKED TRUE =
+    UNTIL ;
 
 : MAIN_OK 
     S" TEST-MODE" FIND NOT IF 
@@ -1346,13 +1344,16 @@ DECIMAL
 
 MAIN_OK
 
+SETUP                                                               1 SECONDS DELAY
+MAIN
+
 ```
 
 # Considerazioni Finali
 
-Dopo una prima, lunga, fase di impostazione dell'attività progettuale, legata principalmente al reperimento della componentistica e all'apprendimento dell'ambiente di sviluppo (essendo la prima esperienza di programmazione a un così basso livello), possiamo affermare che la soluzione proposta rappresenti un punto di partenza per future espansioni e adattamenti a vari contesti, che vanno dalla domotica ad applicazioni industriali, in cui il rilevamento dei valori di temperatura e di umidità in tempo reale possa essere un *game-changer*.
+Dopo una prima, lunga, fase di impostazione dell'attività progettuale, legata principalmente al reperimento della componentistica e all'apprendimento dell'ambiente di sviluppo (essendo la prima esperienza di programmazione a un così basso livello), possiamo affermare che la soluzione proposta rappresenti un punto di partenza per future espansioni e adattamenti.
 
-In questo senso, possibili espansioni riguardano l'inserimento di attuatori e sensori che possano permettere alla soluzione di interfacciarsi con altri dispositivi e di fungere da regolatore del comportamento di questi ultimi, senza, peraltro, dover modificare il codice sorgente fin dove scritto: nel caso domestico, per esempio, si potrebbe pensare di centralizzare il controllo della temperatura aggiungendo pulsanti, per la determinazione dei valori desiderati, e altra componentistica, per permettere la comunicazione con le unità di controllo del clima (es. climatizzatori) e l'imposizione di tali valori fino al soddisfacimento di condizioni sia temporali che ambientali.
+In questo senso, possibili espansioni riguardano l'inserimento di attuatori e sensori che possano permettere alla soluzione di interfacciarsi con altri dispositivi e di fungere da regolatore del comportamento di questi ultimi, senza, peraltro, dover modificare il codice sorgente fin dove scritto: si potrebbe, ad esempio, pensare di interfacciare il sistema con **umidificatori** e **deumidificatori** per il controllo dell'**umidità**, con **sistemi di riscaldamento** per l'innalzamento della **temperatura**, ecc.
 
 Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al codice di poter essere riutilizzato anche su altri dispositivi target, semplicemente variando alcuni parametri di configurazione opportunamente astratti.
 
