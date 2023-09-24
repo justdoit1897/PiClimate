@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>FT_Project.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/*
+
+Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
+
+*/
+
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #FFFFFF;
+}
+
+.hljs,
+.hljs-subst {
+  color: #434f54;
+}
+
+.hljs-keyword,
+.hljs-attribute,
+.hljs-selector-tag,
+.hljs-doctag,
+.hljs-name {
+  color: #00979D;
+}
+
+.hljs-built_in,
+.hljs-literal,
+.hljs-bullet,
+.hljs-code,
+.hljs-addition {
+  color: #D35400;
+}
+
+.hljs-regexp,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+  color: #00979D;
+}
+
+.hljs-type,
+.hljs-string,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion {
+  color: #005C5F;
+}
+
+.hljs-title,
+.hljs-section {
+  color: #880000;
+  font-weight: bold;
+}
+
+.hljs-comment {
+  color: rgba(149,165,166,.8);
+}
+
+.hljs-meta-keyword {
+  color: #728E00;
+}
+
+.hljs-meta {
+  color: #434f54;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+.hljs-function {
+  color: #728E00;
+}
+
+.hljs-number {
+  color: #8A7B52;  
+}
+
+</style>
+
+<style>
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family:   "HelveticaNeue-Light", sans-serif, "宋体","Segoe WPC", "Segoe UI", "SFUIText-Light","Droid Sans Fallback";
+	font-size: 18px;
+	padding: 0 12px;
+	line-height: 1.6;
+	word-wrap: break-word;
+	color: #333333;
+}
+
+.content-wrapper{
+	max-width: 860px;
+    margin: 0 auto;
+    padding: 0 30px;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	color: #4080D0;
+	text-decoration: none;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom: 1px solid #eee;
+}
+
+
+h2{
+	padding-bottom: .3em;
+    font-size: 2em;
+    line-height: 1.225;
+    border-bottom: 1px solid #eee;
+}
+
+h3{
+	font-size: 1.75em;
+    line-height: 1.225;
+}
+
+h1, h2, h3 {
+	font-weight: bold;
+}
+
+h1 code,
+h2 code,
+h3 code,
+h4 code,
+h5 code,
+h6 code {
+	font-size: inherit;
+	line-height: auto;
+}
+
+a:hover {
+	color: #4080D0;
+	text-decoration: underline;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left: 5px solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 14px;
+	line-height: 19px;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+.mac code {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+/** Theming */
+
+.vscode-light,
+.vscode-light pre code {
+	color: rgb(30, 30, 30);
+}
+
+.vscode-dark,
+.vscode-dark pre code {
+	color: #DDD;
+}
+
+.vscode-high-contrast,
+.vscode-high-contrast pre code {
+	color: white;
+}
+
+.vscode-light code {
+	color: #A31515;
+}
+
+.vscode-dark code {
+	color: #D7BA7D;
+}
+
+.vscode-light pre:not(.hljs),
+.vscode-light code > div {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre:not(.hljs),
+.vscode-dark code > div {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre:not(.hljs),
+.vscode-high-contrast code > div {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+.vscode-light blockquote,
+.vscode-dark blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.vscode-high-contrast blockquote {
+	background: transparent;
+	border-color: #fff;
+}
+</style>
+
+<style>
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+.table-of-contents li{
+	list-style-type: initial;
+}
+</style>
+
+<style>
+@font-face{font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(fonts/KaTeX_AMS-Regular.woff) format("woff"),url(fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(fonts/KaTeX_Main-Bold.woff) format("woff"),url(fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(fonts/KaTeX_Main-Italic.woff) format("woff"),url(fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(fonts/KaTeX_Main-Regular.woff) format("woff"),url(fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(fonts/KaTeX_Math-Italic.woff) format("woff"),url(fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(fonts/KaTeX_Script-Regular.woff) format("woff"),url(fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size1-Regular.woff) format("woff"),url(fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size2-Regular.woff) format("woff"),url(fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size3-Regular.woff) format("woff"),url(fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size4-Regular.woff) format("woff"),url(fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{text-rendering:auto;font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;text-indent:0}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.16.2"}.katex .katex-mathml{clip:rect(1px,1px,1px,1px);border:0;height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.newline{display:block}.katex .base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .base,.katex .strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .hbox{width:100%}.katex .hbox,.katex .thinbox{display:inline-flex;flex-direction:row}.katex .thinbox{max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline,.katex .hline,.katex .mfrac .frac-line,.katex .overline .overline-line,.katex .rule,.katex .underline .underline-line{min-height:1px}.katex .mspace{display:inline-block}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.inner,.katex .llap>.inner,.katex .rlap>.inner{position:absolute}.katex .clap>.fix,.katex .llap>.fix,.katex .rlap>.fix{display:inline-block}.katex .llap>.inner{right:0}.katex .clap>.inner,.katex .rlap>.inner{left:0}.katex .clap>.inner>span{margin-left:-50%;margin-right:50%}.katex .rule{border:0 solid;display:inline-block;position:relative}.katex .hline,.katex .overline .overline-line,.katex .underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.root{margin-left:.27777778em;margin-right:-.55555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .sizing.reset-size2.size1{font-size:.83333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .sizing.reset-size2.size3{font-size:1.16666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .sizing.reset-size2.size4{font-size:1.33333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .sizing.reset-size2.size6{font-size:1.66666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .sizing.reset-size2.size10{font-size:3.45666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .sizing.reset-size2.size11{font-size:4.14666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .sizing.reset-size3.size1{font-size:.71428571em}.katex .fontsize-ensurer.reset-size3.size2,.katex .sizing.reset-size3.size2{font-size:.85714286em}.katex .fontsize-ensurer.reset-size3.size3,.katex .sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .sizing.reset-size3.size4{font-size:1.14285714em}.katex .fontsize-ensurer.reset-size3.size5,.katex .sizing.reset-size3.size5{font-size:1.28571429em}.katex .fontsize-ensurer.reset-size3.size6,.katex .sizing.reset-size3.size6{font-size:1.42857143em}.katex .fontsize-ensurer.reset-size3.size7,.katex .sizing.reset-size3.size7{font-size:1.71428571em}.katex .fontsize-ensurer.reset-size3.size8,.katex .sizing.reset-size3.size8{font-size:2.05714286em}.katex .fontsize-ensurer.reset-size3.size9,.katex .sizing.reset-size3.size9{font-size:2.46857143em}.katex .fontsize-ensurer.reset-size3.size10,.katex .sizing.reset-size3.size10{font-size:2.96285714em}.katex .fontsize-ensurer.reset-size3.size11,.katex .sizing.reset-size3.size11{font-size:3.55428571em}.katex .fontsize-ensurer.reset-size4.size1,.katex .sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .sizing.reset-size5.size1{font-size:.55555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .sizing.reset-size5.size2{font-size:.66666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .sizing.reset-size5.size3{font-size:.77777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .sizing.reset-size5.size4{font-size:.88888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .sizing.reset-size5.size6{font-size:1.11111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .sizing.reset-size5.size7{font-size:1.33333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .sizing.reset-size5.size10{font-size:2.30444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .sizing.reset-size5.size11{font-size:2.76444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .sizing.reset-size7.size1{font-size:.41666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .sizing.reset-size7.size3{font-size:.58333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .sizing.reset-size7.size4{font-size:.66666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .sizing.reset-size7.size6{font-size:.83333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .sizing.reset-size7.size10{font-size:1.72833333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .sizing.reset-size7.size11{font-size:2.07333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .sizing.reset-size8.size1{font-size:.34722222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .sizing.reset-size8.size2{font-size:.41666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .sizing.reset-size8.size3{font-size:.48611111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .sizing.reset-size8.size4{font-size:.55555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .sizing.reset-size8.size6{font-size:.69444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .sizing.reset-size8.size7{font-size:.83333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .sizing.reset-size8.size10{font-size:1.44027778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .sizing.reset-size8.size11{font-size:1.72777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .sizing.reset-size9.size1{font-size:.28935185em}.katex .fontsize-ensurer.reset-size9.size2,.katex .sizing.reset-size9.size2{font-size:.34722222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .sizing.reset-size9.size3{font-size:.40509259em}.katex .fontsize-ensurer.reset-size9.size4,.katex .sizing.reset-size9.size4{font-size:.46296296em}.katex .fontsize-ensurer.reset-size9.size5,.katex .sizing.reset-size9.size5{font-size:.52083333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .sizing.reset-size9.size6{font-size:.5787037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .sizing.reset-size9.size7{font-size:.69444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .sizing.reset-size9.size8{font-size:.83333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .sizing.reset-size9.size10{font-size:1.20023148em}.katex .fontsize-ensurer.reset-size9.size11,.katex .sizing.reset-size9.size11{font-size:1.43981481em}.katex .fontsize-ensurer.reset-size10.size1,.katex .sizing.reset-size10.size1{font-size:.24108004em}.katex .fontsize-ensurer.reset-size10.size2,.katex .sizing.reset-size10.size2{font-size:.28929605em}.katex .fontsize-ensurer.reset-size10.size3,.katex .sizing.reset-size10.size3{font-size:.33751205em}.katex .fontsize-ensurer.reset-size10.size4,.katex .sizing.reset-size10.size4{font-size:.38572806em}.katex .fontsize-ensurer.reset-size10.size5,.katex .sizing.reset-size10.size5{font-size:.43394407em}.katex .fontsize-ensurer.reset-size10.size6,.katex .sizing.reset-size10.size6{font-size:.48216008em}.katex .fontsize-ensurer.reset-size10.size7,.katex .sizing.reset-size10.size7{font-size:.57859209em}.katex .fontsize-ensurer.reset-size10.size8,.katex .sizing.reset-size10.size8{font-size:.69431051em}.katex .fontsize-ensurer.reset-size10.size9,.katex .sizing.reset-size10.size9{font-size:.83317261em}.katex .fontsize-ensurer.reset-size10.size10,.katex .sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .sizing.reset-size10.size11{font-size:1.19961427em}.katex .fontsize-ensurer.reset-size11.size1,.katex .sizing.reset-size11.size1{font-size:.20096463em}.katex .fontsize-ensurer.reset-size11.size2,.katex .sizing.reset-size11.size2{font-size:.24115756em}.katex .fontsize-ensurer.reset-size11.size3,.katex .sizing.reset-size11.size3{font-size:.28135048em}.katex .fontsize-ensurer.reset-size11.size4,.katex .sizing.reset-size11.size4{font-size:.32154341em}.katex .fontsize-ensurer.reset-size11.size5,.katex .sizing.reset-size11.size5{font-size:.36173633em}.katex .fontsize-ensurer.reset-size11.size6,.katex .sizing.reset-size11.size6{font-size:.40192926em}.katex .fontsize-ensurer.reset-size11.size7,.katex .sizing.reset-size11.size7{font-size:.48231511em}.katex .fontsize-ensurer.reset-size11.size8,.katex .sizing.reset-size11.size8{font-size:.57877814em}.katex .fontsize-ensurer.reset-size11.size9,.katex .sizing.reset-size11.size9{font-size:.69453376em}.katex .fontsize-ensurer.reset-size11.size10,.katex .sizing.reset-size11.size10{font-size:.83360129em}.katex .fontsize-ensurer.reset-size11.size11,.katex .sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .accent .accent-body{position:relative}.katex .accent .accent-body:not(.accent-full){width:0}.katex .overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .stretchy:after,.katex .stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+
+</style>
+
+</head>
+<body>
+    <div class="content-wrapper">
+        <link rel="stylesheet" type="text/css" href="stili.css">
+<h1 id="introduzione" tabindex="-1">Introduzione</h1>
+<p>I software embedded rappresentano il cuore invisibile di molte delle tecnologie che utilizziamo quotidianamente. Sono software specializzati, incorporati in dispositivi elettronici e macchinari industriali, progettati per eseguire specifiche funzioni senza l'interfaccia di un utente. Questi sistemi sono onnipresenti, dall'elettronica domestica agli impianti industriali, e forniscono l'automazione e il controllo necessari per semplificare le nostre vite e migliorare l'efficienza in molti settori.</p>
+<p>Immaginiamo una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. Valori come <strong>temperatura</strong> ed <strong>umidità</strong> devono essere attentamente monitorati e regolati per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa.</p>
+<p>In particolar modo, la <strong>temperatura</strong> ambientale dovrebbe essere mantenuta entro i <strong>20-24 °C</strong>, dato che un'elevata temperatura può causare surriscaldamento e danneggiare gli apparati, mentre una temperatura troppo bassa potrebbe causare condensa o problemi di umidità.</p>
+<p>L'intervallo di <strong>umidità</strong> consigliato per una sala server è generalmente tra il <strong>40%</strong> e il <strong>60%</strong>. Un'umidità troppo elevata può causare corrosione e danneggiare i componenti elettronici, mentre un'umidità troppo bassa può causare scariche elettrostatiche.</p>
+<p>Qui entra in gioco un progetto embedded dedicato alla gestione di questi parametri ambientali. Il nostro sistema embedded è progettato per:</p>
+<ol>
+<li><strong>Monitoraggio Costante</strong> : Utilizza sensori di temperatura e umidità per monitorare costantemente le condizioni all'interno della sala server.</li>
+<li><strong>Controllo Automatico</strong> : In base ai dati raccolti dai sensori, il sistema può attivare o disattivare sistemi di raffreddamento o umidificatori per mantenere le condizioni ottimali.</li>
+<li><strong>Allarmi e Notifiche</strong> : Se il sistema rileva condizioni fuori norma, può generare allarmi visivi per il personale responsabile, consentendo di reagire rapidamente a eventuali problemi.</li>
+</ol>
+<p>Questo progetto embedded rappresenta un esempio concreto di come i sistemi embedded siano essenziali per garantire l'affidabilità delle infrastrutture tecnologiche moderne. La sua capacità di monitorare e gestire in modo autonomo le condizioni ambientali contribuisce in modo significativo alla continuità operativa delle aziende e alla protezione delle risorse informatiche critiche.</p>
+<h1 id="hardware" tabindex="-1">Hardware</h1>
+<p>In questa sezione verranno elencati i componenti hardware necessari all'implementazione del progetto e verrà illustrato lo schema di collegamento degli stessi.</p>
+<p>Successivamente, si andrà a descrivere nel dettaglio ciascun componente, in modo da offrire una guida a chiunque voglia intraprendere un progetto simile.</p>
+<h2 id="lista-componenti" tabindex="-1">Lista Componenti</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Nome</th>
+<th style="text-align:center">Quantità</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Raspberry™Pi 1 B</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Cavo USB-A a Micro USB</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">MicroSD 32GB</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">FTDI FT232RL UART to USB interface</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Breadboard</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Sensore DHT22</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Display I2C LCD2004</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">LED colore ROSSO</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">LED colore VERDE</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Resistori da<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext> </mtext><mn>100</mn><mi mathvariant="normal">Ω</mi></mrow><annotation encoding="application/x-tex">\ 100 \Omega</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mspace"> </span><span class="mord">100Ω</span></span></span></span></td>
+<td style="text-align:center">2</td>
+</tr>
+<tr>
+<td style="text-align:center">Ventola<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext> </mtext><mn>5</mn><mi mathvariant="normal">V</mi></mrow><annotation encoding="application/x-tex">\ 5 \mathrm V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mspace"> </span><span class="mord">5</span><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span> DC</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Pulsanti</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Resistori da<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext> </mtext><mn>10</mn><mi mathvariant="normal">k</mi><mi mathvariant="normal">Ω</mi></mrow><annotation encoding="application/x-tex">\ 10 \mathrm k \Omega</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6944em;"></span><span class="mspace"> </span><span class="mord">10</span><span class="mord mathrm">k</span><span class="mord">Ω</span></span></span></span></td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Cavo USB-A a Mini USB</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">Cavetti Jumper</td>
+<td style="text-align:center">Q. B.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="breadboard-schematic" tabindex="-1">Breadboard Schematic</h2>
+<img src='./images/schema_FT.png' >
+<h2 id="descrizione-componenti" tabindex="-1">Descrizione Componenti</h2>
+<h3 id="raspberry%E2%84%A2pi-1-b-%5B1%5D" tabindex="-1">Raspberry™Pi 1 B [1]</h3>
+<p>È il <strong>dispositivo target</strong> del progetto. Esso monta il <a href="https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf">SoC Broadcom 2835</a> con processore ARM1176JZFS a <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>700</mn><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">H</mi><mi mathvariant="normal">z</mi></mrow></mrow><annotation encoding="application/x-tex">700 \mathrm{MHz}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">700</span><span class="mord"><span class="mord mathrm">MHz</span></span></span></span></span> che, nonostante le caratteristiche non più all'avanguardia, si presta ancora bene nella gestione dei compiti richiesti.</p>
+<img src='./images/raspberry-pi-1-modello-b.jpg' alt='Raspberry Pi 1B' width="50%">
+<img src='./images/Pi-GPIO-header-26-sm.png' alt='Raspberry Pi 1B GPIO Headers' width="320" style='float:right; margin-top:120px'>
+<p>Specifiche di sistema:</p>
+<ul>
+<li>SoC Broadcom BCM2835</li>
+<li>CPU ARM1176JZF-S core a <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>700</mn><mrow><mi mathvariant="normal">M</mi><mi mathvariant="normal">H</mi><mi mathvariant="normal">z</mi></mrow></mrow><annotation encoding="application/x-tex">700 \mathrm{MHz}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">700</span><span class="mord"><span class="mord mathrm">MHz</span></span></span></span></span></li>
+<li>GPU Broadcom VideoCore IV</li>
+<li>512 MB</li>
+<li>2 Porte USB 2.0</li>
+<li>Video Output Composito (PAL e NTSC), HDMI o LCD diretto (DSI)</li>
+<li>Audio Output tramite Jack <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3.5</mn><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">m</mi></mrow></mrow><annotation encoding="application/x-tex">3.5 \mathrm{mm}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6444em;"></span><span class="mord">3.5</span><span class="mord"><span class="mord mathrm">mm</span></span></span></span></span> o Audio over HDMI</li>
+<li>Archiviazione: SD/MMC/SDIO</li>
+<li>10/100 Ethernet (RJ45)</li>
+<li>Periferiche di Basso Livello:
+<ul>
+<li>8 x GPIO</li>
+<li>UART</li>
+<li>bus I2C</li>
+<li>bus SPI con due chip selects</li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo><mn>3.3</mn><mi mathvariant="normal">V</mi></mrow><annotation encoding="application/x-tex">+3.3 \mathrm V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">+</span><span class="mord">3.3</span><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span></li>
+<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo><mn>5</mn><mi mathvariant="normal">V</mi></mrow><annotation encoding="application/x-tex">+5 \mathrm V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">+</span><span class="mord">5</span><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span></li>
+<li>GND</li>
+</ul>
+</li>
+<li>Requisiti di alimentazione: <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi mathvariant="normal">V</mi></mrow><annotation encoding="application/x-tex">5 \mathrm V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">5</span><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span> @ <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>700</mn><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">A</mi></mrow></mrow><annotation encoding="application/x-tex">700 \mathrm{mA}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">700</span><span class="mord"><span class="mord mathrm">mA</span></span></span></span></span> tramite MicroUSB o Header GPIO</li>
+</ul>
+<h3 id="modulo-ftdi-ft232rl" tabindex="-1">Modulo FTDI FT232RL</h3>
+<img src='https://ae01.alicdn.com/kf/Sf822fcc1fa73463884bf733913cd6d36M/FT232RL-FT232-FTDI-3-3V-5-5V-modulo-adattatore-convertitore-seriale-TYPE-C-Mini-porta-per.jpg' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
+<p>L'FTDI FT232RL è un convertitore USB-to-Serial, un dispositivo che traduce i dati tra il protocollo USB (Universal Serial Bus) e il protocollo seriale RS-232. Questo chip è ampiamente utilizzato per collegare dispositivi seriali, come microcontrollori, a computer moderni dotati di porte USB.</p>
+<p>È noto per la sua semplicità d'uso e la compatibilità con numerosi sistemi operativi.</p>
+<p>Può essere alimentato direttamente dalla porta USB del computer, eliminando la necessità di un'alimentazione esterna.</p>
+<p>Questo modulo è necessario per fornire una porta di comunicazione virtuale al dispositivo di sviluppo (il PC) e consentire di inviare dati al dispositivo target (Il Raspberry Pi).</p>
+<p>Il modulo FTDI è connesso al computer tramite la porta USB e alla UART1 del Pi secondo la seguente configurazione:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">FTDI Pin</th>
+<th style="text-align:center">Raspberry Pi Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">RX</td>
+<td style="text-align:center">GPIO14 / TXD0</td>
+</tr>
+<tr>
+<td style="text-align:center">TX</td>
+<td style="text-align:center">GPIO15 / RXD0</td>
+</tr>
+<tr>
+<td style="text-align:center">GND</td>
+<td style="text-align:center">GND</td>
+</tr>
+</tbody>
+</table>
+<h3 id="modulo-display-i2c-lcd2004-%5B2%5D" tabindex="-1">Modulo Display I2C LCD2004 [2]</h3>
+<img src='https://m.media-amazon.com/images/I/61JbSbfWshL.jpg' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
+<p>Il modulo Display I2C LCD2004 è un componente ampiamente utilizzato in progetti elettronici per visualizzare testo e informazioni su un display LCD (Liquid Crystal Display) alfanumerico con 20 caratteri per 4 righe.</p>
+<p>Questo modulo è noto per la sua versatilità e facilità d'uso grazie all'<strong>interfaccia I2C</strong>, che semplifica notevolmente la connessione e il controllo da parte di microcontrollori e dispositivi embedded, oltre a ridurre notevolmente il numero di pin necessari per il collegamento.</p>
+<p>Il sistema richiede l'uso di un display LCD 2004 per la presentazione delle informazioni all'utente finale ed è caratterizzato da una griglia 20 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">×</span></span></span></span> 4 di <strong>caratteri</strong>, ciascuno dei quali costituito da un valore standard di 5 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>×</mo></mrow><annotation encoding="application/x-tex">\times</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6667em;vertical-align:-0.0833em;"></span><span class="mord">×</span></span></span></span> 8 <strong>dots</strong>, codificati ASCII (la cui gestione da parte della ROM del modulo è visibile in figura).</p>
+<table style='border:none; text-align: center;'>
+   <tr style='border:none'>
+      <td rowspan="2" style='border:none'>
+         <img src="images/lcd2004/ascii_lcd.png" alt="Codifica ASCII e Gestione ROM LCD 2004" style="display: inline; position: relative; left: 0%; margin-top:50px; border: 1px solid;" />
+      </td>
+      <td style='border:none'>
+         <img src="images/lcd2004/parallel_int.png" alt="Interfaccia Parallela LCD 2004" style="display: inline; position: relative; margin-top:50px; border: 1px solid;" />
+      </td>
+   </tr>
+   <tr style='border:none'>
+      <td style='border:none'>
+         <table style="border: 1px solid">
+        <tr>
+            <th>Pin</th>
+            <th>Simbolo</th>
+            <th>Funzione</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>VSS</td>
+            <td>Power Ground</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>VDD</td>
+            <td>Power supply for logic ciurcuit +5V</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>V0</td>
+            <td>For LCD drive voltage (variable)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>RS(C/D)</td>
+            <td>H: Display Data <br> L: Display Instruction</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>R/W</td>
+            <td>H: Data Read (LCM to MPU) <br> L: Data Write (MPU to LCM)</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>E</td>
+            <td style="text-align: left;">Enable Signal. <br> Write mode (R/W = L) data of DB <0:7> <br> is latched at the falling edge of E. <br> Read mode (R/W = H) DB <0:7> appears <br> the reading data while E is at high level. </td>
+        </tr>
+        <tr>
+            <td>7-14</td>
+            <td>DB0-DB7</td>
+            <td>Data bus. There state I/O common terminal.</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>A</td>
+            <td>Power for LED Backlight (+5V)</td>
+        </tr>
+        <tr>
+            <td>16</td>
+            <td>K</td>
+            <td>Power for LED Backlight (GND)</td>
+        </tr>
+    	</table>
+      </td>
+   </tr>
+</table>
+<p>Il modulo LCD2004 è connesso al Pi secondo la seguente configurazione:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">LCD2004 Pin</th>
+<th style="text-align:center">Raspberry Pi Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">GND</td>
+<td style="text-align:center">GND</td>
+</tr>
+<tr>
+<td style="text-align:center">VCC</td>
+<td style="text-align:center">5V</td>
+</tr>
+<tr>
+<td style="text-align:center">SDA</td>
+<td style="text-align:center">GPIO2 / SDA1</td>
+</tr>
+<tr>
+<td style="text-align:center">SCL</td>
+<td style="text-align:center">GPIO3 / SCL1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="modulo-per-la-serializzazione---i2c-backpack-%5B3%5D" tabindex="-1">Modulo per la Serializzazione - I2C Backpack [3]</h3>
+<img src='https://m.media-amazon.com/images/I/61xWHXGsnsL.jpg' width="320" style='float:left; margin-top:50px; border: 1px solid; margin-right: 30px'>
+<p>Si tratta di un modulo usato tipicamente per serializzare la comunicazione tra un microcontrollore e un altro device. Nel caso specifico, il modulo si presenta nella forma di un backpack da saldare al display (nel nostro caso era già saldato) e caratterizzato da quattro pin per il collegamento con il MCU:</p>
+<ul>
+<li>due pin, rispettivamente <strong>VCC</strong> e <strong>GND</strong>, usati per l'alimentazione del modulo;</li>
+<li>un pin, chiamato <strong>SDA</strong>, per l'invio dei dati serializzati;</li>
+<li>un pin, chiamato <strong>SCL</strong>, per la sincronizzazione dei segnali di clock.</li>
+</ul>
+<p>A questi, si aggiungono altri 9 pin, di cui 8 usati come bus di dati e uno usato (eventualmente) per la gestione degli interrupt inviati dal MCU.</p>
+<p>Il modulo richiede una tensione di <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi mathvariant="normal">V</mi></mrow><annotation encoding="application/x-tex">5 \mathrm V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord">5</span><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span> ed è provvisto di un potenziometro per il <strong>controllo del contrasto</strong> dei caratteri. Il controllo della luminosità è possibile via hardware, tramite una circuiteria <em>ad hoc</em>, o via software, tramite opportune istruzioni.</p>
+<h3 id="sensore-di-temperatura-e-umidit%C3%A0-dht22-%5B4%5D" tabindex="-1">Sensore di temperatura e umidità DHT22 [4]</h3>
+<img src='https://img.kwcdn.com/product/Fancyalgo/VirtualModelMatting/4e1160ec5dfb387ab03c938666ab9c5e.jpg?imageMogr2/auto-orient%7CimageView2/2/w/1300/q/80/format/webp' width="320" style='float:right; border: 1px solid; margin-left: 5px'>
+<p>Il sensore permette il monitoraggio della temperatura e dell'umidità nell'ambiente circostante, ed è caratterizzato da un sensore di base della famiglia AM2302, che si caratterizza per la capacità di gestione di segnali digitali con una precisione di 0.5 °C per la temperatura e di 2% RH per l'umidità, rilevando valori di temperatura tra i -40°C e i +80°C e di umidità tra lo 0% e il 100%.</p>
+<p>Il sensore dispone di interfaccia seriale a filo singolo che ne facilita l'utilizzo. Il sensore DHT22 viene calibrato in modo estremamente preciso, essendo che i coefficienti di calibrazione sono memorizzati nella memoria OTP e vengono richiamati durante il processo di rilevamento: in questo modo non vi è alcuna necessità di ricalibrare il sensore.</p>
+<p>La trasmissione dei dati avviene secondo uno specifico protocollo di comunicazione, suddiviso in due fasi:</p>
+<ol>
+<li>
+<p>La prima fase è quella in cui il microcontrollore invia un <strong>segnale iniziale</strong> al sensore, con quest'ultimo che risponde al microcontrollore.
+Dato che, inizialmente, il data bus del sensore è impostato su HIGH, la prima cosa che il microcontrollore deve fare è <strong>abbassare</strong> tale bus per almeno 1 ~ 10 ms (per dar modo al bus di rilevare tale comunicazione), salvo poi <strong>rialzarlo</strong> per 20 ~ 40 µs e <strong>rimanere in attesa</strong> della risposta del sensore.
+Nel momento in cui <strong>il sensore AM2302</strong> rileva il segnale di inizio, <strong>abbassa</strong> il data bus per 80 µs come risposta, salvo poi <strong>rialzarlo</strong> per altri 80 µs e iniziare l'effettiva trasmissione dei dati. L'intera prima fase avviene secondo un diagramma di tensione sul data bus come il seguente</p>
+<p><img src="images/dht22/trans1.png" alt="Fase 1 del Rilevamento AM2302"></p>
+</li>
+<li>
+<p>La seconda fase, in cui avviene il rilevamento vero e proprio, prevede che il sensore invii <strong>un bit per volta</strong>, distinguendo tra 0 e 1 in base al tempo in cui il data bus viene mantenuto su HIGH dopo una fase in cui è stato tenuto LOW, sempre presente e della durata di 50 µs. Se la trasmissione del bit dura 26 ~ 28 µs, il bit trasmesso sarà uno 0, mentre, se la trasmissione durera ~ 70 µs, il bit trasmesso sarà un 1. La trasmissione di un bit segue un diagramma di tensione come i seguenti</p>
+<p><img src="images/dht22/trans2.png" alt="Fase 2 del Rilevamento AM2302"></p>
+</li>
+</ol>
+<p>I dati trasmessi ad ogni ciclo sono un totale di 40 bit, di cui i primi 16 costituenti l'<strong>umidità relativa</strong> (RH), i secondi sedici la <strong>temperatura</strong> (T) in gradi Celsius, e gli ultimi 8 bit una <strong>checksum</strong> per validare il rilevamento.</p>
+<p><strong>N.B.</strong> ad ogni rilevamento bisognerà seguire l'intero protocollo, dato che il sensore, senza aver ricevuto un segnale di avvio, non inizierà ad inviare dati.</p>
+<p>La conversione da sequenza di bit a dato numerico è piuttosto semplice: basterà <strong>dividere il valore</strong> (espresso in base decimale) <strong>per 10</strong>, così da ricavare <strong>parte intera</strong> e <strong>parte frazionaria</strong> della grandezza fisica (es. <code>0x028C</code> corrisponde a 652, da cui si ricava un valore di 65.2).
+Il calcolo della <code>sum</code>, in contrapposizione con la <code>checksum</code>, prevede che si separino i 32 bit misurati in byte, che si effettui la somma e che si consideri il byte finale. Se tale risultato è pari alla checksum, la trasmissione è avvenuta correttamente, altrimenti il contrario (es. <code>0x028C015F</code> produce una <code>sum</code> pari a <code>0xEE</code>).</p>
+<h3 id="leds" tabindex="-1">LEDs</h3>
+<img src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/LEDs.jpg/1200px-LEDs.jpg' width="320" style='float:right; margin-top:50px; border: 1px solid; margin-left: 5px'>
+<p>Un LED, acronimo di Light Emitting Diode, è un dispositivo semiconduttore che emette luce quando una corrente elettrica passa attraverso di esso. Questi piccoli dispositivi sono diventati una parte fondamentale della tecnologia moderna, con applicazioni in una vasta gamma di settori.</p>
+<p>Nel sistema in esame sono presenti due LED, uno rosso e uno verde, che hanno lo scopo di indicare la bontà dei parametri.</p>
+<p>Il LED rosso lampeggiante indica che i valori sono fuori scala e bisogna fare qualcosa per riportarli alla normalità, mentre un LED verde acceso indica che i valori registrati sono buoni e l'ambiente è idoneo. Questa indicazione visiva ha lo scopo di trasmettere una informazione immediata agli utenti in quanto, essendo facilmente comprensibile, fornisce loro un feedback chiaro sullo stato ambientale.</p>
+<p>I LED hanno due connessioni, l'<strong>anodo</strong> (+) e il <strong>catodo</strong> (-), che devono essere collegate correttamente per farli funzionare.</p>
+<p>In un microcontrollore o in una scheda come il Raspberry Pi, i pin GPIO sono i nostri strumenti per controllare i componenti elettronici. Per connettere un LED, il suo anodo (+) viene collegato a uno dei pin GPIO, mentre il catodo (-) viene connesso a terra (GND).</p>
+<p>Tuttavia, c'è un aspetto cruciale da tenere a mente: la necessità di una resistenza. Quando un LED è collegato direttamente a una sorgente di tensione senza una resistenza, la corrente può diventare troppo elevata e danneggiare il LED. Le resistenze svolgono il ruolo di &quot;limitatori di corrente&quot;, regolando la quantità di corrente che fluisce attraverso il LED. La giusta resistenza assicura che il LED funzioni in modo sicuro e durevole.</p>
+<p>Nella tabella sottostante sono riportati i pin GPIO attraverso i quali vengono pilotati i LED:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">LED</th>
+<th style="text-align:center">Raspberry Pi Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">RED</td>
+<td style="text-align:center">GPIO23</td>
+</tr>
+<tr>
+<td style="text-align:center">GREEN</td>
+<td style="text-align:center">GPIO24</td>
+</tr>
+</tbody>
+</table>
+<h3 id="pulsante" tabindex="-1">Pulsante</h3>
+<img src='https://learningscratch519975251.files.wordpress.com/2021/04/button-fig-1.png?w=536' width="320" style='float:left; margin-right: 10px; border: 1px solid; margin-right: 15px'>
+<p>Il pulsante scelto è un pulsante a quattro pin, per uno switch a due poli.</p>
+<p>Per il suo scopo nel sistema è necessario che il pulsante sia configurato in pull-up (il cui schema esemplificativo è presentato in figura), per cui, in fase di riposo (pulsante non premuto), la corrente può circolare, permettendo al sistema di funzionare, mentre, a seguito di una pressione, viene effettuata un'azione bloccante rispetto alla corrente, che impedisce al sistema di funzionare, mandandolo in reset.</p>
+<img src='https://global.discourse-cdn.com/nvidia/original/3X/b/8/b886440071a627ea9efbae5b2638a8625214d9ca.png' width="320" style='float:right; margin-right: 10px; border: 1px solid; margin-right: 15px'>
+<p>Nella tabella sottostante sono riportati i pin GPIO attraverso i quali viene pilotato il pulsante:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Button Pin</th>
+<th style="text-align:center">Raspberry Pi Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">DATA WIRE</td>
+<td style="text-align:center">GPIO8</td>
+</tr>
+<tr>
+<td style="text-align:center">VCC</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo><mn>3.3</mn><mi mathvariant="normal">V</mi></mrow><annotation encoding="application/x-tex">+3.3\mathrm V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">+</span><span class="mord">3.3</span><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">GROUND</td>
+<td style="text-align:center">GND</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ventola-di-raffreddamento-5v-3-pin" tabindex="-1">Ventola di Raffreddamento 5V-3 pin</h3>
+<img src='https://thepihut.com/cdn/shop/products/software-controllable-5v-30mm-fan-for-raspberry-pi-the-pi-hut-105236-39805255418051_1500x.jpg?v=1667563351' width="320" style='float:left; margin-top:50px; border: 1px solid; margin-right: 30px'>
+<p>Si tratta di una ventola di dimensioni 60x60x10 mm, utilizzata per dissipare il calore e mantenere una temperatura ottimale all'interno di dispositivi elettronici. È composta da 3 pin:</p>
+<ol>
+<li><strong>GND (Ground)</strong> : Questo pin è collegato alla terra e serve come riferimento elettrico per il circuito della ventola.</li>
+<li><strong>VCC (Voltage Common Collector)</strong> : Questo pin fornisce l'alimentazione elettrica alla ventola e deve essere collegato a una sorgente di alimentazione a 5V per far funzionare correttamente la ventola.</li>
+<li><strong>GPIO (General-Purpose Input/Output)</strong> : Questo pin è utilizzato per controllare la ventola. Può essere collegato a una porta GPIO di un microcontrollore o di un computer, come il Raspberry Pi, per regolare la velocità della ventola o attivarla/disattivarla in base alle necessità di raffreddamento.</li>
+</ol>
+<p>La ventola è connessa al Pi secondo la seguente configurazione:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Fan Pin</th>
+<th style="text-align:center">Raspberry Pi Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">GND</td>
+<td style="text-align:center">GND</td>
+</tr>
+<tr>
+<td style="text-align:center">VCC</td>
+<td style="text-align:center"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo><mn>5</mn><mi mathvariant="normal">V</mi></mrow><annotation encoding="application/x-tex">+5 \mathrm V</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7667em;vertical-align:-0.0833em;"></span><span class="mord">+</span><span class="mord">5</span><span class="mord mathrm" style="margin-right:0.01389em;">V</span></span></span></span></td>
+</tr>
+<tr>
+<td style="text-align:center">EN</td>
+<td style="text-align:center">GPIO24</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gpio-assignment" tabindex="-1">GPIO assignment</h2>
+<p>Poiché questo progetto incorpora una serie di componenti esterni fondamentali per il suo funzionamento, è cruciale avere una panoramica chiara e ben organizzata dei pin GPIO coinvolti e delle rispettive funzioni a cui sono assegnati. Questa informazione è essenziale per garantire che il sistema funzioni in modo impeccabile e che i collegamenti tra i componenti siano stabiliti correttamente.</p>
+<p>Nella tabella sottostante, vi è riassunta la panoramica dei pin GPIO utilizzati. Essa ha lo scopo di tenere traccia dei collegamenti e delle assegnazioni dei pin, semplificando la manutenzione futura e agevolando il lavoro di chiunque debba comprendere o estendere il progetto.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">GPIO Pin</th>
+<th style="text-align:center">Function</th>
+<th style="text-align:center">Device</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">GPIO2 / SDA1</td>
+<td style="text-align:center">ALT0 / SDA1</td>
+<td style="text-align:center">LCD2004</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIO3 / SCL1</td>
+<td style="text-align:center">ALT0 / SCL1</td>
+<td style="text-align:center">LCD2004</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIO8</td>
+<td style="text-align:center">INPUT</td>
+<td style="text-align:center">BUTTON</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIO14</td>
+<td style="text-align:center">TX</td>
+<td style="text-align:center">UART Transmitter</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIO15</td>
+<td style="text-align:center">RX</td>
+<td style="text-align:center">UART Receiver</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIO18</td>
+<td style="text-align:center">INPUT</td>
+<td style="text-align:center">DHT22/AM2302</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIO23</td>
+<td style="text-align:center">OUTPUT</td>
+<td style="text-align:center">LED Rosso</td>
+</tr>
+<tr>
+<td style="text-align:center">GPIO24</td>
+<td style="text-align:center">OUTPUT</td>
+<td style="text-align:center">LED Verde / Ventola</td>
+</tr>
+</tbody>
+</table>
+<h1 id="environment" tabindex="-1">Environment</h1>
+<p>Per la fase di sviluppo sono stati utilizzati:</p>
+<ul>
+<li>PC con distribuzione Linux (Ubuntu) con installato G-Forth, minicom e picocom</li>
+<li>Interprete FORTH per soluzioni bare-metal <a href="https://github.com/organix/pijFORTHos">pijFORTHos</a>.</li>
+</ul>
+<h2 id="pijforthos" tabindex="-1">pijFORTHos</h2>
+<p>Gli interpreti FORTH possono essere facilmente implementati su macchine con risorse limitate senza la necessità di un sistema operativo, rendendoli particolarmente adatti per lo sviluppo interattivo &quot;bare-metal&quot;.</p>
+<p>L'ambiente <strong>pijFORTHos</strong> si basa su un interprete FORTH in assembly chiamato <strong>JonesForth</strong>, inizialmente sviluppato per l'architettura i686 da Richard WM Jones.</p>
+<p>JonesForth è noto per la sua semplicità ed è stato adattato con successo a numerose architetture diverse. Uno di questi adattamenti, noto come Jonesforth-ARM, ha portato all'implementazione di un interprete FORTH &quot;bare-metal&quot; per il Raspberry Pi, noto come <strong>pijFORTHos</strong>.</p>
+<p>Questo interprete non solo permette l'esecuzione di codice FORTH direttamente sulla piattaforma Raspberry Pi, ma consente anche la connessione con altre macchine attraverso la console seriale del Raspberry Pi.</p>
+<p>Questa capacità di comunicazione seriale offre un'interessante opportunità per il controllo e la comunicazione remota con il Raspberry Pi, rendendo <strong>pijFORTHos</strong> un ambiente versatile per lo sviluppo e l'interazione con il sistema embedded.</p>
+<h2 id="preparazione-ambiente-di-sviluppo" tabindex="-1">Preparazione Ambiente di Sviluppo</h2>
+<p>Dovendo lavorare in <em>bare-metal</em>, abbiamo pensato che i file di codice dovessero essere caricati al momento sul dispositivo, per cui abbiamo optato per un trasferimento lungo la connessione seriale, sfruttando il protocollo FTDI RS-232.</p>
+<p>Nel sistema sorgente (quello su cui viene scritto il codice da inviare), su cui deve essere installata una distribuzione Linux (nel nostro caso Ubuntu 22.04 LTS),
+avviare un terminale, ed eseguire i seguenti comandi per l'installazione di G-Forth e minicom:</p>
+<pre class='hljs'><code><div>$ sudo apt-get update
+$ sudo apt-get install -y gforth
+$ sudo apt-get install -y minicom
+$ sudo apt-get install -y picocom
+</div></code></pre>
+<p>Minicom è un software di emulazione di terminale per sistemi operativi Unix-like da utilizzare per stabilire una comunicazione seriale remota (con il dispositivo target). Dopo averlo installato, bisogna configurarlo con i parametri specifici per il dispositivo target:</p>
+<ol>
+<li>Avviare l'applicativo di configurazione da terminale con il comando <code>$ sudo minicom -s</code></li>
+<li>Usando le frecce, invio (<em>return</em>) ed esc per navigare nei menu:
+<ol>
+<li>Selezionare l'opzione &quot;Serial port setup&quot;</li>
+<li>Seguendo le istruzioni a schermo:
+<ol>
+<li>Modificare il <em>Serial Device</em>, impostandolo sulla posizione del dispositivo target collegato (tipicamente <code>/dev/ttyUSB0</code>)</li>
+<li>Modificare le impostazioni relative al baud rate, al bit di parità e ai data bits necessari alla comunicazione. Per il Raspberry™ Pi 1B sono:
+<ul>
+<li>baud rate a 115200 bps</li>
+<li>bit di parità assente</li>
+<li>8 data bits</li>
+</ul>
+</li>
+<li>Disattivare l'opzione &quot;Hardware Flow Control&quot;</li>
+<li>Uscire dal menu</li>
+</ol>
+</li>
+<li>Selezionare l'opzione &quot;Modem and dialing&quot;</li>
+<li>Seguendo le istruzioni a schermo
+<ol>
+<li>Impostare i Dialing prefix e Dialing suffix (1, 2 e 3) su stringhe vuote</li>
+<li>Uscire dal menu</li>
+</ol>
+</li>
+<li>Salvare la configurazione come di default o come nuova configurazione (es. <code>raspi</code>)</li>
+</ol>
+</li>
+<li>Uscire dall'applicativo</li>
+</ol>
+<p>Dopo aver salvato la configurazione, si potrà mettere minicom in ascolto secondo i parametri scelti digitando <code>$ sudo minicom [nome_configurazione]</code></p>
+<p>In alternativa, è possibile utilizzare <strong>picocom</strong> attraverso il comando <code>sudo picocom -b 115200 -r -l /dev/ttyUSB0 --imap delbs -s &quot;ascii-xfr -sv -l100 -c10&quot;</code>, in cui specifichiamo:</p>
+<ul>
+<li>baudrate a 115200 bps</li>
+<li><code>--imap delbs</code> per usare il backspace per cancellare caratteri</li>
+<li><code>-s &quot;ascii-xfr -sv -l100 -c10&quot;</code> permette di specificare il protocollo ASCII-XFR per lo scambio di file, con un ritardo di 100 ms tra l'invio di una riga e l'altra e un intervallo di 10 ms tra l'invio di un carattere e l'altro.</li>
+</ul>
+<h3 id="automatizzazione-della-connessione-seriale-con-picocom%3A-avvio_picocom.sh" tabindex="-1">Automatizzazione della Connessione Seriale con Picocom: <code>avvio_picocom.sh</code></h3>
+<p>Il seguente script Bash svolge un ruolo fondamentale nella gestione di una connessione seriale tramite il programma Picocom, uno strumento molto utile quando si lavora con dispositivi embedded o hardware, poiché consente di stabilire una comunicazione seriale tra un computer host e il dispositivo target.</p>
+<p>In questo script, definiamo alcune variabili chiave che determinano i parametri della connessione seriale. Il dispositivo di destinazione è specificato come <strong>/dev/ttyUSB0</strong>, che è spesso utilizzato per rappresentare una porta seriale USB su sistemi Linux.</p>
+<p>La <strong>velocità di trasmissione</strong> (BAUD) è impostata su <strong>115200 bit al secondo</strong>, un valore comune nelle comunicazioni seriali.</p>
+<p>Il comando principale all'interno dello script è l'invocazione di Picocom con le opzioni appropriate per stabilire la connessione seriale. In particolare, notiamo l'uso del flag <code>-r</code>, che abilita la registrazione della sessione seriale in un file di log, e l'opzione <code>--imap delbs</code>, che specifica come gestire i caratteri di cancellazione &quot;Backspace&quot; nella comunicazione.</p>
+<p>Inoltre, l'uso di <code>ascii-xfr</code> indica che verrà utilizzato un protocollo di trasferimento dati ASCII durante la comunicazione seriale, il che può essere particolarmente utile per il trasferimento di dati tra il computer host e il dispositivo target.</p>
+<pre class='hljs'><code><div>#!/bin/bash
+
+DEVICE=/dev/ttyUSB0 
+BAUD=115200  
+
+sudo picocom -b $BAUD -r -l $DEVICE --imap delbs -s &quot;ascii-xfr -sv -l100 -c10&quot;
+</div></code></pre>
+<h2 id="preparazione-della-scheda-sd-e-dell'interprete" tabindex="-1">Preparazione della Scheda SD e dell'Interprete</h2>
+<p>Per procedere all'installazione di pijFORTHos sulla scheda SD si possono seguire direttamente le istruzioni fornite dal gestore della repo <em>organix</em>, che riportiamo per completezza.</p>
+<p>Direttamente da Raspbian OS:</p>
+<ol>
+<li>Aprire il terminale</li>
+<li>Clonare il repository attraverso il comando <code>$ git clone https://github.com/organix/pijFORTHos</code></li>
+<li>Accedere alla posizione della copia della repository con il comando <code>$ cd path/to/pijFORTHos</code></li>
+<li>Eseguire il comando <code>$ make clean all</code></li>
+</ol>
+<p>Questa procedura genera un file <code>kernel.img</code> ma, in caso di problemi, ne può essere utilizzato uno predefinito incluso nei file della repository
+Dopo di che, eseguire i comandi</p>
+<pre class='hljs'><code><div>$ cp firmware/* /media/&lt;SD-card&gt;/
+$ cp kernel.img /media/&lt;SD-card&gt;/
+</div></code></pre>
+<p>per copiare i file necessari per pijFORTHos nella scheda SD. Alla fine della procedura la scheda conterrà esattamente tre file</p>
+<pre class='hljs'><code><div>bootcode.bin
+start.elf
+kernel.img
+</div></code></pre>
+<p>È possibile, quindi, inserire la scheda SD nel Raspberry™ Pi, connetterlo al computer con il cavo USB-seriale e, con minicom/picocom avviato secondo le modalità dette in precedenza, collegare il Raspberry™ Pi all'alimentazione.</p>
+<h1 id="software" tabindex="-1">Software</h1>
+<h2 id="flusso-di-lavoro" tabindex="-1">Flusso di Lavoro</h2>
+<p>Prima di immergerci nel codice sorgente e nelle specifiche implementazioni tecniche, è essenziale stabilire una base solida di comprensione del <strong>flusso di lavoro</strong> del progetto.</p>
+<p>Questa panoramica iniziale fornisce un quadro concettuale che aiuta a mettere in prospettiva le diverse parti del progetto e a chiarire l'ordine sequenziale in cui avvengono gli eventi.</p>
+<ol>
+<li><strong>Inizializzazione</strong> : All'avvio, il sistema esegue un'operazione di <strong>inizializzazione</strong>, configurando il sensore di temperatura e umidità, gli attuatori (ventola e LED), e imposta le soglie di temperatura e umidità desiderate (<strong>20-24 °C</strong> e <strong>40-60%</strong> di umidità). Il sistema entra quindi in uno stato di attesa.</li>
+<li><strong>Monitoraggio Continuo</strong> : Il sistema monitora costantemente i dati proveniente dal sensore di temperatura e umidità per rilevare eventuali variazioni. Questo monitoraggio avviene in un ciclo continuo.</li>
+<li><strong>Controllo della Temperatura e dell'Umidità</strong> : Quando il sistema rileva che la temperatura o l'umidità escono dai range desiderati, mostra nel display LCD un messaggio per indicare il problema e, successivamente, attiva un LED rosso lampeggiante un numero <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span> di volte. In base al valore di <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span> si può riconoscere visivamente il tipo di problema, nel caso in cui il display LCD dovesse essere malfunzionante.</li>
+<li><strong>Raffreddamento</strong> : Nel caso la temperatura sia troppo alta, il sistema attiva, in concomitanza ad un LED verde, una ventola di raffreddamento per abbassare la temperatura all'interno della sala server. La ventola e il LED rimangono accesi fino a quando la temperatura non rientra nei limiti accettabili.</li>
+<li><strong>Controllo della Temperatura e dell'Umidità Ridotto</strong> : Una volta che la temperatura e l'umidità rientrano nei range desiderati, il sistema spegne la ventola di raffreddamento e disattiva il LED verde.</li>
+<li><strong>Indicazione di Normale Funzionamento</strong> : Quando la temperatura e l'umidità sono nuovamente sotto controllo, il sistema attiva spegne tutti i LED e mostra sul display LCD i valori di temperatura ed umidità rilevati dal sensore DHT22.</li>
+<li><strong>Controllo del Pulsante di Reset</strong> : Il sistema monitora costantemente il pulsante di reset. Se il pulsante viene premuto, il sistema esce dal ciclo di monitoraggio e rientra in uno stato di attesa, pensato per gestire un eventuale servizio di manutenzione.</li>
+<li><strong>Monitoraggio Continuo (Ripetizione)</strong> : Il sistema embedded continua a monitorare costantemente i dati dai sensori e ripete il processo di controllo della temperatura e dell'umidità, verificando anche lo stato del pulsante di reset.</li>
+</ol>
+<p>Ecco una tabella riassuntiva dei tipi di malfunzionamento in funzione di quante volte lampeggia il LED rosso:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">n</th>
+<th style="text-align:center">Tipo malfunzionamento</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">3</td>
+<td style="text-align:center">Temperatura sotto la soglia</td>
+</tr>
+<tr>
+<td style="text-align:center">5</td>
+<td style="text-align:center">Temperatura elevata</td>
+</tr>
+<tr>
+<td style="text-align:center">4</td>
+<td style="text-align:center">Umidità sotto la soglia</td>
+</tr>
+<tr>
+<td style="text-align:center">6</td>
+<td style="text-align:center">Umidità elevata</td>
+</tr>
+</tbody>
+</table>
+<h2 id="codice" tabindex="-1">Codice</h2>
+<p>L'approccio seguito in fase di scrittura del software prevede la produzione di moduli a sé stanti, con la condizione di essere caricati solo successivamente ad alcuni file essenziali per la definizione di funzioni di utilità e costanti di interfacciamento con il microcontrollore.</p>
+<h3 id="makefile" tabindex="-1">Makefile</h3>
+<p>Per il deployment del sistema completo è stato realizzato un semplice makefile che concatena tutti i singoli file nell'ordine corretto e, per non appesantire il trasferimento all'interno del MCU, elimina tutti i commenti all'interno del sorgente completo, come si evince dal seguente listato</p>
+<pre class='hljs'><code><div>all: code.f
+
+clean:
+	rm -f code.f
+	rm -f final.f
+
+code.f:
+	cat ~/EmbeddedSystems_Proj_FT/src/jonesforth.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/utils.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/gpio.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/time.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/i2c.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/lcd.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/led.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/button.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/dht.f &gt;&gt; code.f
+	cat ~/EmbeddedSystems_Proj_FT/src/main.f &gt;&gt; code.f
+	grep -v '^ *\\' code.f &gt; final.f
+
+</div></code></pre>
+<h3 id="jonesforth.f" tabindex="-1">jonesforth.f</h3>
+<p>Questo file contiene parole normalmente definite in JonesFORTH ma che l'implementazione basilare di pijFORTHos non comprende di default. In ogni caso, il file è disponibile nel <a href="%60https://github.com/organix/pijFORTHos%60">repository</a> Github.</p>
+<p>Contenuto interessante per il progetto all'interno del file è sicuramente l'insieme di parole utilizzate per la <strong>gestione delle stringhe</strong>, sia per la loro invocazione come immediate (<code>.&quot;</code>) che per la loro invocazione sullo stack (<code>.S&quot;</code>).</p>
+<h3 id="utils.f" tabindex="-1">utils.f</h3>
+<p>Questo file contiene alcune word di utilità, che vengono utilizzate nel resto dell'applicazione.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Word</th>
+<th style="text-align:center">Stack</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">ABS</td>
+<td style="text-align:center">( a --$</td>
+<td>a</td>
+</tr>
+<tr>
+<td style="text-align:center">BILS</td>
+<td style="text-align:center">( a -- 1&lt;&lt;a )</td>
+<td>effettua un logical shift left di 1 bit per un numero a di posizioni</td>
+</tr>
+<tr>
+<td style="text-align:center">BIC</td>
+<td style="text-align:center">( a b -- a&amp;~b )</td>
+<td>esegue una operazione di BIt-Clear. Esegue un bitwise NOT del TOS e mette questo valore in bitwise AND con il valore sotto al TOS.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="gpio.f" tabindex="-1">gpio.f</h3>
+<p>Questo file contiene tutte le definizioni di parole e costanti necessarie ad operare con i pin GPIO del Raspberry™ Pi. In esso sono state definite le costanti utili a identificare gli <strong>indirizzi</strong> dei principali registri su cui abbiamo operato (es. <code>GPFSEL0</code>, <code>GPSEL1</code>), oltre che gli indirizzi base per particolari set di registri, utilizzati all'interno di alcune parole per ricavare gli indirizzi esatti degli altri registri dello stesso set (es. la costante <code>GPLEV0</code> che, usata insieme alla parola <code>GPLEV</code> permette di ricavare anche l'indirizzo del registro <code>GPLEV1</code>).
+All'interno del file sono definite anche le costanti associate ai <strong>pin GPIO</strong>, nello specifico identificati da un bit posto a 1 shiftato del loro valore numerico (es. <code>18 BILS CONSTANT GPIO18</code> identifica il pin GPIO 18), utilizzando una notazione molto comune all'interno dei registri GPIO che permette di ridurre il numero di calcoli effettuati <em>on-the-fly</em> (es. attivare un pin GPIO posto in output può essere espresso banalmente come <code>GPIO7 GPSET0 !</code>).
+Le ultime costanti che sono definite riguardano i possibili valori della FSEL per una specifica tripletta di bit, ricordando che nei registri <code>GPFSEL</code> la FSEL di ogni pin è gestita da una tripletta di bit opportunamente codificata (es. <code>0 CONSTANT INPUT</code> è associata alla tripletta <code>0b000</code>, dunque equivale al valore <code>0</code>, <code>4 CONSTANT ALT0</code> alla tripletta <code>0b100</code>, dunque al valore <code>4</code>, ecc.).</p>
+<p>Successivamente, possiamo trovare le definizioni di parole utilizzate per la <strong>manipolazione dei pin GPIO</strong> al fine di ricavare informazioni extra, come <code>N_GPIO</code> per ottenere il numero del pin associato ad una costante <code>GPIOx</code>, come si vede nel seguente listato</p>
+<pre class='hljs'><code><div>: N_GPIO 
+    0 SWAP 
+    BEGIN 
+        DUP 2 MOD 
+        0 = IF 
+            1 RSHIFT SWAP 1+ SWAP 
+        ELSE 
+        THEN 
+        DUP 2 = 
+    UNTIL 
+    DROP 1+ ;
+</div></code></pre>
+<p>o <code>GPSET</code> per ricavare l'indirizzo del registro <code>GPSET0/1</code> cui fa riferimento una costante <code>GPIOx</code>, visibile nel seguente listato</p>
+<pre class='hljs'><code><div>: GPSET ( gpion -- gpset0/1 ) N_GPIO 32 / 4 * GPSET0 + ;
+</div></code></pre>
+<p>Sono presenti altre parole propriamente utilizzate per calcolare i valori da usare come parametri per altre parole, come <code>GPIO_LSB</code> e <code>FSEL_MASK</code>, riportate nel seguente listato</p>
+<pre class='hljs'><code><div>: GPIO_LSB ( gpion -- fsel_lsb ) N_GPIO 10 MOD 3 * ;
+
+: FSEL_MASK ( gpion -- fsel_mask ) DUP DUP 2 + &gt;R 1 + &gt;R BILS R&gt; BILS OR R&gt; BILS OR ;
+
+</div></code></pre>
+<p>Queste ultime parole servono, rispettivamente, per calcolare la posizione del bit meno significativo nella tripletta usata nella gestione della FSEL e la maschera da utilizzare nella scrittura di una FSEL all'interno di un registro <code>GPFSELx</code>.
+Interessanti sono, infine, le parole <code>ACTIVATE</code> e la sua controparte <code>DEACTIVATE</code>. Per quanto riguarda la prima, si tratta di una parola che opera a triplette di parametri, come evidenziato dalla sua definizione in stack notation <code>( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )</code>, che permette di rendere effettive le modifiche desiderate nei registri GPFSEL per un blocco di pin passato in input. Al contrario, <code>DEACTIVATE</code> permette di effettuare una <em>clear function</em> per una serie di pin passati in input (secondo lo stesso ordine nello stack di <code>ACTIVATE</code>), rendendoli disponibili a successive modifiche.</p>
+<pre class='hljs'><code><div>: ACTIVATE ( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )
+    DEPTH 3 /
+    TIMES !
+    BEGIN
+        ENABLE_PIN
+        TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
+        TIMES @ 0=                          \ CONDIZIONE DI USCITA
+    UNTIL ;
+
+: DEACTIVATE ( fsel_n mode_n gpfsel_n ... fsel_0 mode_0 gpfsel_0 -- )
+    DEPTH 3 /
+    TIMES !
+    BEGIN
+        DISABLE_PIN
+        TIMES @ 1 - TIMES !                 \ DECREMENTO TIMES AD OGNI ITERAZIONE
+        TIMES @ 0=                          \ CONDIZIONE DI USCITA
+    UNTIL ;
+</div></code></pre>
+<p>Le due parole fanno uso massiccio di altre due parole definite in questo file, ossia <code>ENABLE_PIN</code> e <code>DISABLE_PIN</code>, che effettuano rispettivamente un'operazione di <strong>set function</strong> e di <strong>clear function</strong> per apportare le modifiche relative ad un pin GPIO nel rispettivo registro <code>GPFSEL</code>.</p>
+<pre class='hljs'><code><div>: ENABLE_PIN ( gpion_fsel gpion_mode gpfselm -- ) DUP &gt;R @ -ROT &gt;R BIC R&gt; OR R&gt; ! ;
+
+: DISABLE_PIN ( gpion_fsel gpion_mode gpfselm -- ) NIP DUP &gt;R @ SWAP BIC R&gt; ! ;
+</div></code></pre>
+<h3 id="time.f" tabindex="-1">time.f</h3>
+<p>Il file è necessario in quanto abbiamo deciso che la gestione dei tempi meritasse un modulo a sé stante. In esso sono contenute parole e costanti necessarie alla temporarizzazione degli eventi nel sistema.
+All'interno del file sono presenti due modi distinti per la gestione dei tempi e, nello specifico, per la generazione di ritardi. Con la parola <code>DELAY</code> si è scelto un <strong>approccio più semplice</strong>, tra l'altro visto a lezione, secondo cui il sistema viene messo in uno stato di <strong>busy-wait</strong>, nel quale viene eseguito un numero di operazioni semplici (tipicamente una sottrazione) pari al valore passato in input.</p>
+<pre class='hljs'><code><div>: DELAY ( nops -- ) BEGIN 1 - DUP 0 = UNTIL DROP ;
+</div></code></pre>
+<p>Per alcune periferiche, però, questo approccio non ha sortito gli effetti desiderati, dunque si è reso necessario un approccio più preciso e che rendesse la temporizzazione degli eventi quanto più vincolato all'hardware del Raspberry™ Pi; dunque, abbiamo optato per usare il set di registri del <strong>System Timer</strong>.
+Questa periferica interna è dotata di quattro registri a 32 bit, detti <strong>canali</strong>, e due registri, <code>CLO</code> e <code>CHI</code>, che fungono da contatori del tempo che scorre dall'accensione del sistema. Nello specifico, questi due registri permettono di definire una variante del fattore di ritardo, in cui si utilizza come fonte dei dati proprio uno di questi registri, ossia <code>CLO</code>, e che segue un approccio molto semplice: si avvia il timer a partire dal valore corrente del registro e, all'interno di ogni iterazione di un ciclo, si valuta che il valore attuale differisca da quello di partenza per un numero di microsecondi passato in input. Questo secondo approccio è riscontrabile nella parola <code>CLK_DELAY</code>, in cui si è scelto di semplificare la lettura del codice attraverso la definizione di un'altra parola, <code>CURRENT_TIME</code>.</p>
+<pre class='hljs'><code><div>HEX
+ 
+RPI1_BASE 3000 +    CONSTANT TIMER_BASE
+TIMER_BASE 4 +      CONSTANT TIMER_COUNT
+
+: CURRENT_TIME ( -- time ) TIMER_COUNT @ ;
+ 
+: CLK_DELAY ( us -- ) CURRENT_TIME BEGIN 2DUP CURRENT_TIME - ABS SWAP &gt; UNTIL 2DROP ;
+
+</div></code></pre>
+<p>All'interno del file sono presenti anche funzioni basilari di <strong>utilità</strong> che permettono, per esempio, la conversione di un certo numero di secondi/millisecondi nello specifico numero di microsecondi da utilizzare in fase di timing (<code>MILLISECONDS</code> e <code>SECONDS</code>).</p>
+<pre class='hljs'><code><div>DECIMAL
+
+: MILLISECONDS ( ms -- us ) 1000 * ;
+ 
+: SECONDS ( s -- us ) 1000 * MILLISECONDS ;
+ 
+</div></code></pre>
+<h3 id="led.f" tabindex="-1">led.f</h3>
+<p>Il file permette la gestione della coppia di LED usati nel sistema proposto, comprendendo parole e costanti per l'accensione, lo spegnimento ed il lampeggiamento dei LED.</p>
+<p>I LED rappresentano uno dei dispositivi di output più semplici e costituiscono una base fondamentale per implementare la selezione delle funzioni di un GPIO (General Purpose Input/Output).</p>
+<p>I LED rosso e verde sul RPi sono connessi, rispettivamente, ai pin GPIO 23 e 24.  Per una migliore leggibilità del codice, si sono definite le costanti:</p>
+<pre class='hljs'><code><div>GPIO23 CONSTANT RED
+GPIO24 CONSTANT GREEN
+</div></code></pre>
+<p>D'ora in poi, per semplicità, parleremo solo del LED rosso, dato che le istruzioni per il pilotaggio del LED verde sono analoghe.</p>
+<p>I bit di selezione della funzione relativa ai pin GPIO 20-29 (<strong>GPFSEL2</strong>) si trovano all'indirizzo 0x20200008.</p>
+<p>Utilizzando la word <code>GPFSEL</code> precedentemente definita, andiamo in automatico a memorizzare questo indirizzo nella costante <strong>RED_GPFSEL</strong></p>
+<pre class='hljs'><code><div>RED GPFSEL CONSTANT RED_GPFSEL
+</div></code></pre>
+<p>Per ogni pin ci sono 3 bit di selezione della funzione. Nel nostro caso, i bit relativi al pin GPIO 23 vanno dal bit 11 al bit 9. Utilizzando la word <code>FSEL</code>, andiamo a creare una maschera in cui i bit 11-9 sono posti a 1 e tutti gli altri saranno posti a 0. Memorizziamo il tutto nella costante <strong>RED_FSEL</strong></p>
+<pre class='hljs'><code><div>RED FSEL CONSTANT RED_FSEL
+</div></code></pre>
+<p>Abbiamo detto che i LED devono essere definiti in modalità <strong>output</strong> (0b001). Pertanto, vogliamo che nei bit 11-9 si presenti tale pattern, in modo da selezionare la output function relativa al pin GPIO 23. Utilizziamo la word <code>MODE</code> per tale scopo e memorizziamo il tutto in una costante, chiamata <strong>RED_OUT</strong></p>
+<pre class='hljs'><code><div>RED OUT MODE CONSTANT RED_OUT
+</div></code></pre>
+<p>Adesso, per abilitare il pin GPIO 23, dovremmo:</p>
+<ol>
+<li>Leggere la GPIO function selection  									RED_GPFSEL @</li>
+<li>Effettuare una clear function per il pin 23  							RED_FSEL BIC</li>
+<li>Effettuare una set function per settare il pin 23 in output  				RED_OUT OR</li>
+<li>Scrivere la function selection GPIO									RED_GPFSEL !</li>
+</ol>
+<p>Per prima cosa, andiamo a definire la word <code>RED_PIN</code></p>
+<pre class='hljs'><code><div>: RED_PIN RED_FSEL RED_OUT RED_GPFSEL ;
+</div></code></pre>
+<p>Successivamente, per abilitare il pin GPIO 23 ci basterà digitare</p>
+<pre class='hljs'><code><div>RED_PIN ENABLE
+</div></code></pre>
+<p>I pin GPIO vengono impostati e cancellati scrivendo negli indirizzi GPSET0 e GPCLR0, rispettivamente. Andando a scrivere 1 nel bit 23 del registro GPSET0 andremo ad accendere il LED. Analogamente, scrivendo 1 nel bit 23 del registro GPCLR0 andremo a spegnerlo.</p>
+<p>Necessitiamo quindi una maschera che abbia 1 nel bit 23 e tutti 0 altrove. Nel nostro caso, la maschera corrisponde alla costante GPIO23 che abbiamo rinominato precedentemente RED.</p>
+<p>Quindi scrivere:</p>
+<pre class='hljs'><code><div>RED GPSET0 !
+</div></code></pre>
+<p>andrà ad accendere il LED, mentre scrivere:</p>
+<pre class='hljs'><code><div>RED GPCLR0 !
+</div></code></pre>
+<p>lo andrà a spegnere. Per migliorare la leggibilità del codice, abbiamo definito le seguenti word:</p>
+<pre class='hljs'><code><div>: LED GPSET0 GPCLR0 ;
+: ON DROP ! ;
+: OFF NIP ! ; 
+</div></code></pre>
+<p>Per accendere il LED rosso basterà quindi digitare:</p>
+<pre class='hljs'><code><div>RED LED ON
+</div></code></pre>
+<p>e per spegnerlo</p>
+<pre class='hljs'><code><div>RED LED OFF
+</div></code></pre>
+<p>Inoltre, abbiamo creato una word <code>BLINK</code> che fa lampeggiare il LED rosso per un numero <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span> di volte pari all'elemento presente nel TOS:</p>
+<pre class='hljs'><code><div>VARIABLE FLAG 
+
+: BLINK 
+    FLAG !
+    BEGIN 
+        RED LED ON
+        300 MILLISECONDS DELAY 
+        RED LED OFF
+        300 MILLISECONDS DELAY
+        FLAG @ 1 - FLAG !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        FLAG @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+</div></code></pre>
+<p>Il valore <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi></mrow><annotation encoding="application/x-tex">n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.4306em;"></span><span class="mord mathnormal">n</span></span></span></span> viene memorizzato nella variabile FLAG e, successivamente, viene utilizzato un ciclo BEGIN...UNTIL per accendere e spegnere il LED con una cadenza di 300 ms. Successivamente, il valore della variabile FLAG viene decrementato di 1 e, successivamente, si va a verificare se il valore di FLAG è pari a 0, ovvero se la condizione di uscita è stata soddisfatta.</p>
+<h3 id="i2c.f" tabindex="-1">i2c.f</h3>
+<p>Il file permette di utilizzare il protocollo I2C in combinata con un display LCD grazie al backpack.</p>
+<p>Contiene parole e costanti utilizzate per implementare il suddetto protocollo, comprese quelle per impostare i registri del controller BSC su valori opportuni per abilitare il trasferimento di dati dal MCU al display in uno schema master-slave.</p>
+<p>La comunicazione viene SEMPRE iniziata e terminata dal Master, che invia una START e una STOP condition:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">CONDITION</th>
+<th style="text-align:center">SDA</th>
+<th style="text-align:center">SCL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">START</td>
+<td style="text-align:center">high-to-low</td>
+<td style="text-align:center">high</td>
+</tr>
+<tr>
+<td style="text-align:center">STOP</td>
+<td style="text-align:center">low-to-high</td>
+<td style="text-align:center">high</td>
+</tr>
+</tbody>
+</table>
+<p>Tra la START e la STOP CONDITION si può trasferire un qualsiasi numero di byte.</p>
+<p>SDA ed SCL del modulo I2C, sono connessi sul RPi ai pin GPIO 2 e 3.  È necessario che entrambi i pin siano abilitati in modalità ALT0 (Alternative Function 0).</p>
+<p>Per una migliore leggibilità del codice, si sono definite le costanti:</p>
+<pre class='hljs'><code><div>GPIO2 FSEL          CONSTANT GPIO2_FSEL
+GPIO2 ALT0 MODE     CONSTANT GPIO2_ALT0
+GPIO2 GPFSEL        CONSTANT GPIO2_GPFSEL
+
+GPIO3 FSEL          CONSTANT GPIO3_FSEL
+GPIO3 ALT0 MODE     CONSTANT GPIO3_ALT0
+GPIO3 GPFSEL        CONSTANT GPIO3_GPFSEL 
+</div></code></pre>
+<p>e le relative word:</p>
+<pre class='hljs'><code><div>: SDA1_PIN GPIO2_FSEL GPIO2_ALT0 GPIO2_GPFSEL ;
+: SCL1_PIN GPIO3_FSEL GPIO3_ALT0 GPIO3_GPFSEL ;
+
+: I2C_PINS SDA1_PIN SCL1_PIN ;
+</div></code></pre>
+<p>Pertanto, definiamo la word <code>INIT_I2C</code> per abilitare i pin SDA1 ed SCL1.</p>
+<pre class='hljs'><code><div>: INIT_I2C I2C_PINS ACTIVATE ;
+</div></code></pre>
+<p>Per abilitare i pin I2C ci basterà digitare</p>
+<pre class='hljs'><code><div>INIT_I2C
+</div></code></pre>
+<p>Per quanto riguarda il trasferimento dei dati, dovremo abilitare il Master in modalità di trasmissione e lo Slave in modalità di ricezione.</p>
+<img src=./images/i2c_backpack/7.png style="margin-bottom:30px" width=60%>
+<p>I passi di scrittura sono i seguenti:</p>
+<ol>
+<li>Il Master invia una START CONDITION seguita dallo SLAVE ADDR e dal bit R/W settato a 0 (WRITE).</li>
+<li>Lo Slave invia il bit di ACK</li>
+<li>Il Master invia il l'indirizzo del registro su cui vuole effettuare l'operazione di scrittura</li>
+<li>Lo Slave invia di nuovo il bit di ACK, se è pronto</li>
+<li>Il Master inizia ad inviare i dati da scrivere sul registro (uno o più byte) dello Slave</li>
+<li>Ad ogni byte inviato il Master deve aspettare che lo Slave invii il bit di ACK</li>
+<li>Il Master termina la trasmissione inviando una STOP CONDITION</li>
+</ol>
+<p>Il controller Broadcom Serial Controller (<strong>BSC</strong>) è un controller BSC master, fast-mode (400Kb/s). Il bus Broadcom Serial Control è un bus proprietario conforme al bus/interfaccia I2C di Philips®.</p>
+<p>Abbiamo a disposizione tre BSC master. Nel nostro caso abbiamo scelto il BSC1, che si trova all'indirizzo 0x20804000</p>
+<p>Nella tabella sottostante sono mostrati gli indirizzi relativi all'interfaccia I2C, dove ogni indirizzo è un offset dell'indirizzo BSC1.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Address Offset</th>
+<th>Register Name</th>
+<th>Description</th>
+<th style="text-align:center">Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0x0</td>
+<td>C</td>
+<td>Control</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">0x4</td>
+<td>S</td>
+<td>Status</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">0x8</td>
+<td>DLEN</td>
+<td>Data Length</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">0xC</td>
+<td>A</td>
+<td>Slave Address</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">0x10</td>
+<td>FIFO</td>
+<td>Data FIFO</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">0x14</td>
+<td>DIV</td>
+<td>Clock Divider</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">0x18</td>
+<td>DEL</td>
+<td>Data Delay</td>
+<td style="text-align:center">32</td>
+</tr>
+<tr>
+<td style="text-align:center">0x1C</td>
+<td>CLKT</td>
+<td>Clock Stretch Timeout</td>
+<td style="text-align:center">32</td>
+</tr>
+</tbody>
+</table>
+<p>Passiamo quindi a definire una serie di costanti per ottenere tali indirizzi:</p>
+<pre class='hljs'><code><div>RPI1_BASE 804000 +  CONSTANT BSC1
+
+BSC1                CONSTANT C_REGISTER
+BSC1 4 +            CONSTANT S_REGISTER
+BSC1 8 +            CONSTANT DLEN_REGISTER
+BSC1 C +            CONSTANT A_REGISTER
+BSC1 10 +           CONSTANT FIFO_REGISTER
+</div></code></pre>
+<p>Definiamo, inoltre, la word <code>SET</code>, che ha lo scopo di eseguire un &quot;store&quot; controllato.</p>
+<pre class='hljs'><code><div>: SET DUP &gt;R @ OR R&gt; ! ;
+</div></code></pre>
+<p>Inizialmente, viene eseguito un &quot;fetch&quot; per recuperare il valore memorizzato in un registro. Successivamente, questo valore viene combinato tramite un operatore OR con il valore presente nello stack. Questa operazione è progettata per preservare i bit che erano precedentemente impostati su 1.</p>
+<p>Alla fine, il nuovo valore risultante viene memorizzato nuovamente nel registro.</p>
+<p>Il <strong>C_REGISTER</strong> (Control Register) viene utilizzato per abilitare gli interrupt, cancellare la FIFO, definire un'operazione di lettura o scrittura e avviare un trasferimento.</p>
+<p>Tramite la definizione delle costanti sottostanti, andiamo a creare delle maschere che hanno impostato ad 1 il bit che serve per attivare un campo predefinito e tutti gli altri bit sono posti a 0.</p>
+<pre class='hljs'><code><div>0                   CONSTANT READ
+10# 4 BILS          CONSTANT CLEAR
+10# 7 BILS          CONSTANT ST
+10# 15 BILS         CONSTANT I2CEN
+</div></code></pre>
+<p>In particolar modo, vogliamo settare il bit 0 (READ) in modalità <strong>Write Packet Transfer</strong>, il bit 5-4 (CLEAR) in modalità <strong>Clear FIFO</strong>, il bit 7 (ST) in <strong>Start a new transfer</strong> ed il bit 15 (I2CEN) per abilitare il controller BSC.</p>
+<p>Definiamo le word per fare quanto scritto sopra:</p>
+<pre class='hljs'><code><div>: SET_WRITE         READ        C_REGISTER SET ;
+: CLEAR_FIFO        CLEAR       C_REGISTER SET ;
+: START_TRANSFER    ST          C_REGISTER SET ;
+: I2C_ENABLE        I2CEN       C_REGISTER SET ;
+</div></code></pre>
+<p>Il <strong>DLEN_REGISTER</strong> (Data Length Register) definisce il numero di byte di dati da trasmettere o ricevere nel trasferimento I2C. La lettura del registro fornisce il numero di byte rimanenti nel trasferimento corrente.</p>
+<p>Il campo DLEN specifica il numero di byte da trasmettere/ricevere. Nel nostro caso ci interessa trasmettere 1 Byte (8 bit) alla volta.</p>
+<pre class='hljs'><code><div>1 CONSTANT DLEN
+: SET_DLEN DLEN DLEN_REGISTER SET ;
+
+</div></code></pre>
+<p><strong>A_REGISTER</strong> (Slave Address Register) specifica l'indirizzo dello slave. Ogni Slave ha un idirizzo specifico. Nel nostro caso, esso corrisponde a 0x27.</p>
+<pre class='hljs'><code><div>27 CONSTANT ADDR
+</div></code></pre>
+<p>Definiamo la word <code>SET_SLAVE</code> per andare ad impostare l'indirizzo dello slave address nell'A_REGISTER</p>
+<pre class='hljs'><code><div>: SET_SLAVE ADDR A_REGISTER SET ;
+</div></code></pre>
+<p>Il <strong>FIFO_REGISTER</strong> viene utilizzato per accedere alla FIFO. Definiamo una word adatta a scrivere un byte di dati sulla FIFO:</p>
+<pre class='hljs'><code><div>: &gt;FIFO FIFO_REGISTER ! ;
+</div></code></pre>
+<p>Andiamo adesso a definire la word <code>I2C_SEND</code>, che la funzionalità di:</p>
+<ul>
+<li>impostare il tipo di trasferimento in modalità di scrittura</li>
+<li>abilitare un nuovo trasferimento BSC</li>
+<li>abilitare le operazioni BSC, dato che se ciò non accade, i trasferimenti non possono essere effettuati</li>
+</ul>
+<pre class='hljs'><code><div>: I2C_SEND
+    SET_WRITE
+    START_TRANSFER
+    I2C_ENABLE ;
+</div></code></pre>
+<p>Successivamente, definiamo la word <code>&gt;I2C</code> che, ricevuto un Byte di dati, consente di:</p>
+<ul>
+<li>scrivere i dati nel FIFO REGISTER</li>
+<li>impostare il numero di bit da trasmettere/ricevere</li>
+<li>richiamare la subroutine I2C_SEND per attivare il controllore BSC ed iniziare un nuovo trasferimento.</li>
+</ul>
+<pre class='hljs'><code><div>: &gt;I2C
+    &gt;FIFO
+    SET_DLEN
+    I2C_SEND ;
+</div></code></pre>
+<h3 id="lcd.f" tabindex="-1">lcd.f</h3>
+<p>Il file permette la gestione del modulo display utilizzato nel sistema proposto, successivamente all'impostazione del controller BSC del RPi.</p>
+<p>Nel file sono incluse parole per la stampa di parole sul display e per la discriminazione tra l'invio di caratteri e quello di comandi, sfruttando la modalità di invio a 4 bit offerta dal display LCD2004.</p>
+<p>Lo Slave, in base al byte di dati che riceve, si comporta diversamente se questo corrisponde ad un semplice dato o ad un comando.</p>
+<p>Siamo andati a definire la word <code>?CMD</code> con lo scopo di determinare se una sequenza di bit è un comando o un carattere restituendo, rispettivamente, TRUE o FALSE. La differenza è rappresentata dal fatto che i comandi presentano il bit 8 posto a 1, che è invece 0 nel caso dei caratteri.</p>
+<pre class='hljs'><code><div>: ?CMD DUP 8 RSHIFT 1 = ;
+</div></code></pre>
+<p>Pertanto, abbiamo definito la word <code>CMD</code> per fare in modo che il bit 8 venisse posto a 1:</p>
+<pre class='hljs'><code><div>: CMD 100 OR ;
+</div></code></pre>
+<p>Per determinare la costante di apertura della comunicazione da sommare al valore presente nel TOS, ricorriamo alla word <code>?CMD_OR_CHAR</code>. Se dobbiamo inviare un comando, dovremmo sommare al TOS il valore 0xC. Altrimenti andremo a sommare 0xD.</p>
+<pre class='hljs'><code><div>: ?CMD_OR_CHAR 
+    TRUE = IF
+        C
+    ELSE
+        D
+    THEN
+    OR ;
+</div></code></pre>
+<p>Come precedentemente specificato, il modulo LCD2004 sfrutta la modalità di invio a 4 bit. Pertanto, per inviare 1 Byte di dati, dovremo spezzettarlo in due parti da 4 bit ciascuna, ovvero 2 nibble. Definiamo la word <code>NIBBLE</code> con lo scopo di inserire sullo stack metà del byte effettivo:</p>
+<pre class='hljs'><code><div>: NIBBLE
+    DUP ROT
+    ?CMD_OR_CHAR SWAP
+    8 OR SWAP ;
+</div></code></pre>
+<p>Ricevuta in input una condizione di verità p (0/T, 1/F) viene determinata, tramite la word ?CMD_OR_CHAR quale costante di apertura della comunicazione sommare al valore v per inviare un carattere (D) o un comando (C).</p>
+<p>Successivamente una copia del valore v viene sommata alla costante di chiusura della comunicazione dello stesso nibble (0x8).</p>
+<p>es. processare 5 come parte di un carattere produce i byte 5D e 58</p>
+<p>es. processare 5 come parte di un comando produce i byte 5C e 58</p>
+<p>La comunicazione, andrà ad inviare prima i MSB del Byte di dati e, successivamente i LSB.</p>
+<p>Abbiamo definito due word ad hoc <code>MSB</code> ed <code>LSB</code> che, rispettivamente, pongono a 0 tutti i bit tranne i primi 4 per inviare i bit più significativi e viceversa.</p>
+<pre class='hljs'><code><div>: MSB F0 AND ;
+: LSB F AND 4 LSHIFT ;
+</div></code></pre>
+<p>Compattiamo ora il tutto nella word <code>BYTE</code> che, se richiamata, prende il valore b nel TOS, lo processa e ritorna sullo stack un totale di 4 valori (due per ciascun nibble), che compongono il Byte b che si desidera inviare.</p>
+<pre class='hljs'><code><div>: BYTE
+    ?CMD SWAP 2DUP
+    MSB NIBBLE 
+    2SWAP
+    LSB NIBBLE
+    2SWAP ;
+</div></code></pre>
+<p>Per inviare il Byte, basterà utilizzare la word <code>SEND</code></p>
+<pre class='hljs'><code><div>: SEND
+    &gt;I2C 1 MILLISECONDS DELAY
+    &gt;I2C 2 MILLISECONDS DELAY
+    &gt;I2C 1 MILLISECONDS DELAY
+    &gt;I2C 2 MILLISECONDS DELAY ;
+</div></code></pre>
+<p>Per astrarre ancora di più il codice, abbiamo definito la word <code>&gt;LCD</code> per inviare un Byte di dati allo Slave tramite I2C.</p>
+<pre class='hljs'><code><div>: &gt;LCD BYTE SEND ;
+</div></code></pre>
+<p>Successivamente siamo andati a definire alcune costanti di utilità per lavorare al meglio con il display 2004</p>
+<pre class='hljs'><code><div>01                  CONSTANT CLEAR_DISPLAY
+02                  CONSTANT RETURN_HOME
+
+80                  CONSTANT ROW1
+C0                  CONSTANT ROW2
+ROW1 14 +           CONSTANT ROW3
+ROW2 14 +           CONSTANT ROW4
+
+14                  CONSTANT CURSOR_RSHIFT
+10                  CONSTANT CURSOR_LSHIFT
+
+0C                  CONSTANT CURSOR_OFF
+0F                  CONSTANT CURSOR_ON
+0E                  CONSTANT CURSOR_BLINK_OFF
+</div></code></pre>
+<p>Il display, può essere visto come una matrice 4x20. Siamo andati a creare la word <code>SET_CURSOR</code> con lo scopo di posizionare il cursore in un punto specifico del display, sfruttando i valori di riga e colonna inseriti nello stack.</p>
+<pre class='hljs'><code><div>VARIABLE COL
+
+: SET_CURSOR
+    COL !
+    CMD &gt;LCD
+    BEGIN 
+        CURSOR_RSHIFT CMD &gt;LCD
+        COL @ 1 - COL !                   \ DECREMENTO FLAG AD OGNI ITERAZIONE
+        COL @ 0=                           \ CONDIZIONE DI USCITA
+    UNTIL ;
+</div></code></pre>
+<p>Se vogliamo scrivere dei caratteri sul display, anziché andare ogni volta a scrivere l'equivalente ascii sullo stack e poi &gt;LCD, abbiamo creato la word <code>PRINT</code> che stampa una serie di caratteri o comandi presenti sullo stack.</p>
+<pre class='hljs'><code><div>VARIABLE LEN
+
+: PRINT 
+    DEPTH LEN !
+    BEGIN 
+        &gt;LCD
+        LEN @ 1 - LEN !                     \ DECREMENTO LEN AD OGNI ITERAZIONE
+        LEN @ 0=                            \ CONDIZIONE DI USCITA
+    UNTIL ;
+</div></code></pre>
+<p>Viene calcolata la profondità dello stack e memorizzata in una variabile LEN, per conoscere il numero di iterazioni per stampare tutti gli elementi dello stack.</p>
+<p>Il ciclo BEGIN...UNTIL viene utilizzato per iterare attraverso gli elementi nello stack e stamparli sul display LCD.</p>
+<p>Dopo che il carattere/comando viene inviato, la variabile LEN viene decrementata di 1 e, successivamente, si verifica se il valore di LEN è pari a 0, ovvero se la condizione di uscita è stata soddisfatta.</p>
+<p>Sfruttando una logica molto simile, siamo passati alla definizione della word <code>PRINT_STR</code>. Essa nasce con lo scopo di stampare una stringa di caratteri presente in memoria, specificata da &quot;s_addr&quot; (l'indirizzo di inizio della stringa) e &quot;s_len&quot; (la lunghezza della stringa).</p>
+<pre class='hljs'><code><div>: PRINT_STR
+    STR_LEN !
+    BEGIN
+        DUP C@ &gt;LCD
+        STR_LEN @ 1- STR_LEN !
+        1+
+        STR_LEN @ 0=
+    UNTIL
+    DROP ;
+</div></code></pre>
+<p>Il ciclo BEGIN...UNTIL viene utilizzato per scorrere la stringa carattere per carattere fino a quando non viene raggiunta la fine della stringa (quando &quot;STR_LEN&quot; diventa 0).</p>
+<p>All'interno del ciclo, &quot;DUP C@&quot; estrae il carattere corrente dalla stringa e lo invia alla destinazione di output (un display LCD nel nostro caso).</p>
+<p>Dopo che il carattere viene inviato, la lunghezza della stringa viene ridotta di 1 ed il puntatore viene incrementato di 1 in modo da puntare alla cella di memoria successiva.</p>
+<p>Successivamente siamo andati a definire delle word che, fondamentalmente, stampano su LCD opportuni messaggi.</p>
+<p>È inoltre presente una word di inizializzazione del display LCD, <code>INIT_LCD</code></p>
+<pre class='hljs'><code><div>: INIT_LCD 
+    SET_SLAVE 02 CMD &gt;LCD
+    WELCOME_MSG ;
+</div></code></pre>
+<h3 id="dht.f" tabindex="-1">dht.f</h3>
+<p>Il file permette la gestione di un sensore DHT22/AM2302 secondo le modalità descritte precedentemente. Contiene la definizione di parole e costanti atte ad impostare le condizioni operative del sensore e a presentare i risultati del rilevamento in formato <em>human-readable</em>.</p>
+<p>Innanzitutto, possiamo trovare le definizioni di alcune costanti strettamente legate al sensore DHT22/AM2302 in uso, come le temperature massima e minima registrabili, più le dichiarazioni di alcune variabili usate per la raccolta e il processing dei dati.</p>
+<pre class='hljs'><code><div>DECIMAL
+
+-40                 CONSTANT MIN_TEMP
+80                  CONSTANT MAX_TEMP
+0                   CONSTANT MIN_HUM
+100                 CONSTANT MAX_HUM
+
+VARIABLE DATA
+VARIABLE CHECKSUM
+
+VARIABLE HUMIDITY_IP
+VARIABLE HUMIDITY_DP
+VARIABLE TEMPERATURE_IP
+VARIABLE TEMPERATURE_DP
+</div></code></pre>
+<p>Sono, quindi, specificate le costanti di interfaccia tra il sensore e il Raspberry™ Pi, come il pin GPIO cui è connesso il DHT22/AM2302 (<code>GPIO18</code>) e le maschere usate per le operazioni sui registri (quest'ultima scelta resasi necessaria per non sovraccaricare il sistema di operazioni che sono molto frequenti).</p>
+<pre class='hljs'><code><div>GPIO18 FSEL          CONSTANT GPIO18_FSEL
+GPIO18 OUT MODE      CONSTANT GPIO18_OUT
+GPIO18 INP MODE      CONSTANT GPIO18_INP
+GPIO18 GPFSEL        CONSTANT GPIO18_GPFSEL
+</div></code></pre>
+<p>Successivamente, troviamo le definizioni di alcune parole utili ai fini del rilevamento e del processing dei dati (<code>WAIT_PULLDOWN</code> e <code>WAIT_PULLUP</code>), oltre che di parole necessarie a far riferimento al sensore DHT in formato <em>human-readable</em> e utili a semplificare certe operazioni (<code>DHT_PIN_OUT</code> e <code>DHT_OUT</code>). Nello specifico, troviamo le parole:</p>
+<ul>
+<li><code>DHT_PIN_OUT</code>, che permette di caricare sullo stack i valori necessari a impostare il pin GPIO cui è collegato il sensore in modalità output</li>
+<li><code>DHT_OUT</code>, che rende effettiva l'impostazione del pin collegato al sensore in output</li>
+<li><code>DHT_PIN_INP</code>, che permette di caricare sullo stack i valori necessari a impostare il pin GPIO cui è collegato il sensore in modalità input</li>
+<li><code>DHT_INPUT</code>, che rende effettiva l'impostazione del pin collegato al sensore in input</li>
+</ul>
+<p>I listati delle parole citate finora sono i seguenti:</p>
+<pre class='hljs'><code><div>: WAIT_PULLDOWN ( ngpio -- ) BEGIN DUP PIN_LEVEL 0 = WHILE REPEAT DROP ;
+
+: WAIT_PULLUP ( ngpio -- ) BEGIN DUP PIN_LEVEL 1 = WHILE REPEAT DROP ;
+
+: DHT_PIN_OUT ( -- ) GPIO18_FSEL GPIO18_OUT GPIO18_GPFSEL ;
+
+: DHT_OUT ( -- ) DHT_PIN_OUT ENABLE_PIN ;
+
+: DHT_PIN_INP ( -- ) GPIO18_FSEL GPIO18_INP GPIO18_GPFSEL ;
+
+: DHT_INPUT ( -- ) DHT_PIN_INP ENABLE_PIN ;
+</div></code></pre>
+<p>Dopo di ché, sono presenti le parole necessarie al funzionamento vero e proprio del sensore:</p>
+<ul>
+<li><code>SETUP_SENSOR</code>, che permette al Raspberry™ Pi di inviare la <strong>start condition</strong> al sensore, per cui bisogna impostare il pin in modalità <strong>output</strong> (scrivendo <code>0b001</code> nella tripletta del registro <code>GPFSEL</code> associata al pin), <strong>spegnere</strong> il pin (andando a impostare nel registro <code>GPCLR</code> il bit associato al pin GPIO), attendere 1 ms, <strong>attivare</strong> il pin (andando a impostare il bit associato al pin GPIO nel registro <code>GPSET</code>), per poi impostare il pin in modalità <strong>input</strong> (in modo analogo all'impostazione della modalità di output) e cedere, quindi, il controllo al sensore.</li>
+<li><code>READ_DATA</code>, che permette al Raspberry™ Pi di <strong>campionare</strong> 40 valori inviati dal sensore DHT22/AM2302 e di salvarli nelle variabili <code>DATA</code> (primi 32 bit) e <code>CHECKSUM</code> (ultimi 8 bit), facendo uso della parola ausiliaria <code>READ_BIT</code>, con cui si effettua il campionamento di un bit <strong>sulla base del tempo</strong> in cui il sensore mantiene alta la data line: se ciò avviene per più di 50 µs, il sensore avrà trasmesso un bit pari a 1, altrimenti sarà un bit pari a 0.</li>
+</ul>
+<p>Riportiamo, quindi, i listati di suddette parole:</p>
+<pre class='hljs'><code><div>: SETUP_SENSOR ( -- )
+    DHT_OUT
+    GPIO18 DUP GPCLR !
+    1 MILLISECONDS CLK_DELAY
+    GPIO18 DUP GPSET !
+    DHT_INPUT ;
+
+: READ_BIT ( gpion -- 0/1 ) DUP WAIT_PULLDOWN TIMER_COUNT @ SWAP WAIT_PULLUP TIMER_COUNT @ SWAP - 50 &gt; IF 1 ELSE 0 THEN ;
+
+: READ_DATA ( -- )
+    GPIO18 N_GPIO DUP DUP DUP WAIT_PULLDOWN WAIT_PULLUP
+    39 BEGIN
+        DUP 7 &gt; IF
+            DATA DUP @ 1 LSHIFT
+        ELSE 
+            CHECKSUM DUP @ 1 LSHIFT
+        THEN
+        3 PICK READ_BIT
+        OR SWAP !
+        1 - DUP 0 &gt;
+    WHILE REPEAT 2DROP ;
+</div></code></pre>
+<p>Abbiamo, quindi, le parole usate per estrarre dai dati i valori reali della temperatura e dell'umidità (<code>GET_TEMPERATURE</code> e <code>GET_HUMIDITY</code>), sfruttando semplici correlazioni tra la posizione dei bit e il loro significato (spiegati in precedenza) e il fatto che il valore dell'una o dell'altra grandezza sono ottenuti dividendo per 10 il valore complessivo.</p>
+<pre class='hljs'><code><div>: GET_HUMIDITY ( -- )
+    DATA @ 16 RSHIFT 10 /MOD DUP DUP MIN_HUM &gt;= SWAP MAX_HUM &lt;= AND
+    IF
+        HUMIDITY_IP ! 
+        HUMIDITY_DP ! 
+    ELSE
+        2DROP
+    THEN ;
+
+: GET_TEMPERATURE ( -- )
+    DATA @ 65535 AND 10 /MOD DUP DUP MIN_TEMP &gt;= SWAP MAX_TEMP &lt;= AND
+    IF
+        TEMPERATURE_IP !
+        TEMPERATURE_DP !
+    ELSE
+        2DROP
+    THEN ;
+
+: GET_READING GET_HUMIDITY GET_TEMPERATURE ;
+</div></code></pre>
+<p>Infine, sono state definite semplici parole per la presentazione dei dati in formato <em>human-readable</em>, che permettono di stampare le misurazioni sia su riga di comando (<code>DHT&gt;CMD</code>) che sul display LCD di cui è provvisto il sistema (<code>TEMPERATURE&gt;LCD</code> e <code>HUMIDITY&gt;LCD</code>). A queste si aggiungono anche le parole ausiliarie per la conversione delle cifre decimali in messaggi per il display codificati ASCII.</p>
+<pre class='hljs'><code><div>: HUMIDITY&gt;CMD ( -- ) .&quot; Humidity: &quot; HUMIDITY_IP ? .&quot; . &quot; HUMIDITY_DP ? .&quot; %&quot; ;
+
+: TEMPERATURE&gt;CMD ( -- ) .&quot; Temperature: &quot; TEMPERATURE_IP ? .&quot; . &quot; TEMPERATURE_DP ? .&quot; *C&quot; ;
+
+: DHT&gt;CMD TEMPERATURE&gt;CMD .&quot;  - &quot; HUMIDITY&gt;CMD CR ;
+
+\ Parola usata per stampare su schermo la parte intera di un valore (temperatura/umidità)
+: INT_MSG ( r q x -- ) 13 SET_CURSOR NUMBER &gt;LCD NUMBER &gt;LCD ;
+
+\ Parola usata per stampare su schermo la parte decimale di un valore (temperatura/umidità)
+: DEC_MSG ( n x -- ) 16 SET_CURSOR NUMBER &gt;LCD ;
+
+: HUMIDITY&gt;LCD ( -- )
+    HUMIDITY_IP @ 10 /MOD ROW3 INT_MSG
+    HUMIDITY_DP @ ROW3 DEC_MSG ;
+
+: TEMPERATURE&gt;LCD ( -- )
+    TEMPERATURE_IP @ 10 /MOD ROW2 INT_MSG
+    TEMPERATURE_DP @ ROW2 DEC_MSG ;
+
+</div></code></pre>
+<p>A riassumere tutte le operazioni descritte in precedenza abbiamo la parola <code>MEASURE</code>, che reimposta le variabili.</p>
+<pre class='hljs'><code><div>: MEASURE ( -- ) 0 DATA ! 0 CHECKSUM ! SETUP_SENSOR READ_DATA GET_READING DHT&gt;CMD DROP ;
+</div></code></pre>
+<h3 id="button.f" tabindex="-1">button.f</h3>
+<p>Il file permette di utilizzare il pulsante di reset previsto dal sistema. Contiene la definizione di parole e costanti utilizzate per impostare opportunamente i registri necessari e per determinare se il pulsante è stato premuto.</p>
+<p>Innanzitutto si dichiarano alcune <strong>costanti</strong> utili per le operazioni seguenti, comprese quelle associate al pin <code>GPIO8</code>, cui è collegata la linea dati del pulsante.</p>
+<pre class='hljs'><code><div>HEX
+ 
+\ Definizione di costanti per il setting del registro GPPUD
+ 
+1                   CONSTANT DOWN
+2                   CONSTANT UP
+ 
+\ Definizione di costanti per la gestione del GPIO associato al bottone di reset
+ 
+GPIO8               CONSTANT RESET_BTN
+GPIO8 FSEL          CONSTANT GPIO8_FSEL
+GPIO8 INP MODE      CONSTANT GPIO8_INPUT
+GPIO8 GPFSEL        CONSTANT GPIO8_GPFSEL
+</div></code></pre>
+<p>Si procede, quindi, con la definizione della parola <code>RESET_PIN</code>, che carica sullo stack dei valori utili (in modo similare alle altre periferiche)</p>
+<pre class='hljs'><code><div>: RESET_PIN ( -- ) GPIO8_FSEL GPIO8_INPUT GPIO8_GPFSEL ;
+</div></code></pre>
+<p>Dopo di ché, viene definita la parola <code>SET_PULL</code>, che riceve in input un pin <code>GPIOx</code> e una modalità di pull (up/down) e permette di asserire il controllo corrispondente per il pin <code>GPIOx</code>. Perché ciò avvenga, serve scrivere su una coppia di registri (definiti nel file <code>gpio.f</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Registro</th>
+<th>Descrizione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPPUD</td>
+<td>Registro a 32 bit, di cui solo i primi due utilizzati, per controllare l'attuazione delle linee di controllo PU/PD per tutti i pin GPIO.<code>&lt;br&gt;</code> Da usare INSIEME ai registri GPPUDCLK0/1</td>
+</tr>
+<tr>
+<td>GPPUDCLK0/1</td>
+<td>Registro a 32 bit, in cui il bit i-esimo asserisce la linea di clock per il controllo dell'attivazione del PU/PD interno per il pin i-esimo</td>
+</tr>
+</tbody>
+</table>
+<p>Nello specifico, le operazioni che vengono svolte per asserire l'attuazione di una linea di controllo per il pull-up sul pin GPIO8 occorre:</p>
+<ol>
+<li>scrivere nel registro <code>GPPUD</code> il valore <code>0b10</code> (<code>2</code>) per abilitare il controllo pull-up/pull-down</li>
+<li>attendere 150 cicli di clock con <code>DELAY</code></li>
+<li>impostare a 1 il bit 8 nel registro <code>GPPUDCLK0</code></li>
+<li>attendere ulteriori 150 cicli di clock</li>
+</ol>
+<p>Dal momento che vogliamo che il pulsante sia sempre in pull-up, non serve che vengano effettuate le ultime due operazioni di questa sequenza, che servirebbero a restaurare la situazione di partenza, ossia:</p>
+<ol>
+<li>scrivere <code>0</code> nel registro <code>GPPUD</code> per rimuovere il segnale di controllo</li>
+<li>annullare il bit 8 nel registro <code>GPPUDCLK0</code> per rimuovere il clock</li>
+</ol>
+<p><strong>N.B.</strong> Questa sequenza si rende necessaria a causa del dispositivo target, dato che le versioni del Raspberry™ Pi dalla 4 in poi sfruttano un meccanismo diverso.</p>
+<p>Segue il listato della parola <code>SET_PULL</code></p>
+<pre class='hljs'><code><div>: SET_PULL ( gpiox pud -- )
+    GPPUD !
+    150 MILLISECONDS DELAY
+    GPPUDCLK0 DUP @
+    ROT 2DUP
+    BIC &gt;R
+    OR OVER !
+    150 MILLISECONDS DELAY
+    R&gt; SWAP ! ;
+</div></code></pre>
+<p>La parola <code>SET_PULL</code> viene usata all'interno della parola <code>INIT_BTN</code> in quanto parte del processo di inizializzazione del componente. Bisogna, però, effettuare altre operazioni per fissare il funzionamento del pulsante, dato che, con la sola impostazione del controllo pull-up ciò non avviene.
+In questo senso, bisogna operare su due altri registri (anch'essi definiti nel file <code>gpio.f</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Registro</th>
+<th>Descrizione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPREN0</td>
+<td>Registro a 32 bit, usato per individuare transizioni logiche da 0 a 1, del tipo &quot;011...1&quot; sui pin 0...31.<br />Ad ogni transizione, viene settato un bit nel registro GPEDS0</td>
+</tr>
+<tr>
+<td>GPFEN0</td>
+<td>Registro a 32 bit, usato per individuare transizioni logiche da 1 a 0, del tipo &quot;100...0&quot; sui pin 0...31.<br />Ad ogni transizione, viene settato un bit nel registro GPEDS0</td>
+</tr>
+</tbody>
+</table>
+<p>Nello specifico, quello che viene fatto è impostare a 1 i bit dei due registri corrispondenti al pin <code>GPIO8</code>, ossia il bit 8, cosicché vengano rilevati eventi quando si verificano transizioni del tipo <code>01...10</code> e che tali eventi vengano scritti impostando a 1 il bit 8 (per il pin <code>GPIO8</code>) del registro <code>GPEDS0</code>.</p>
+<p>Detto ciò, è quindi possibile presentare il listato della parola <code>INIT_BTN</code>, in cui viene impostato il pin <code>GPIO8</code> in modalità input, viene impostato il controllo in pull-up del pulsante e vengono abilitati i detector per transizioni alto-basso e basso-alto.</p>
+<pre class='hljs'><code><div>: INIT_BTN ( -- )
+    RESET_PIN ENABLE
+    RESET_BTN UP SET_PULL
+    RESET_BTN GPREN0 !
+    RESET_BTN GPFEN0 ! ;
+</div></code></pre>
+<p>Utile al funzionamento del bottone è poi la parola <code>IS_CLICKED</code>, che permette di determinare se è stato registrato un evento nel registro <code>GPEDS0</code> e di restituire un valore di verità.</p>
+<pre class='hljs'><code><div>: IS_CLICKED ( gpio -- 0/1 ) DUP &gt;R GPEDS0 @ AND R&gt; N_GPIO RSHIFT 0 = IF TRUE ELSE FALSE THEN ;
+ 
+</div></code></pre>
+<h3 id="main.f" tabindex="-1">main.f</h3>
+<p>Il file contiene il flusso sequenziale/logico di funzionamento del sistema. In esso sono definite le parole necessarie al funzionamento del software secondo le modalità previste.</p>
+<p>Nello specifico, è definita la parola <code>SETUP</code>, in cui sono previste, in un ordine che garantisca il funzionamento di tutti i componenti, le <strong>fasi di inizializzazione</strong> dei registri (attraverso le parole <code>INIT_x</code>) per il protocollo I2C, per il funzionamento del display LCD2004 (con la presentazione delle schermate di avvio del sistema), per i LED e per il pulsante.</p>
+<p>È poi definita la parola <code>MAIN</code>, in cui il software entra in un loop con test posticipato della condizione che il bottone <strong>non sia stato premuto</strong>, nel cui caso avviene il termine dell'esecuzione.</p>
+<p>Ad ogni iterazione del ciclo, viene prima fatta una <strong>misurazione</strong> dal sensore DHT22/AM2302 (tramite la parola <code>MEASURE</code> definita in <code>dht.f</code>), poi si procede al <strong>controllo della correttezza</strong> dei dati rispetto alle condizioni ambientali necessarie al corretto funzionamento di una sala server:</p>
+<ul>
+<li>se queste sono rispettate, viene visualizzata su display la struttura tipo dell'output per mostrare temperatura e umidità (attraverso la parola <code>TEMP_HUM_MSG</code>) e, con essa, i valori rilevati di temperatura e umidità; se attivi, vengono disattivati il LED verde e la ventola;</li>
+<li>se i valori sono anomali, il sistema prevede una gestione separata per le diverse situazioni, in genere mostrando messaggi distinti (attraverso le parole <code>LOW/HIGH_TEMP/HUM_MSG</code>) e facendo lampeggiare il LED rosso per un numero fissato di volte (codificato in base all'anomalia); nel caso particolare di alta temperatura, il sistema attiva anche il LED verde e la ventola di aerazione.</li>
+</ul>
+<p>Il file comprende, come tutti gli altri, anche la parola <code>MAIN_OK</code>, da usare in fase di debug/test, che notifica il corretto caricamento del file sul Raspberry™ Pi.</p>
+<p>Di seguito è riportato il codice sorgente del file.</p>
+<pre class='hljs'><code><div>
+DECIMAL
+
+: SETUP 
+    INIT_I2C
+    INIT_LCD
+    INIT_LEDS
+    INIT_BTN ;
+
+: MAIN
+    BEGIN
+        MEASURE
+        TEMPERATURE_IP @ 20 24 WITHIN HUMIDITY_IP @ 40 60 WITHIN AND 
+        TRUE =  IF
+            TEMP_HUM_MSG
+            TEMPERATURE&gt;LCD HUMIDITY&gt;LCD
+            GREEN LED OFF
+        ELSE 
+            TEMPERATURE_IP @ 20 &lt;= IF 
+                LOW_TEMP_MSG
+                3 BLINK
+            ELSE TEMPERATURE_IP @ 24 &gt;= IF
+                HIGH_TEMP_MSG
+                5 BLINK
+                GREEN LED ON
+                THEN
+            THEN 
+            HUMIDITY_IP @ 40 &lt;= IF
+                LOW_HUM_MSG
+                4 BLINK
+            ELSE HUMIDITY_IP @ 60 &gt;= IF
+                HIGH_HUM_MSG
+                6 BLINK
+                THEN
+            THEN
+        THEN
+        2 SECONDS CLK_DELAY
+        RESET_BTN IS_CLICKED TRUE =
+    UNTIL ;
+
+: MAIN_OK 
+    S&quot; TEST-MODE&quot; FIND NOT IF 
+        CR .&quot;           **********&quot; CR
+        .&quot; main.f CARICATO CORRETTAMENTE&quot; CR 
+        .&quot; DIGITARE COMANDO 'MAIN' SUL TERMINALE PER AVVIARE IL SISTEMA&quot; CR 
+        .&quot; OK &quot; CR
+        .&quot;           **********&quot; CR
+    THEN ;
+
+MAIN_OK
+
+SETUP                                                               1 SECONDS DELAY
+MAIN
+
+</div></code></pre>
+<h1 id="considerazioni-finali" tabindex="-1">Considerazioni Finali</h1>
+<p>Dopo una prima, lunga, fase di impostazione dell'attività progettuale, legata principalmente al reperimento della componentistica e all'apprendimento dell'ambiente di sviluppo (essendo la prima esperienza di programmazione a un così basso livello), possiamo affermare che la soluzione proposta rappresenti un punto di partenza per future espansioni e adattamenti.</p>
+<p>In questo senso, possibili espansioni riguardano l'inserimento di attuatori e sensori che possano permettere alla soluzione di interfacciarsi con altri dispositivi e di fungere da regolatore del comportamento di questi ultimi, senza, peraltro, dover modificare il codice sorgente fin dove scritto: si potrebbe, ad esempio, pensare di interfacciare il sistema con <strong>umidificatori</strong> e <strong>deumidificatori</strong> per il controllo dell'<strong>umidità</strong>, con <strong>sistemi di riscaldamento</strong> per l'innalzamento della <strong>temperatura</strong>, ecc.</p>
+<p>Inoltre, riteniamo che l'approccio seguito in fase di programmazione permetta al codice di poter essere riutilizzato anche su altri dispositivi target, semplicemente variando alcuni parametri di configurazione opportunamente astratti.</p>
+<h1 id="references" tabindex="-1">References</h1>
+<p>[1] <em>&quot;BCM2835 ARM Peripherals&quot;</em>, Broadcom Corporation</p>
+<p>[2] <em>&quot;Specification For LCD Module 2004A&quot;</em>, SHENZHEN EONE ELECTRONICS CO.</p>
+<p>[3] <em>&quot;PCF8574; PCF8574A Remote 8-bit I/O expander for I2C-bus with interrupt Rev. 5&quot;</em>, NXP Microelectronics</p>
+<p>[4] <em>&quot;Digital relative humidity &amp; temperature sensor AM2302/DHT22&quot;</em>, Liu T.</p>
+
+    </div>
+</body>
+</html>
