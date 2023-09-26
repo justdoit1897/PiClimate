@@ -46,7 +46,7 @@ Successivamente, si andrà a descrivere nel dettaglio ciascun componente, in mod
 
 ## Breadboard Schematic
 
-!['./docs/images/schema_FT.png']
+![./docs/images/schema_FT.png]
 
 ## Descrizione Componenti
 
