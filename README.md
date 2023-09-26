@@ -46,7 +46,7 @@ Successivamente, si andrà a descrivere nel dettaglio ciascun componente, in mod
 
 ## Breadboard Schematic
 
-<img src='./images/schema_FT.png' >
+!['./docs/images/schema_FT.png']
 
 ## Descrizione Componenti
 
@@ -54,9 +54,9 @@ Successivamente, si andrà a descrivere nel dettaglio ciascun componente, in mod
 
 È il **dispositivo target** del progetto. Esso monta il [SoC Broadcom 2835](https://www.raspberrypi.org/app/uploads/2012/02/BCM2835-ARM-Peripherals.pdf) con processore ARM1176JZFS a $700 \mathrm{MHz}$ che, nonostante le caratteristiche non più all'avanguardia, si presta ancora bene nella gestione dei compiti richiesti.
 
-<img src='./images/raspberry-pi-1-modello-b.jpg' alt='Raspberry Pi 1B' width="50%">
+!['./docs/images/raspberry-pi-1-modello-b.jpg']
 
-<img src='./images/Pi-GPIO-header-26-sm.png' alt='Raspberry Pi 1B GPIO Headers' width="320" style='float:right; margin-top:120px'>
+!['./docs/images/Pi-GPIO-header-26-sm.png']
 
 Specifiche di sistema:
 
