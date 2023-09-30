@@ -1,17 +1,39 @@
-I software embedded rappresentano il cuore invisibile di molte delle tecnologie che utilizziamo quotidianamente. Sono software specializzati, incorporati in dispositivi elettronici e macchinari industriali, progettati per eseguire specifiche funzioni senza l'interfaccia di un utente. Questi sistemi sono onnipresenti, dall'elettronica domestica agli impianti industriali, e forniscono l'automazione e il controllo necessari per semplificare le nostre vite e migliorare l'efficienza in molti settori.
+# PiServer-ClimateControl
 
-Immaginiamo una sala server, il cuore di un'organizzazione che ospita server e infrastrutture informatiche critiche. Valori come **temperatura** ed **umidità** devono essere attentamente monitorati e regolati per garantire il funzionamento ottimale dei dispositivi e prevenire danni dovuti al surriscaldamento o alla condensa.
+## 🇬🇧 Introduction
 
-In particolar modo, la **temperatura** ambientale dovrebbe essere mantenuta entro i **20-24 °C**, dato che un'elevata temperatura può causare surriscaldamento e danneggiare gli apparati, mentre una temperatura troppo bassa potrebbe causare condensa o problemi di umidità.
+**Course**: <a href="https://www.unipa.it/dipartimenti/ingegneria/cds/ingegneriainformatica2035/?template=responsive&pagina=insegnamento&idInsegnamento=171739&idDocente=153119&idCattedra=167738">Embedded Systems</a>
 
-L'intervallo di **umidità** consigliato per una sala server è generalmente tra il **40%** e il **60%**. Un'umidità troppo elevata può causare corrosione e danneggiare i componenti elettronici, mentre un'umidità troppo bassa può causare scariche elettrostatiche.
+**Professor**: <a href="https://www.unipa.it/persone/docenti/p/daniele.peri">Daniele Peri</a>
 
-Qui entra in gioco un progetto embedded dedicato alla gestione di questi parametri ambientali. Il nostro sistema embedded è progettato per:
+University project implementing an **embedded system** based on the FORTH language for the management of temperature and humidity inside a server room. The system is designed to constantly monitor the environmental conditions in the server room and take, through the use of special actuators, corrective actions if conditions reach critical levels.
 
-1. **Monitoraggio Costante** : Utilizza sensori di temperatura e umidità per monitorare costantemente le condizioni all'interno della sala server.
-2. **Controllo Automatico** : In base ai dati raccolti dai sensori, il sistema può attivare o disattivare sistemi di raffreddamento o umidificatori per mantenere le condizioni ottimali.
-3. **Allarmi e Notifiche** : Se il sistema rileva condizioni fuori norma, può generare allarmi visivi per il personale responsabile, consentendo di reagire rapidamente a eventuali problemi.
+For further information, please refer to the documentation.
 
-Questo progetto embedded rappresenta un esempio concreto di come i sistemi embedded siano essenziali per garantire l'affidabilità delle infrastrutture tecnologiche moderne. La sua capacità di monitorare e gestire in modo autonomo le condizioni ambientali contribuisce in modo significativo alla continuità operativa delle aziende e alla protezione delle risorse informatiche critiche.
+## 🇮🇹 Introduzione
+
+**Corso**: <a href="https://www.unipa.it/dipartimenti/ingegneria/cds/ingegneriainformatica2035/?template=responsive&pagina=insegnamento&idInsegnamento=171739&idDocente=153119&idCattedra=167738">Embedded Systems</a>
+
+**Docente**: <a href="https://www.unipa.it/persone/docenti/p/daniele.peri">Daniele Peri</a>
+
+Progetto universitario che mira ad implementare un **sistema embedded** basato sul linguaggio FORTH per la gestione della temperatura e dell'umidità all'interno di una sala server. Il sistema è progettato per monitorare costantemente le condizioni ambientali nella sala server e prendere, mediante l'utilizzo di particolari attuatori, azioni correttive se le condizioni raggiungono livelli critici.
+
+Per ulteriori informazioni, si faccia riferimento alla documentazione.
+
+## Hardware
+
+* Raspberry™Pi 1 B
+* FTDI FT232RL UART to USB interface
+* Breadboard
+* DHT22 Digital Temperature & Humidity Sensor
+* Display I2C LCD2004
+* Red LED
+* Green LED
+* 100-ohm resistors
+* 3-pin 5V DC fan
+* Push button switch
+* 10K-ohms resistor
+* Jumpers
 
 *Developed By Vincenzo Fardella & Mario Tortorici @ Università degli Studi di Palermo*
+
